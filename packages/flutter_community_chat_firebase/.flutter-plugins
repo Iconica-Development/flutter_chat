@@ -1,0 +1,9 @@
+# This is a generated file; do not edit or check into version control.
+cloud_firestore=/Users/steinmilder/.pub-cache/hosted/pub.dartlang.org/cloud_firestore-3.2.0/
+cloud_firestore_web=/Users/steinmilder/.pub-cache/hosted/pub.dartlang.org/cloud_firestore_web-2.8.10/
+firebase_auth=/Users/steinmilder/.pub-cache/hosted/pub.dartlang.org/firebase_auth-3.11.2/
+firebase_auth_web=/Users/steinmilder/.pub-cache/hosted/pub.dartlang.org/firebase_auth_web-4.6.1/
+firebase_core=/Users/steinmilder/.pub-cache/hosted/pub.dartlang.org/firebase_core-1.24.0/
+firebase_core_web=/Users/steinmilder/.pub-cache/hosted/pub.dartlang.org/firebase_core_web-1.7.3/
+firebase_storage=/Users/steinmilder/.pub-cache/hosted/pub.dartlang.org/firebase_storage-10.3.11/
+firebase_storage_web=/Users/steinmilder/.pub-cache/hosted/pub.dartlang.org/firebase_storage_web-3.3.9/
