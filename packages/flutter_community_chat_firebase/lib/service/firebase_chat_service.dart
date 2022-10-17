@@ -165,7 +165,7 @@ class FirebaseChatService {
         userChatsSubscription = db
             .collection(options.usersCollectionName)
             .doc(currentUser?.id)
-            .collection(options.chatsCollectionName)
+            .collection('chats')
             .snapshots()
             .listen((snapshot) {
           List<String> chatIds = [];
