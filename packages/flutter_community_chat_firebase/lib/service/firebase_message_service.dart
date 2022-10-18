@@ -26,7 +26,8 @@ class FirebaseMessageService {
       _sendMessage(chat, {'text': text});
 
   Future<void> sendImageMessage(ChatModel chat, Uint8List image) async {
-    var ref = storage.ref('chats/${chat.id}/${const Uuid().v4()}');
+    var ref = storage
+        .ref('${options.chatsCollectionName}/${chat.id}/${const Uuid().v4()}');
 
     return ref.putData(image).then(
           (_) => ref.getDownloadURL().then(
