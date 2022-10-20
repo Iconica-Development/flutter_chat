@@ -74,7 +74,7 @@ class FirebaseUserService {
     var existingChatCollection = await db
         .collection(options.usersCollectionName)
         .doc(currentUser?.id)
-        .collection(options.chatsCollectionName)
+        .collection('chats')
         .get();
 
     var existingChatsIds =

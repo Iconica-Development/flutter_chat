@@ -136,8 +136,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/flutter_community_chat_interface"
-      ref: "0.0.3"
-      resolved-ref: "3c88dcd3ce77f6703e9d2f3bb535f8117eb0b33d"
+      ref: "0.0.4"
+      resolved-ref: c035924618c1886caa9e699c4a8126c965506097
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
