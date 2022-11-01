@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Iconica
+//
+// SPDX-License-Identifier: BSD-3-Clause
+
 library flutter_community_chat_view;
 
 export 'src/components/chat_row.dart';

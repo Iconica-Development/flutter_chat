@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Iconica
+//
+// SPDX-License-Identifier: BSD-3-Clause
+
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
