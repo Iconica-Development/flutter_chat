@@ -16,12 +16,14 @@ class CommunityChat extends StatelessWidget {
     required this.dataProvider,
     this.chatOptions = const ChatOptions(),
     this.imagePickerTheme = const ImagePickerTheme(),
+    this.imagePickerConfig = const ImagePickerConfig(),
     super.key,
   });
 
   final CommunityChatInterface dataProvider;
   final ChatOptions chatOptions;
   final ImagePickerTheme imagePickerTheme;
+  final ImagePickerConfig imagePickerConfig;
 
   Future<void> _push(BuildContext context, Widget widget) =>
       Navigator.of(context).push(
@@ -64,6 +66,7 @@ class CommunityChat extends StatelessWidget {
               () => Navigator.of(context).pop(),
             ),
             imagePickerTheme: imagePickerTheme,
+            imagePickerConfig: imagePickerConfig,
           ),
         ),
       ).then(

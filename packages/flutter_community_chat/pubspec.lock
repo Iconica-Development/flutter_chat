@@ -136,8 +136,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/flutter_community_chat_interface"
-      ref: "0.0.4"
-      resolved-ref: c035924618c1886caa9e699c4a8126c965506097
+      ref: HEAD
+      resolved-ref: a44d0e936291a40c2e14bf102ade72f48f24cc6d
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
@@ -145,8 +145,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/flutter_community_chat_view"
-      ref: "0.0.4"
-      resolved-ref: c035924618c1886caa9e699c4a8126c965506097
+      ref: HEAD
+      resolved-ref: a44d0e936291a40c2e14bf102ade72f48f24cc6d
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
@@ -163,11 +163,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "v1.0.1"
-      resolved-ref: "8a5ddd6ea1fcf85793777d9a3e6f10da2e2ac5f3"
+      ref: "1.0.3"
+      resolved-ref: "20814755cca74296600a0ae3e016e46979e66a7e"
       url: "https://github.com/Iconica-Development/flutter_image_picker"
     source: git
-    version: "1.0.0"
+    version: "1.0.3"
   flutter_lints:
     dependency: "direct dev"
     description:

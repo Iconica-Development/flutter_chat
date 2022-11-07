@@ -15,16 +15,16 @@ dependencies:
     git: 
       url: https://github.com/Iconica-Development/flutter_community_chat.git
       path: packages/flutter_community_chat_view
-      ref: 0.0.4
+      ref: 0.0.5
   flutter_community_chat_interface: 
     git: 
       url: https://github.com/Iconica-Development/flutter_community_chat.git
       path: packages/flutter_community_chat_interface
-      ref: 0.0.4
+      ref: 0.0.5
   flutter_image_picker:
     git:
       url: https://github.com/Iconica-Development/flutter_image_picker
-      ref: v1.0.1
+      ref: 1.0.3
       
 dev_dependencies:
   flutter_lints: ^2.0.0
