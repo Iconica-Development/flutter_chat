@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
 import 'package:flutter_community_chat_view/src/components/chat_image.dart';
@@ -63,9 +64,10 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 999,
                               )
-                            : Image.network(
-                                (widget.message as ChatImageMessageModel)
-                                    .imageUrl,
+                            : CachedNetworkImage(
+                                imageUrl:
+                                    (widget.message as ChatImageMessageModel)
+                                        .imageUrl,
                               ),
                       ),
                       Padding(

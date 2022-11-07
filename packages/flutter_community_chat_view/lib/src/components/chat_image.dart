@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ChatImage extends StatelessWidget {
@@ -25,8 +26,8 @@ class ChatImage extends StatelessWidget {
         height: size,
         child: image == null
             ? const Center(child: Icon(Icons.person))
-            : Image.network(
-                image!,
+            : CachedNetworkImage(
+                imageUrl: image!,
                 fit: BoxFit.cover,
               ),
       );
