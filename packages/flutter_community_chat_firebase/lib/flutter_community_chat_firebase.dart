@@ -38,38 +38,40 @@ class FirebaseCommunityChatDataProvider extends CommunityChatInterface {
       options: firebaseChatOptoons,
     );
 
-    _messageService = FirebaseMessageService(
-      db: db,
-      storage: storage,
-      userService: _userService,
-      options: firebaseChatOptoons,
-    );
-
     _chatService = FirebaseChatService(
       db: db,
       userService: _userService,
       options: firebaseChatOptoons,
     );
+
+    _messageService = FirebaseMessageService(
+      db: db,
+      storage: storage,
+      userService: _userService,
+      chatService: _chatService,
+      options: firebaseChatOptoons,
+    );
   }
 
   @override
-  Stream<List<ChatMessageModel>> getMessagesStream(ChatModel chat) =>
-      _messageService.getMessagesStream(chat);
+  Stream<List<ChatMessageModel>> getMessagesStream() =>
+      _messageService.getMessagesStream();
 
   @override
-  Future<List<ChatUserModel>> getChatUsers() => _userService.getNewUsers();
+  Future<List<ChatUserModel>> getChatUsers() => _userService.getAllUsers();
 
   @override
   Stream<List<ChatModel>> getChatsStream() => _chatService.getChatsStream();
 
   @override
-  Future<void> createChat(ChatModel chat) => _chatService.createChat(chat);
+  Future<void> sendTextMessage(String text) =>
+      _messageService.sendTextMessage(text);
 
   @override
-  Future<void> sendTextMessage(ChatModel chat, String text) =>
-      _messageService.sendTextMessage(chat, text);
+  Future<void> sendImageMessage(Uint8List image) =>
+      _messageService.sendImageMessage(image);
 
   @override
-  Future<void> sendImageMessage(ChatModel chat, Uint8List image) =>
-      _messageService.sendImageMessage(chat, image);
+  Future<void> setChat(ChatModel chat) async =>
+      await _messageService.setChat(chat);
 }

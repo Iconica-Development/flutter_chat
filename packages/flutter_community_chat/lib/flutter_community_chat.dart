@@ -38,26 +38,32 @@ class CommunityChat extends StatelessWidget {
             NewChatScreen(
               options: options,
               translations: translations,
-              onPressCreateChat: (user) => dataProvider.createChat(
-                PersonalChatModel(user: user),
-              ),
+              onPressCreateChat: (user) {
+                _onPressChat(
+                  context,
+                  PersonalChatModel(user: user),
+                );
+              },
               users: users,
             ),
           ));
 
-  Future<void> _onPressChat(BuildContext context, ChatModel chat) => _push(
-        context,
-        ChatDetailScreen(
-          options: options,
-          translations: translations,
-          chat: chat,
-          chatMessages: dataProvider.getMessagesStream(chat),
-          onPressSelectImage: (ChatModel chat) =>
-              _onPressSelectImage(context, chat),
-          onMessageSubmit: (ChatModel chat, String content) =>
-              dataProvider.sendTextMessage(chat, content),
-        ),
-      );
+  Future<void> _onPressChat(BuildContext context, ChatModel chat) async {
+    dataProvider.setChat(chat);
+    _push(
+      context,
+      ChatDetailScreen(
+        options: options,
+        translations: translations,
+        chat: chat,
+        chatMessages: dataProvider.getMessagesStream(),
+        onPressSelectImage: (ChatModel chat) =>
+            _onPressSelectImage(context, chat),
+        onMessageSubmit: (ChatModel chat, String content) =>
+            dataProvider.sendTextMessage(content),
+      ),
+    );
+  }
 
   Future<void> _onPressSelectImage(BuildContext context, ChatModel chat) =>
       showModalBottomSheet<Uint8List?>(
@@ -76,7 +82,7 @@ class CommunityChat extends StatelessWidget {
       ).then(
         (image) {
           if (image != null) {
-            return dataProvider.sendImageMessage(chat, image);
+            return dataProvider.sendImageMessage(image);
           }
         },
       );

@@ -13,12 +13,12 @@ dependencies:
     sdk: flutter
   flutter_community_chat_view:
     git: 
-      url: https://github.com/Iconica-Development/flutter_community_chat.git
-      path: packages/flutter_community_chat_view
+       url: https://github.com/Iconica-Development/flutter_community_chat.git
+       path: packages/flutter_community_chat_view
   flutter_community_chat_interface: 
     git: 
-      url: https://github.com/Iconica-Development/flutter_community_chat.git
-      path: packages/flutter_community_chat_interface
+       url: https://github.com/Iconica-Development/flutter_community_chat.git
+       path: packages/flutter_community_chat_interface
   flutter_image_picker:
     git:
       url: https://github.com/Iconica-Development/flutter_image_picker

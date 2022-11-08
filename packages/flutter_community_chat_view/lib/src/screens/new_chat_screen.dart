@@ -86,10 +86,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                     title: user.name ?? '',
                   ),
                 ),
-                onTap: () {
-                  widget.onPressCreateChat(user);
-                  Navigator.of(context).pop();
-                },
+                onTap: () => widget.onPressCreateChat(user),
               ),
           ],
         ),
