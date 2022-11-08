@@ -14,14 +14,16 @@ export 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 class CommunityChat extends StatelessWidget {
   const CommunityChat({
     required this.dataProvider,
-    this.chatOptions = const ChatOptions(),
+    this.options = const ChatOptions(),
+    this.translations = const ChatTranslations(),
     this.imagePickerTheme = const ImagePickerTheme(),
     this.imagePickerConfig = const ImagePickerConfig(),
     super.key,
   });
 
   final CommunityChatInterface dataProvider;
-  final ChatOptions chatOptions;
+  final ChatOptions options;
+  final ChatTranslations translations;
   final ImagePickerTheme imagePickerTheme;
   final ImagePickerConfig imagePickerConfig;
 
@@ -34,7 +36,8 @@ class CommunityChat extends StatelessWidget {
       dataProvider.getChatUsers().then((users) => _push(
             context,
             NewChatScreen(
-              chatOptions: chatOptions,
+              options: options,
+              translations: translations,
               onPressCreateChat: (user) => dataProvider.createChat(
                 PersonalChatModel(user: user),
               ),
@@ -45,7 +48,8 @@ class CommunityChat extends StatelessWidget {
   Future<void> _onPressChat(BuildContext context, ChatModel chat) => _push(
         context,
         ChatDetailScreen(
-          chatOptions: chatOptions,
+          options: options,
+          translations: translations,
           chat: chat,
           chatMessages: dataProvider.getMessagesStream(chat),
           onPressSelectImage: (ChatModel chat) =>
@@ -58,12 +62,12 @@ class CommunityChat extends StatelessWidget {
   Future<void> _onPressSelectImage(BuildContext context, ChatModel chat) =>
       showModalBottomSheet<Uint8List?>(
         context: context,
-        builder: (BuildContext context) =>
-            chatOptions.imagePickerContainerBuilder(
+        builder: (BuildContext context) => options.imagePickerContainerBuilder(
           ImagePicker(
-            customButton: chatOptions.closeImagePickerButtonBuilder(
+            customButton: options.closeImagePickerButtonBuilder(
               context,
               () => Navigator.of(context).pop(),
+              translations,
             ),
             imagePickerTheme: imagePickerTheme,
             imagePickerConfig: imagePickerConfig,
@@ -82,6 +86,7 @@ class CommunityChat extends StatelessWidget {
         chats: dataProvider.getChatsStream(),
         onPressStartChat: () => _onPressStartChat(context),
         onPressChat: (chat) => _onPressChat(context, chat),
-        chatOptions: chatOptions,
+        options: options,
+        translations: translations,
       );
 }

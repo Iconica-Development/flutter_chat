@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import 'package:flutter/material.dart';
+import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 
 class ChatOptions {
   const ChatOptions({
@@ -25,6 +26,7 @@ class ChatOptions {
 Widget _createNewChatButton(
   BuildContext context,
   VoidCallback onPressed,
+  ChatTranslations translations,
 ) =>
     Padding(
       padding: const EdgeInsets.all(16.0),
@@ -33,18 +35,19 @@ Widget _createNewChatButton(
           minimumSize: const Size.fromHeight(50),
         ),
         onPressed: onPressed,
-        child: const Text('Start chat'),
+        child: Text(translations.newChatButton),
       ),
     );
 
 Widget _createMessageInput(
   TextEditingController textEditingController,
   Widget suffixIcon,
+  ChatTranslations translations,
 ) =>
     TextField(
       controller: textEditingController,
       decoration: InputDecoration(
-        hintText: 'Schrijf hier je bericht',
+        hintText: translations.messagePlaceholder,
         suffixIcon: suffixIcon,
       ),
     );
@@ -72,10 +75,13 @@ Widget _createImagePickerContainer(
 Widget _createCloseImagePickerButton(
   BuildContext context,
   VoidCallback onPressed,
+  ChatTranslations translations,
 ) =>
     ElevatedButton(
       onPressed: onPressed,
-      child: const Text('Annuleren'),
+      child: Text(
+        translations.cancelImagePickerBtn,
+      ),
     );
 
 Scaffold _createScaffold(
@@ -90,11 +96,13 @@ Scaffold _createScaffold(
 typedef ButtonBuilder = Widget Function(
   BuildContext context,
   VoidCallback onPressed,
+  ChatTranslations translations,
 );
 
 typedef TextInputBuilder = Widget Function(
   TextEditingController textEditingController,
   Widget suffixIcon,
+  ChatTranslations translations,
 );
 
 typedef ContainerBuilder = Widget Function(

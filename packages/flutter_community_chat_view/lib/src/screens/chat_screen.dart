@@ -3,21 +3,22 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
 import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 import 'package:flutter_community_chat_view/src/services/date_formatter.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({
-    required this.chatOptions,
+    required this.options,
     required this.chats,
     required this.onPressStartChat,
     required this.onPressChat,
+    this.translations = const ChatTranslations(),
     super.key,
   });
 
-  final ChatOptions chatOptions;
+  final ChatOptions options;
+  final ChatTranslations translations;
   final Stream<List<ChatModel>> chats;
   final VoidCallback? onPressStartChat;
   final void Function(ChatModel chat) onPressChat;
@@ -30,9 +31,9 @@ class _ChatScreenState extends State<ChatScreen> {
   final DateFormatter _dateFormatter = DateFormatter();
 
   @override
-  Widget build(BuildContext context) => widget.chatOptions.scaffoldBuilder(
+  Widget build(BuildContext context) => widget.options.scaffoldBuilder(
         AppBar(
-          title: const Text('Chats'),
+          title: Text(widget.translations.chatsTitle),
         ),
         Column(
           children: [
@@ -49,7 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         for (ChatModel chat in snapshot.data ?? [])
                           GestureDetector(
                             onTap: () => widget.onPressChat(chat),
-                            child: widget.chatOptions.chatRowContainerBuilder(
+                            child: widget.options.chatRowContainerBuilder(
                               ChatRow(
                                 image: chat is PersonalChatModel
                                     ? chat.user.imageUrl
@@ -62,7 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                         ? (chat.lastMessage!
                                                 as ChatTextMessageModel)
                                             .text
-                                        : '📷 Afbeelding'
+                                        : '📷 ${widget.translations.image}'
                                     : null,
                                 lastUsed: chat.lastUsed != null
                                     ? _dateFormatter.format(
@@ -79,9 +80,10 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             if (widget.onPressStartChat != null)
-              widget.chatOptions.newChatButtonBuilder(
+              widget.options.newChatButtonBuilder(
                 context,
                 widget.onPressStartChat!,
+                widget.translations,
               ),
           ],
         ),

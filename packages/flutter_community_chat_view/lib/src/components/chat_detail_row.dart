@@ -58,9 +58,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                         child: widget.message is ChatTextMessageModel
                             ? Text(
                                 (widget.message as ChatTextMessageModel).text,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: const TextStyle(fontSize: 16),
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 999,
                               )

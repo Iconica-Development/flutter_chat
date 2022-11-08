@@ -11,16 +11,18 @@ import 'package:flutter_community_chat_view/src/components/chat_image.dart';
 
 class ChatDetailScreen extends StatelessWidget {
   const ChatDetailScreen({
-    required this.chatOptions,
+    required this.options,
     required this.chat,
     required this.onMessageSubmit,
+    this.translations = const ChatTranslations(),
     this.chatMessages,
     this.onPressSelectImage,
     super.key,
   });
 
   final ChatModel chat;
-  final ChatOptions chatOptions;
+  final ChatOptions options;
+  final ChatTranslations translations;
   final Stream<List<ChatMessageModel>>? chatMessages;
   final Function(ChatModel)? onPressSelectImage;
   final Future<void> Function(ChatModel chat, String text) onMessageSubmit;
@@ -81,9 +83,10 @@ class ChatDetailScreen extends StatelessWidget {
             ),
             ChatBottom(
               chat: chat,
-              messageInputBuilder: chatOptions.messageInputBuilder,
+              messageInputBuilder: options.messageInputBuilder,
               onPressSelectImage: onPressSelectImage,
               onMessageSubmit: onMessageSubmit,
+              translations: translations,
             ),
           ],
         ),

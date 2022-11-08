@@ -8,13 +8,15 @@ import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 
 class NewChatScreen extends StatefulWidget {
   const NewChatScreen({
-    required this.chatOptions,
+    required this.options,
     required this.users,
     required this.onPressCreateChat,
+    this.translations = const ChatTranslations(),
     super.key,
   });
 
-  final ChatOptions chatOptions;
+  final ChatOptions options;
+  final ChatTranslations translations;
   final List<ChatUserModel> users;
   final Function(ChatUserModel) onPressCreateChat;
 
@@ -51,12 +53,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
                   child: TextField(
                     focusNode: _textFieldFocusNode,
                     onChanged: filterUsers,
-                    decoration: const InputDecoration(
-                      hintText: 'Zoeken...',
+                    decoration: InputDecoration(
+                      hintText: widget.translations.searchPlaceholder,
                     ),
                   ),
                 )
-              : const Text('Start een chat'),
+              : Text(widget.translations.newChatButton),
           actions: [
             IconButton(
               onPressed: () {
@@ -78,7 +80,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
           children: [
             for (var user in _filteredUsers ?? widget.users)
               GestureDetector(
-                child: widget.chatOptions.chatRowContainerBuilder(
+                child: widget.options.chatRowContainerBuilder(
                   ChatRow(
                     image: user.imageUrl,
                     title: user.name ?? '',

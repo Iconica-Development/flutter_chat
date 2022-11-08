@@ -24,9 +24,7 @@ class ChatRow extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
-            child: ChatImage(
-              image: image,
-            ),
+            child: ChatImage(image: image),
           ),
           Expanded(
             child: Padding(

@@ -188,7 +188,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_view"
       ref: HEAD
-      resolved-ref: bfca7ca229a0f9e6749d079a5b447e50bef6d56f
+      resolved-ref: "4af8360850b7d8d220f3052e4be25d6eb45ef963"
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
@@ -562,7 +562,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.0"
+    version: "3.1.1"
   xdg_directories:
     dependency: transitive
     description:
