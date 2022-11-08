@@ -177,9 +177,11 @@ packages:
   flutter_community_chat_interface:
     dependency: "direct main"
     description:
-      path: "/Users/steinmilder/documents/packages/chat/flutter_community_chat/packages/flutter_community_chat_interface"
-      relative: false
-    source: path
+      path: "packages/flutter_community_chat_interface"
+      ref: HEAD
+      resolved-ref: "01ab5599d44c2708b5a0f15959f6f59781ff8eb0"
+      url: "https://github.com/Iconica-Development/flutter_community_chat.git"
+    source: git
     version: "0.0.1"
   flutter_data_interface:
     dependency: transitive
