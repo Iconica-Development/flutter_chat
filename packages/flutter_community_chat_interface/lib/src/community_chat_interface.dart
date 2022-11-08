@@ -12,10 +12,10 @@ abstract class CommunityChatInterface extends DataInterface {
 
   static final Object _token = Object();
 
-  Future<void> createChat(ChatModel chat);
-  Future<void> sendTextMessage(ChatModel chat, String text);
-  Future<void> sendImageMessage(ChatModel chat, Uint8List image);
-  Stream<List<ChatMessageModel>> getMessagesStream(ChatModel chat);
+  Future<void> setChat(ChatModel chat);
+  Future<void> sendTextMessage(String text);
+  Future<void> sendImageMessage(Uint8List image);
+  Stream<List<ChatMessageModel>> getMessagesStream();
   Stream<List<ChatModel>> getChatsStream();
   Future<List<ChatUserModel>> getChatUsers();
 }

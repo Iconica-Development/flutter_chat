@@ -197,43 +197,28 @@ class FirebaseChatService {
     return controller.stream;
   }
 
-  Future<void> createChat(ChatModel chat) async {
-    if (chat is! PersonalChatModel) {
-      return;
-    }
-
+  Future<ChatModel?> getChatByUser(ChatUserModel user) async {
     var currentUser = await userService.getCurrentUser();
+    var chatCollection = await db
+        .collection(options.usersCollectionName)
+        .doc(currentUser?.id)
+        .collection('chats')
+        .get();
 
-    if (currentUser?.id == null || chat.user.id == null) {
-      return;
+    for (var element in chatCollection.docs) {
+      var data = element.data();
+      if (data.containsKey('id') &&
+          data.containsKey('users') &&
+          data['users'] is List) {
+        if (data['users'].contains(user.id)) {
+          return PersonalChatModel(
+            id: data['id'],
+            user: user,
+          );
+        }
+      }
     }
 
-    List<String> userIds = [
-      currentUser!.id!,
-      chat.user.id!,
-    ];
-
-    var reference = await db
-        .collection(options.chatsCollectionName)
-        .withConverter(
-          fromFirestore: (snapshot, _) =>
-              FirebaseChatDocument.fromJson(snapshot.data()!, snapshot.id),
-          toFirestore: (chat, _) => chat.toJson(),
-        )
-        .add(
-          FirebaseChatDocument(
-            personal: true,
-            users: userIds,
-            lastUsed: Timestamp.now(),
-          ),
-        );
-
-    for (var userId in userIds) {
-      await db
-          .collection(options.usersCollectionName)
-          .doc(userId)
-          .collection('chats')
-          .add({'id': reference.id});
-    }
+    return null;
   }
 }
