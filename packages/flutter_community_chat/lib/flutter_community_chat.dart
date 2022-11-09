@@ -81,6 +81,27 @@ class _CommunityChatState extends State<CommunityChat> {
     );
   }
 
+  void _beforeUploadingImage() => ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(minutes: 1),
+          content: Row(
+            children: [
+              const SizedBox(
+                width: 25,
+                height: 25,
+                child: CircularProgressIndicator(color: Colors.grey),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Text(widget.translations.imageUploading),
+              ),
+            ],
+          ),
+        ),
+      );
+
+  _afterUploadingImage() => ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
   Future<void> _onPressSelectImage(BuildContext context, ChatModel chat) =>
       showModalBottomSheet<Uint8List?>(
         context: context,
@@ -97,10 +118,14 @@ class _CommunityChatState extends State<CommunityChat> {
           ),
         ),
       ).then(
-        (image) {
+        (image) async {
+          _beforeUploadingImage();
+
           if (image != null) {
-            return widget.dataProvider.sendImageMessage(image);
+            await widget.dataProvider.sendImageMessage(image);
           }
+
+          _afterUploadingImage();
         },
       );
 

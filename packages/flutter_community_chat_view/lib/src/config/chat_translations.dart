@@ -11,6 +11,7 @@ class ChatTranslations {
     this.searchPlaceholder = 'Search...',
     this.cancelImagePickerBtn = 'Cancel',
     this.messagePlaceholder = 'Write your message here...',
+    this.imageUploading = 'Image is uploading...',
   });
 
   final String chatsTitle;
@@ -20,4 +21,5 @@ class ChatTranslations {
   final String searchPlaceholder;
   final String cancelImagePickerBtn;
   final String messagePlaceholder;
+  final String imageUploading;
 }
