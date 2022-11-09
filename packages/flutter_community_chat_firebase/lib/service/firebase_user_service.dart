@@ -61,9 +61,21 @@ class FirebaseUserService {
   Future<List<ChatUserModel>> getAllUsers() async {
     var currentUser = await getCurrentUser();
 
-    var data = await _userCollection.get();
+    var query = _userCollection.where(
+      FieldPath.documentId,
+      isNotEqualTo: currentUser?.id,
+    );
 
-    return data.docs.where((user) => user.id != currentUser?.id).map((user) {
+    if (options.userFilter != null) {
+      query = query.where(
+        options.userFilter!.field,
+        isEqualTo: options.userFilter!.expectedValue,
+      );
+    }
+
+    var data = await query.get();
+
+    return data.docs.map((user) {
       var userData = user.data();
       return ChatUserModel(
         id: user.id,
