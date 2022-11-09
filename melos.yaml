@@ -15,6 +15,9 @@ scripts:
   get:
     run: melos exec -c 1 -- "flutter pub get"
 
+  upgrade:
+    run: melos exec -c 1 -- "flutter pub upgrade"
+
   analyze:
     run: |
       melos exec -c 1 -- \

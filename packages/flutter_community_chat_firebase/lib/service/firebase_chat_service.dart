@@ -172,15 +172,7 @@ class FirebaseChatService {
             .collection('chats')
             .snapshots()
             .listen((snapshot) {
-          List<String> chatIds = [];
-
-          for (var chatDoc in snapshot.docs) {
-            var chatData = chatDoc.data();
-
-            if (chatData['id'] != null) {
-              chatIds.add(chatData['id']);
-            }
-          }
+          List<String> chatIds = snapshot.docs.map((chat) => chat.id).toList();
 
           if (chatIds.isNotEmpty) {
             chatsSubscription = _getSpecificChatsStream(chatIds).listen(
@@ -207,12 +199,10 @@ class FirebaseChatService {
 
     for (var element in chatCollection.docs) {
       var data = element.data();
-      if (data.containsKey('id') &&
-          data.containsKey('users') &&
-          data['users'] is List) {
+      if (data.containsKey('users') && data['users'] is List) {
         if (data['users'].contains(user.id)) {
           return PersonalChatModel(
-            id: data['id'],
+            id: element.id,
             user: user,
           );
         }
@@ -220,5 +210,32 @@ class FirebaseChatService {
     }
 
     return null;
+  }
+
+  Future<void> deleteChat(ChatModel chat) async {
+    var chatCollection = await db
+        .collection(options.chatsCollectionName)
+        .doc(chat.id)
+        .withConverter(
+          fromFirestore: (snapshot, _) =>
+              FirebaseChatDocument.fromJson(snapshot.data()!, snapshot.id),
+          toFirestore: (chat, _) => chat.toJson(),
+        )
+        .get();
+
+    var chatData = chatCollection.data();
+
+    if (chatData != null) {
+      for (var userId in chatData.users) {
+        db
+            .collection(options.usersCollectionName)
+            .doc(userId)
+            .collection('chats')
+            .doc(chat.id)
+            .delete();
+      }
+
+      await db.collection(options.chatsCollectionName).doc(chat.id).delete();
+    }
   }
 }

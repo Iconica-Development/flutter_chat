@@ -134,6 +134,7 @@ class _CommunityChatState extends State<CommunityChat> {
         chats: widget.dataProvider.getChatsStream(),
         onPressStartChat: () => _onPressStartChat(context),
         onPressChat: (chat) => _onPressChat(context, chat),
+        onDeleteChat: (ChatModel chat) => widget.dataProvider.deleteChat(chat),
         options: widget.options,
         translations: widget.translations,
       );

@@ -12,11 +12,13 @@ class ChatTranslations {
     this.cancelImagePickerBtn = 'Cancel',
     this.messagePlaceholder = 'Write your message here...',
     this.imageUploading = 'Image is uploading...',
+    this.deleteChatButton = 'Delete',
   });
 
   final String chatsTitle;
   final String newChatButton;
   final String newChatTitle;
+  final String deleteChatButton;
   final String image;
   final String searchPlaceholder;
   final String cancelImagePickerBtn;

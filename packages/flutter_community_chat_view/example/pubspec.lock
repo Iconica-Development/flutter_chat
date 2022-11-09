@@ -186,7 +186,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_interface"
       ref: HEAD
-      resolved-ref: adc7d063039e44e5a76275bed48d336b18271f3d
+      resolved-ref: f3cae1bf88f7f55c485aeab86a95cdff776373d4
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
@@ -252,7 +252,7 @@ packages:
       name: lints
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.1"
   logging:
     dependency: transitive
     description:

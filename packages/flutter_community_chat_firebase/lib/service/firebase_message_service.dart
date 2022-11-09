@@ -197,7 +197,8 @@ class FirebaseMessageService {
             .collection(options.usersCollectionName)
             .doc(userId)
             .collection('chats')
-            .add({'id': reference.id, 'users': userIds});
+            .doc(reference.id)
+            .set({'users': userIds});
       }
 
       chat.id = reference.id;

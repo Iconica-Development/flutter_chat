@@ -18,4 +18,5 @@ abstract class CommunityChatInterface extends DataInterface {
   Stream<List<ChatMessageModel>> getMessagesStream();
   Stream<List<ChatModel>> getChatsStream();
   Future<List<ChatUserModel>> getChatUsers();
+  Future<void> deleteChat(ChatModel chat);
 }

@@ -74,4 +74,8 @@ class FirebaseCommunityChatDataProvider extends CommunityChatInterface {
   @override
   Future<void> setChat(ChatModel chat) async =>
       await _messageService.setChat(chat);
+
+  @override
+  Future<void> deleteChat(ChatModel chat) async =>
+      await _chatService.deleteChat(chat);
 }

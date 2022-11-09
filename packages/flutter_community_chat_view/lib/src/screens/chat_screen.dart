@@ -13,6 +13,7 @@ class ChatScreen extends StatefulWidget {
     required this.chats,
     required this.onPressStartChat,
     required this.onPressChat,
+    required this.onDeleteChat,
     this.translations = const ChatTranslations(),
     super.key,
   });
@@ -21,6 +22,7 @@ class ChatScreen extends StatefulWidget {
   final ChatTranslations translations;
   final Stream<List<ChatModel>> chats;
   final VoidCallback? onPressStartChat;
+  final void Function(ChatModel chat) onDeleteChat;
   final void Function(ChatModel chat) onPressChat;
 
   @override
@@ -39,37 +41,56 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.only(
-                  top: 15.0,
-                ),
+                padding: const EdgeInsets.only(top: 15.0),
                 children: [
                   StreamBuilder<List<ChatModel>>(
                     stream: widget.chats,
                     builder: (BuildContext context, snapshot) => Column(
                       children: [
                         for (ChatModel chat in snapshot.data ?? [])
-                          GestureDetector(
-                            onTap: () => widget.onPressChat(chat),
-                            child: widget.options.chatRowContainerBuilder(
-                              ChatRow(
-                                image: chat is PersonalChatModel
-                                    ? chat.user.imageUrl
-                                    : (chat as GroupChatModel).imageUrl,
-                                title: chat is PersonalChatModel
-                                    ? chat.user.name ?? ''
-                                    : (chat as GroupChatModel).title,
-                                subTitle: chat.lastMessage != null
-                                    ? chat.lastMessage is ChatTextMessageModel
-                                        ? (chat.lastMessage!
-                                                as ChatTextMessageModel)
-                                            .text
-                                        : '📷 ${widget.translations.image}'
-                                    : null,
-                                lastUsed: chat.lastUsed != null
-                                    ? _dateFormatter.format(
-                                        date: chat.lastUsed!,
-                                      )
-                                    : null,
+                          Builder(
+                            builder: (context) => Dismissible(
+                              onDismissed: (_) => widget.onDeleteChat(chat),
+                              background: Container(
+                                color: Colors.red,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      widget.translations.deleteChatButton,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              key: Key(
+                                chat.id.toString(),
+                              ),
+                              child: GestureDetector(
+                                onTap: () => widget.onPressChat(chat),
+                                child: widget.options.chatRowContainerBuilder(
+                                  ChatRow(
+                                    image: chat is PersonalChatModel
+                                        ? chat.user.imageUrl
+                                        : (chat as GroupChatModel).imageUrl,
+                                    title: chat is PersonalChatModel
+                                        ? chat.user.name ?? ''
+                                        : (chat as GroupChatModel).title,
+                                    subTitle: chat.lastMessage != null
+                                        ? chat.lastMessage
+                                                is ChatTextMessageModel
+                                            ? (chat.lastMessage!
+                                                    as ChatTextMessageModel)
+                                                .text
+                                            : '📷 ${widget.translations.image}'
+                                        : null,
+                                    lastUsed: chat.lastUsed != null
+                                        ? _dateFormatter.format(
+                                            date: chat.lastUsed!,
+                                          )
+                                        : null,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
