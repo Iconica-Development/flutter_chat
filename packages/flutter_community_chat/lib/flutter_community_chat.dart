@@ -11,7 +11,7 @@ import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 import 'package:flutter_image_picker/flutter_image_picker.dart';
 export 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 
-class CommunityChat extends StatelessWidget {
+class CommunityChat extends StatefulWidget {
   const CommunityChat({
     required this.dataProvider,
     this.options = const ChatOptions(),
@@ -27,17 +27,29 @@ class CommunityChat extends StatelessWidget {
   final ImagePickerTheme imagePickerTheme;
   final ImagePickerConfig imagePickerConfig;
 
+  @override
+  State<CommunityChat> createState() => _CommunityChatState();
+}
+
+class _CommunityChatState extends State<CommunityChat> {
+  bool _isFetchingUsers = false;
+
   Future<void> _push(BuildContext context, Widget widget) =>
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => widget),
       );
 
-  Future<void> _onPressStartChat(BuildContext context) =>
-      dataProvider.getChatUsers().then((users) => _push(
+  Future<void> _onPressStartChat(BuildContext context) async {
+    if (!_isFetchingUsers) {
+      _isFetchingUsers = true;
+      await widget.dataProvider.getChatUsers().then(
+        (users) {
+          _isFetchingUsers = false;
+          _push(
             context,
             NewChatScreen(
-              options: options,
-              translations: translations,
+              options: widget.options,
+              translations: widget.translations,
               onPressCreateChat: (user) {
                 _onPressChat(
                   context,
@@ -46,21 +58,25 @@ class CommunityChat extends StatelessWidget {
               },
               users: users,
             ),
-          ));
+          );
+        },
+      );
+    }
+  }
 
   Future<void> _onPressChat(BuildContext context, ChatModel chat) async {
-    dataProvider.setChat(chat);
+    widget.dataProvider.setChat(chat);
     _push(
       context,
       ChatDetailScreen(
-        options: options,
-        translations: translations,
+        options: widget.options,
+        translations: widget.translations,
         chat: chat,
-        chatMessages: dataProvider.getMessagesStream(),
+        chatMessages: widget.dataProvider.getMessagesStream(),
         onPressSelectImage: (ChatModel chat) =>
             _onPressSelectImage(context, chat),
         onMessageSubmit: (ChatModel chat, String content) =>
-            dataProvider.sendTextMessage(content),
+            widget.dataProvider.sendTextMessage(content),
       ),
     );
   }
@@ -68,31 +84,32 @@ class CommunityChat extends StatelessWidget {
   Future<void> _onPressSelectImage(BuildContext context, ChatModel chat) =>
       showModalBottomSheet<Uint8List?>(
         context: context,
-        builder: (BuildContext context) => options.imagePickerContainerBuilder(
+        builder: (BuildContext context) =>
+            widget.options.imagePickerContainerBuilder(
           ImagePicker(
-            customButton: options.closeImagePickerButtonBuilder(
+            customButton: widget.options.closeImagePickerButtonBuilder(
               context,
               () => Navigator.of(context).pop(),
-              translations,
+              widget.translations,
             ),
-            imagePickerTheme: imagePickerTheme,
-            imagePickerConfig: imagePickerConfig,
+            imagePickerTheme: widget.imagePickerTheme,
+            imagePickerConfig: widget.imagePickerConfig,
           ),
         ),
       ).then(
         (image) {
           if (image != null) {
-            return dataProvider.sendImageMessage(image);
+            return widget.dataProvider.sendImageMessage(image);
           }
         },
       );
 
   @override
   Widget build(BuildContext context) => ChatScreen(
-        chats: dataProvider.getChatsStream(),
+        chats: widget.dataProvider.getChatsStream(),
         onPressStartChat: () => _onPressStartChat(context),
         onPressChat: (chat) => _onPressChat(context, chat),
-        options: options,
-        translations: translations,
+        options: widget.options,
+        translations: widget.translations,
       );
 }
