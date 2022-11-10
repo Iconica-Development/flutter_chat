@@ -33,9 +33,16 @@ class FirebaseMessageService {
   ChatModel? _chat;
 
   Future<void> setChat(ChatModel chat) async {
-    if (chat is PersonalChatModel) {
-      _chat = await chatService.getChatByUser(chat.user) ?? chat;
+    if (chat.id == null && chat is PersonalChatModel) {
+      var chatWithUser = await chatService.getChatByUser(chat.user);
+
+      if (chatWithUser != null) {
+        _chat = chatWithUser;
+        return;
+      }
     }
+
+    _chat = chat;
   }
 
   Future<void> _beforeSendMessage() async {
@@ -116,7 +123,9 @@ class FirebaseMessageService {
           _subscription = _startListeningForMessages(_chat!);
         }
       },
-      onCancel: () => _subscription?.cancel(),
+      onCancel: () {
+        _subscription?.cancel();
+      },
     );
 
     return _controller.stream;

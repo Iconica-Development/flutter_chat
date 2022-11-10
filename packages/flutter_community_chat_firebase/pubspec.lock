@@ -228,7 +228,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_interface"
       ref: HEAD
-      resolved-ref: f3cae1bf88f7f55c485aeab86a95cdff776373d4
+      resolved-ref: "82b9b0be80eb0d0c36b72432c7517a6d04cecb20"
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
@@ -264,7 +264,7 @@ packages:
       name: glob
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.0"
+    version: "2.1.1"
   http:
     dependency: transitive
     description:

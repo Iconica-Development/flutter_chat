@@ -39,6 +39,8 @@ class _CommunityChatState extends State<CommunityChat> {
         MaterialPageRoute(builder: (context) => widget),
       );
 
+  void _pop(BuildContext context) => Navigator.of(context).pop();
+
   Future<void> _onPressStartChat(BuildContext context) async {
     if (!_isFetchingUsers) {
       _isFetchingUsers = true;
@@ -50,12 +52,11 @@ class _CommunityChatState extends State<CommunityChat> {
             NewChatScreen(
               options: widget.options,
               translations: widget.translations,
-              onPressCreateChat: (user) {
-                _onPressChat(
-                  context,
-                  PersonalChatModel(user: user),
-                );
-              },
+              onPressCreateChat: (user) => _onPressChat(
+                context,
+                PersonalChatModel(user: user),
+                popBeforePush: true,
+              ),
               users: users,
             ),
           );
@@ -64,22 +65,29 @@ class _CommunityChatState extends State<CommunityChat> {
     }
   }
 
-  Future<void> _onPressChat(BuildContext context, ChatModel chat) async {
-    widget.dataProvider.setChat(chat);
-    _push(
-      context,
-      ChatDetailScreen(
-        options: widget.options,
-        translations: widget.translations,
-        chat: chat,
-        chatMessages: widget.dataProvider.getMessagesStream(),
-        onPressSelectImage: (ChatModel chat) =>
-            _onPressSelectImage(context, chat),
-        onMessageSubmit: (ChatModel chat, String content) =>
-            widget.dataProvider.sendTextMessage(content),
-      ),
-    );
-  }
+  Future<void> _onPressChat(
+    BuildContext context,
+    ChatModel chat, {
+    bool popBeforePush = false,
+  }) =>
+      widget.dataProvider.setChat(chat).then((_) {
+        if (popBeforePush) {
+          _pop(context);
+        }
+        _push(
+          context,
+          ChatDetailScreen(
+            options: widget.options,
+            translations: widget.translations,
+            chat: chat,
+            chatMessages: widget.dataProvider.getMessagesStream(),
+            onPressSelectImage: (ChatModel chat) =>
+                _onPressSelectImage(context, chat),
+            onMessageSubmit: (ChatModel chat, String content) =>
+                widget.dataProvider.sendTextMessage(content),
+          ),
+        );
+      });
 
   void _beforeUploadingImage() => ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
