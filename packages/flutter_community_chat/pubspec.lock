@@ -179,7 +179,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_interface"
       ref: HEAD
-      resolved-ref: "82b9b0be80eb0d0c36b72432c7517a6d04cecb20"
+      resolved-ref: "3793e853721291dc50655ca4ee7999508fe9e2fe"
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
@@ -188,7 +188,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_view"
       ref: HEAD
-      resolved-ref: "82b9b0be80eb0d0c36b72432c7517a6d04cecb20"
+      resolved-ref: "3793e853721291dc50655ca4ee7999508fe9e2fe"
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"

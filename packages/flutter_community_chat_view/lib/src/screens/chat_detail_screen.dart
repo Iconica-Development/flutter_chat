@@ -39,11 +39,13 @@ class ChatDetailScreen extends StatelessWidget {
                   image: (chat as PersonalChatModel).user.imageUrl,
                   size: 36.0,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15.5),
-                  child: Text(
-                    (chat as PersonalChatModel).user.name ?? '',
-                    style: const TextStyle(fontSize: 18),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 15.5),
+                    child: Text(
+                      (chat as PersonalChatModel).user.name ?? '',
+                      style: const TextStyle(fontSize: 18),
+                    ),
                   ),
                 ),
               ],
@@ -52,11 +54,13 @@ class ChatDetailScreen extends StatelessWidget {
                   image: (chat as GroupChatModel).imageUrl,
                   size: 36.0,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15.5),
-                  child: Text(
-                    (chat as GroupChatModel).title,
-                    style: const TextStyle(fontSize: 18),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 15.5),
+                    child: Text(
+                      (chat as GroupChatModel).title,
+                      style: const TextStyle(fontSize: 18),
+                    ),
                   ),
                 ),
               ],
