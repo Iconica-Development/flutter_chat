@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_community_chat_firebase/config/firebase_chat_options.dart';
 import 'package:flutter_community_chat_firebase/dto/firebase_chat_document.dart';
 import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
-
 import 'firebase_user_service.dart';
 
 class FirebaseChatService {
@@ -20,7 +18,7 @@ class FirebaseChatService {
 
   FirebaseFirestore db;
   FirebaseUserService userService;
-  FirebaseChatOptoons options;
+  FirebaseChatOptions options;
 
   StreamSubscription<QuerySnapshot> _addChatSubscription(
     List<String> chatIds,

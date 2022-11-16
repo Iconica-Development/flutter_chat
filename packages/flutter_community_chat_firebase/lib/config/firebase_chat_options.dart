@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-class FirebaseChatOptoons {
-  const FirebaseChatOptoons({
+class FirebaseChatOptions {
+  const FirebaseChatOptions({
     this.chatsCollectionName = 'chats',
     this.messagesCollectionName = 'messages',
     this.usersCollectionName = 'users',

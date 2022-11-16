@@ -27,7 +27,7 @@ class FirebaseMessageService {
   final FirebaseStorage storage;
   final FirebaseUserService userService;
   final FirebaseChatService chatService;
-  FirebaseChatOptoons options;
+  FirebaseChatOptions options;
   late StreamController<List<ChatMessageModel>> _controller;
   StreamSubscription<QuerySnapshot>? _subscription;
   ChatModel? _chat;

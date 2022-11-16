@@ -17,7 +17,7 @@ class FirebaseUserService {
 
   FirebaseFirestore db;
   FirebaseAuth auth;
-  FirebaseChatOptoons options;
+  FirebaseChatOptions options;
   ChatUserModel? _currentUser;
   final Map<String, ChatUserModel> _users = {};
 

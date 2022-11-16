@@ -179,7 +179,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_interface"
       ref: HEAD
-      resolved-ref: "3793e853721291dc50655ca4ee7999508fe9e2fe"
+      resolved-ref: "5c4556f800e2b9806605f9e934dc4a5e471214d6"
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
@@ -188,7 +188,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_view"
       ref: HEAD
-      resolved-ref: "3793e853721291dc50655ca4ee7999508fe9e2fe"
+      resolved-ref: "5c4556f800e2b9806605f9e934dc4a5e471214d6"
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
@@ -445,14 +445,14 @@ packages:
       name: pub_semver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.2"
+    version: "2.1.3"
   rxdart:
     dependency: transitive
     description:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.27.5"
+    version: "0.27.7"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -541,7 +541,7 @@ packages:
       name: uuid
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.6"
+    version: "3.0.7"
   vector_math:
     dependency: transitive
     description:

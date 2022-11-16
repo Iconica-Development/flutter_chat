@@ -20,10 +20,10 @@ class FirebaseCommunityChatDataProvider extends CommunityChatInterface {
   late final FirebaseUserService _userService;
   late final FirebaseMessageService _messageService;
   late final FirebaseChatService _chatService;
-  final FirebaseChatOptoons firebaseChatOptoons;
+  final FirebaseChatOptions firebaseChatOptions;
 
   FirebaseCommunityChatDataProvider({
-    this.firebaseChatOptoons = const FirebaseChatOptoons(),
+    this.firebaseChatOptions = const FirebaseChatOptions(),
     FirebaseApp? app,
   }) {
     var appInstance = app ?? Firebase.app();
@@ -35,13 +35,13 @@ class FirebaseCommunityChatDataProvider extends CommunityChatInterface {
     _userService = FirebaseUserService(
       db: db,
       auth: auth,
-      options: firebaseChatOptoons,
+      options: firebaseChatOptions,
     );
 
     _chatService = FirebaseChatService(
       db: db,
       userService: _userService,
-      options: firebaseChatOptoons,
+      options: firebaseChatOptions,
     );
 
     _messageService = FirebaseMessageService(
@@ -49,7 +49,7 @@ class FirebaseCommunityChatDataProvider extends CommunityChatInterface {
       storage: storage,
       userService: _userService,
       chatService: _chatService,
-      options: firebaseChatOptoons,
+      options: firebaseChatOptions,
     );
   }
 
