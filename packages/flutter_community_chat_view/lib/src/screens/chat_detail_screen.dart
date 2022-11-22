@@ -17,6 +17,7 @@ class ChatDetailScreen extends StatelessWidget {
     this.translations = const ChatTranslations(),
     this.chatMessages,
     this.onPressSelectImage,
+    this.onPressChatTitle,
     super.key,
   });
 
@@ -26,45 +27,50 @@ class ChatDetailScreen extends StatelessWidget {
   final Stream<List<ChatMessageModel>>? chatMessages;
   final Function(ChatModel)? onPressSelectImage;
   final Future<void> Function(ChatModel chat, String text) onMessageSubmit;
+  final Future<void> Function(ChatModel chat)? onPressChatTitle;
 
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (chat is PersonalChatModel) ...[
-                ChatImage(
-                  image: (chat as PersonalChatModel).user.imageUrl,
-                  size: 36.0,
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 15.5),
-                    child: Text(
-                      (chat as PersonalChatModel).user.name ?? '',
-                      style: const TextStyle(fontSize: 18),
+          title: GestureDetector(
+            onTap: () =>
+                onPressChatTitle != null ? onPressChatTitle!(chat) : {},
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (chat is PersonalChatModel) ...[
+                  ChatImage(
+                    image: (chat as PersonalChatModel).user.imageUrl,
+                    size: 36.0,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 15.5),
+                      child: Text(
+                        (chat as PersonalChatModel).user.name ?? '',
+                        style: const TextStyle(fontSize: 18),
+                      ),
                     ),
                   ),
-                ),
-              ],
-              if (chat is GroupChatModel) ...[
-                ChatImage(
-                  image: (chat as GroupChatModel).imageUrl,
-                  size: 36.0,
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 15.5),
-                    child: Text(
-                      (chat as GroupChatModel).title,
-                      style: const TextStyle(fontSize: 18),
+                ],
+                if (chat is GroupChatModel) ...[
+                  ChatImage(
+                    image: (chat as GroupChatModel).imageUrl,
+                    size: 36.0,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 15.5),
+                      child: Text(
+                        (chat as GroupChatModel).title,
+                        style: const TextStyle(fontSize: 18),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
         body: Column(
