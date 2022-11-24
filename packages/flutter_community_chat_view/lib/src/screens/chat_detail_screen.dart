@@ -47,7 +47,7 @@ class ChatDetailScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 15.5),
                     child: Text(
-                      (chat as PersonalChatModel).user.name ?? '',
+                      (chat as PersonalChatModel).user.fullName,
                       style: const TextStyle(fontSize: 18),
                     ),
                   ),

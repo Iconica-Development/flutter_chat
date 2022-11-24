@@ -77,7 +77,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                           )
                                         : Container(),
                                     title: chat is PersonalChatModel
-                                        ? chat.user.name ?? ''
+                                        ? chat.user.fullName
                                         : (chat as GroupChatModel).title,
                                     subTitle: chat.lastMessage != null
                                         ? chat.lastMessage

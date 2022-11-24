@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import 'package:flutter/material.dart';
-import 'package:flutter_community_chat_view/src/components/chat_image.dart';
 
 class ChatRow extends StatelessWidget {
   const ChatRow({

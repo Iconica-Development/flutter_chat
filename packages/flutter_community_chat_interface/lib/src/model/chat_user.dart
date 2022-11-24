@@ -5,11 +5,15 @@
 class ChatUserModel {
   ChatUserModel({
     this.id,
-    this.name,
+    this.firstName,
+    this.lastName,
     this.imageUrl,
   });
 
   final String? id;
-  final String? name;
+  final String? firstName;
+  final String? lastName;
   final String? imageUrl;
+
+  String get fullName => '$firstName $lastName';
 }

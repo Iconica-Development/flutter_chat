@@ -43,7 +43,8 @@ class FirebaseUserService {
           ? ChatUserModel(id: id)
           : ChatUserModel(
               id: id,
-              name: '${data.firstName} ${data.lastName}',
+              firstName: data.firstName,
+              lastName: data.lastName,
               imageUrl: data.imageUrl,
             );
 
@@ -79,7 +80,8 @@ class FirebaseUserService {
       var userData = user.data();
       return ChatUserModel(
         id: user.id,
-        name: '${userData.firstName} ${userData.lastName}',
+        firstName: userData.firstName,
+        lastName: userData.lastName,
         imageUrl: userData.imageUrl,
       );
     }).toList();

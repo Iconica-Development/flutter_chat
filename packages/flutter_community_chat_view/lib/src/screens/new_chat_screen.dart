@@ -35,11 +35,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
             ? null
             : widget.users
                 .where(
-                  (user) =>
-                      user.name != null &&
-                      user.name!.toLowerCase().contains(
-                            query.toLowerCase(),
-                          ),
+                  (user) => user.fullName.toLowerCase().contains(
+                        query.toLowerCase(),
+                      ),
                 )
                 .toList(),
       );
@@ -86,7 +84,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                       user,
                       40.0,
                     ),
-                    title: user.name ?? '',
+                    title: user.fullName,
                   ),
                 ),
                 onTap: () => widget.onPressCreateChat(user),
