@@ -8,18 +8,19 @@ import 'package:flutter_image_picker/flutter_image_picker.dart';
 abstract class ChatService {
   ChatService({
     required this.options,
-    required this.imagePickerTheme,
     required this.imagePickerConfig,
     required this.dataProvider,
   });
 
   final CommunityChatInterface dataProvider;
   final ChatOptions options;
-  final ImagePickerTheme imagePickerTheme;
   final ImagePickerConfig imagePickerConfig;
   bool _isFetchingUsers = false;
 
-  ChatTranslations translations(BuildContext buildContext);
+  ImagePickerTheme imagePickerTheme(BuildContext context) =>
+      const ImagePickerTheme();
+
+  ChatTranslations translations(BuildContext context);
 
   Future<void> _push(BuildContext context, Widget widget) =>
       Navigator.of(context).push(
@@ -103,6 +104,8 @@ abstract class ChatService {
               () => Navigator.of(context).pop(),
               translations(context),
             ),
+            imagePickerConfig: imagePickerConfig,
+            imagePickerTheme: imagePickerTheme(context),
           ),
         ),
       ).then(
