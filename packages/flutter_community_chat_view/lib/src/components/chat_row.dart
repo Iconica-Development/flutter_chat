@@ -8,13 +8,13 @@ import 'package:flutter_community_chat_view/src/components/chat_image.dart';
 class ChatRow extends StatelessWidget {
   const ChatRow({
     required this.title,
-    this.image,
     this.lastUsed,
     this.subTitle,
+    this.avatar,
     super.key,
   });
   final String title;
-  final String? image;
+  final Widget? avatar;
   final String? subTitle;
   final String? lastUsed;
 
@@ -24,7 +24,7 @@ class ChatRow extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
-            child: ChatImage(image: image),
+            child: avatar,
           ),
           Expanded(
             child: Padding(

@@ -82,7 +82,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
               GestureDetector(
                 child: widget.options.chatRowContainerBuilder(
                   ChatRow(
-                    image: user.imageUrl,
+                    avatar: widget.options.userAvatarBuilder(
+                      user,
+                      40.0,
+                    ),
                     title: user.name ?? '',
                   ),
                 ),

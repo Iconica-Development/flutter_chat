@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import 'package:flutter/material.dart';
+import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
 import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
+import 'package:flutter_community_chat_view/src/components/chat_image.dart';
 
 class ChatOptions {
   const ChatOptions({
@@ -13,6 +15,7 @@ class ChatOptions {
     this.imagePickerContainerBuilder = _createImagePickerContainer,
     this.closeImagePickerButtonBuilder = _createCloseImagePickerButton,
     this.scaffoldBuilder = _createScaffold,
+    this.userAvatarBuilder = _createUserAvatar,
   });
 
   final ButtonBuilder newChatButtonBuilder;
@@ -21,6 +24,7 @@ class ChatOptions {
   final ContainerBuilder imagePickerContainerBuilder;
   final ButtonBuilder closeImagePickerButtonBuilder;
   final ScaffoldBuilder scaffoldBuilder;
+  final UserAvatarBuilder userAvatarBuilder;
 }
 
 Widget _createNewChatButton(
@@ -93,6 +97,15 @@ Scaffold _createScaffold(
       body: body,
     );
 
+Widget _createUserAvatar(
+  ChatUserModel user,
+  double size,
+) =>
+    ChatImage(
+      image: user.imageUrl,
+      size: size,
+    );
+
 typedef ButtonBuilder = Widget Function(
   BuildContext context,
   VoidCallback onPressed,
@@ -112,4 +125,9 @@ typedef ContainerBuilder = Widget Function(
 typedef ScaffoldBuilder = Scaffold Function(
   AppBar appBar,
   Widget body,
+);
+
+typedef UserAvatarBuilder = Widget Function(
+  ChatUserModel user,
+  double size,
 );

@@ -70,9 +70,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                 onTap: () => widget.onPressChat(chat),
                                 child: widget.options.chatRowContainerBuilder(
                                   ChatRow(
-                                    image: chat is PersonalChatModel
-                                        ? chat.user.imageUrl
-                                        : (chat as GroupChatModel).imageUrl,
+                                    avatar: chat is PersonalChatModel
+                                        ? widget.options.userAvatarBuilder(
+                                            chat.user,
+                                            40.0,
+                                          )
+                                        : Container(),
                                     title: chat is PersonalChatModel
                                         ? chat.user.name ?? ''
                                         : (chat as GroupChatModel).title,
