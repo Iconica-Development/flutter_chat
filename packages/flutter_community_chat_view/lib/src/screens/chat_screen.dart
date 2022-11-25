@@ -50,6 +50,36 @@ class _ChatScreenState extends State<ChatScreen> {
                         for (ChatModel chat in snapshot.data ?? [])
                           Builder(
                             builder: (context) => Dismissible(
+                              confirmDismiss: (_) => showDialog(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: Text(
+                                    widget.translations.deleteChatModalTitle,
+                                  ),
+                                  content: Text(
+                                    widget.translations
+                                        .deleteChatModalDescription,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      child: Text(
+                                        widget
+                                            .translations.deleteChatModalCancel,
+                                      ),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: Text(
+                                        widget.translations
+                                            .deleteChatModalConfirm,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               onDismissed: (_) => widget.onDeleteChat(chat),
                               background: Container(
                                 color: Colors.red,

@@ -13,6 +13,11 @@ class ChatTranslations {
     this.messagePlaceholder = 'Write your message here...',
     this.imageUploading = 'Image is uploading...',
     this.deleteChatButton = 'Delete',
+    this.deleteChatModalTitle = 'Delete chat',
+    this.deleteChatModalDescription =
+        'Are you sure you want to delete this chat?',
+    this.deleteChatModalCancel = 'Cancel',
+    this.deleteChatModalConfirm = 'Delete',
   });
 
   final String chatsTitle;
@@ -24,4 +29,8 @@ class ChatTranslations {
   final String cancelImagePickerBtn;
   final String messagePlaceholder;
   final String imageUploading;
+  final String deleteChatModalTitle;
+  final String deleteChatModalDescription;
+  final String deleteChatModalCancel;
+  final String deleteChatModalConfirm;
 }
