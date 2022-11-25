@@ -50,7 +50,35 @@ class _ChatScreenState extends State<ChatScreen> {
                         for (ChatModel chat in snapshot.data ?? [])
                           Builder(
                             builder: (context) => Dismissible(
-                              onDismissed: (_) => widget.onDeleteChat(chat),
+                              onDismissed: (_) => showDialog(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: Text(
+                                    widget.translations.deleteChatModalTitle,
+                                  ),
+                                  content: Text(
+                                    widget.translations
+                                        .deleteChatModalDescription,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      child: Text(
+                                        widget
+                                            .translations.deleteChatModalCancel,
+                                      ),
+                                      onPressed: () {},
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () =>
+                                          widget.onDeleteChat(chat),
+                                      child: Text(
+                                        widget.translations
+                                            .deleteChatModalConfirm,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               background: Container(
                                 color: Colors.red,
                                 child: Align(

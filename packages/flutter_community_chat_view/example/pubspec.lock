@@ -186,7 +186,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_interface"
       ref: HEAD
-      resolved-ref: a6b21aab224b47e112ae771b3ce81c158843ee5d
+      resolved-ref: "68578b8ac21493b88cd5b1a2fd55634f0616ff77"
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
