@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_community_chat_firebase/config/firebase_chat_options.dart';
 import 'package:flutter_community_chat_firebase/dto/firebase_chat_document.dart';
 import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
@@ -12,11 +13,13 @@ import 'firebase_user_service.dart';
 class FirebaseChatService {
   FirebaseChatService({
     required this.db,
+    required this.storage,
     required this.userService,
     required this.options,
   });
 
   FirebaseFirestore db;
+  FirebaseStorage storage;
   FirebaseUserService userService;
   FirebaseChatOptions options;
 
@@ -233,7 +236,18 @@ class FirebaseChatService {
             .delete();
       }
 
-      await db.collection(options.chatsCollectionName).doc(chat.id).delete();
+      if (chat.id != null) {
+        await db.collection(options.chatsCollectionName).doc(chat.id).delete();
+        await storage
+            .ref(options.chatsCollectionName)
+            .child(chat.id!)
+            .listAll()
+            .then((value) {
+          for (var element in value.items) {
+            element.delete();
+          }
+        });
+      }
     }
   }
 }

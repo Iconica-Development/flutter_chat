@@ -40,6 +40,7 @@ class FirebaseCommunityChatDataProvider extends CommunityChatInterface {
 
     _chatService = FirebaseChatService(
       db: db,
+      storage: storage,
       userService: _userService,
       options: firebaseChatOptions,
     );
