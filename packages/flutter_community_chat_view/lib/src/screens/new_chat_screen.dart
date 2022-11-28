@@ -43,53 +43,59 @@ class _NewChatScreenState extends State<NewChatScreen> {
       );
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: _isSearching
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextField(
-                    focusNode: _textFieldFocusNode,
-                    onChanged: filterUsers,
-                    decoration: InputDecoration(
-                      hintText: widget.translations.searchPlaceholder,
-                    ),
-                  ),
-                )
-              : Text(widget.translations.newChatButton),
-          actions: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _isSearching = !_isSearching;
-                });
+  Widget build(BuildContext context) {
+    var users = _filteredUsers ?? widget.users;
 
-                if (_isSearching) {
-                  _textFieldFocusNode.requestFocus();
-                }
-              },
-              icon: Icon(
-                _isSearching ? Icons.close : Icons.search,
-              ),
-            )
-          ],
-        ),
-        body: ListView(
-          children: [
-            for (var user in _filteredUsers ?? widget.users)
-              GestureDetector(
-                child: widget.options.chatRowContainerBuilder(
-                  ChatRow(
-                    avatar: widget.options.userAvatarBuilder(
-                      user,
-                      40.0,
-                    ),
-                    title: user.fullName,
+    return Scaffold(
+      appBar: AppBar(
+        title: _isSearching
+            ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextField(
+                  focusNode: _textFieldFocusNode,
+                  onChanged: filterUsers,
+                  decoration: InputDecoration(
+                    hintText: widget.translations.searchPlaceholder,
                   ),
                 ),
-                onTap: () => widget.onPressCreateChat(user),
-              ),
-          ],
-        ),
-      );
+              )
+            : Text(widget.translations.newChatButton),
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _isSearching = !_isSearching;
+              });
+
+              if (_isSearching) {
+                _textFieldFocusNode.requestFocus();
+              }
+            },
+            icon: Icon(
+              _isSearching ? Icons.close : Icons.search,
+            ),
+          )
+        ],
+      ),
+      body: users.isEmpty
+          ? widget.options.noChatsPlaceholderBuilder(widget.translations)
+          : ListView(
+              children: [
+                for (var user in users)
+                  GestureDetector(
+                    child: widget.options.chatRowContainerBuilder(
+                      ChatRow(
+                        avatar: widget.options.userAvatarBuilder(
+                          user,
+                          40.0,
+                        ),
+                        title: user.fullName,
+                      ),
+                    ),
+                    onTap: () => widget.onPressCreateChat(user),
+                  ),
+              ],
+            ),
+    );
+  }
 }

@@ -18,6 +18,7 @@ class ChatTranslations {
         'Are you sure you want to delete this chat?',
     this.deleteChatModalCancel = 'Cancel',
     this.deleteChatModalConfirm = 'Delete',
+    this.noUsersFound = 'No users found',
   });
 
   final String chatsTitle;
@@ -33,4 +34,5 @@ class ChatTranslations {
   final String deleteChatModalDescription;
   final String deleteChatModalCancel;
   final String deleteChatModalConfirm;
+  final String noUsersFound;
 }

@@ -16,6 +16,7 @@ class ChatOptions {
     this.closeImagePickerButtonBuilder = _createCloseImagePickerButton,
     this.scaffoldBuilder = _createScaffold,
     this.userAvatarBuilder = _createUserAvatar,
+    this.noChatsPlaceholderBuilder = _createNoChatsPlaceholder,
   });
 
   final ButtonBuilder newChatButtonBuilder;
@@ -25,6 +26,7 @@ class ChatOptions {
   final ButtonBuilder closeImagePickerButtonBuilder;
   final ScaffoldBuilder scaffoldBuilder;
   final UserAvatarBuilder userAvatarBuilder;
+  final NoChatsPlaceholderBuilder noChatsPlaceholderBuilder;
 }
 
 Widget _createNewChatButton(
@@ -106,6 +108,20 @@ Widget _createUserAvatar(
       size: size,
     );
 
+Widget _createNoChatsPlaceholder(
+  ChatTranslations translations,
+) =>
+    Center(
+      child: Text(
+        translations.noUsersFound,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+        ),
+      ),
+    );
+
 typedef ButtonBuilder = Widget Function(
   BuildContext context,
   VoidCallback onPressed,
@@ -130,4 +146,8 @@ typedef ScaffoldBuilder = Scaffold Function(
 typedef UserAvatarBuilder = Widget Function(
   ChatUserModel user,
   double size,
+);
+
+typedef NoChatsPlaceholderBuilder = Widget Function(
+  ChatTranslations translations,
 );
