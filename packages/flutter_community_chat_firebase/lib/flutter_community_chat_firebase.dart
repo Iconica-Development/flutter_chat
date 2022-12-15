@@ -11,10 +11,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_community_chat_firebase/config/firebase_chat_options.dart';
-import 'package:flutter_community_chat_firebase/service/firebase_chat_service.dart';
-import 'package:flutter_community_chat_firebase/service/firebase_message_service.dart';
-import 'package:flutter_community_chat_firebase/service/firebase_user_service.dart';
+import 'package:flutter_community_chat_firebase/service/service.dart';
 import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
+export 'package:flutter_community_chat_firebase/service/service.dart';
 
 class FirebaseCommunityChatDataProvider extends CommunityChatInterface {
   late final FirebaseUserService _userService;
@@ -25,6 +24,9 @@ class FirebaseCommunityChatDataProvider extends CommunityChatInterface {
   FirebaseCommunityChatDataProvider({
     this.firebaseChatOptions = const FirebaseChatOptions(),
     FirebaseApp? app,
+    FirebaseUserService? firebaseUserService,
+    FirebaseMessageService? firebaseMessageService,
+    FirebaseChatService? firebaseChatService,
   }) {
     var appInstance = app ?? Firebase.app();
 
@@ -32,26 +34,29 @@ class FirebaseCommunityChatDataProvider extends CommunityChatInterface {
     var storage = FirebaseStorage.instanceFor(app: appInstance);
     var auth = FirebaseAuth.instanceFor(app: appInstance);
 
-    _userService = FirebaseUserService(
-      db: db,
-      auth: auth,
-      options: firebaseChatOptions,
-    );
+    _userService = firebaseUserService ??
+        FirebaseUserService(
+          db: db,
+          auth: auth,
+          options: firebaseChatOptions,
+        );
 
-    _chatService = FirebaseChatService(
-      db: db,
-      storage: storage,
-      userService: _userService,
-      options: firebaseChatOptions,
-    );
+    _chatService = firebaseChatService ??
+        FirebaseChatService(
+          db: db,
+          storage: storage,
+          userService: _userService,
+          options: firebaseChatOptions,
+        );
 
-    _messageService = FirebaseMessageService(
-      db: db,
-      storage: storage,
-      userService: _userService,
-      chatService: _chatService,
-      options: firebaseChatOptions,
-    );
+    _messageService = firebaseMessageService ??
+        FirebaseMessageService(
+          db: db,
+          storage: storage,
+          userService: _userService,
+          chatService: _chatService,
+          options: firebaseChatOptions,
+        );
   }
 
   @override
