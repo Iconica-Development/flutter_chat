@@ -16,9 +16,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_community_chat_interface: 
-    git: 
-       url: https://github.com/Iconica-Development/flutter_community_chat.git
-       path: packages/flutter_community_chat_interface
+   path: ../flutter_community_chat_interface
 
 dev_dependencies:
   flutter_lints: ^2.0.0

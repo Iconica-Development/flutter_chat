@@ -177,20 +177,16 @@ packages:
   flutter_community_chat_interface:
     dependency: "direct main"
     description:
-      path: "packages/flutter_community_chat_interface"
-      ref: HEAD
-      resolved-ref: "6a9e88ec8d07118e1543b1a82aa5482d6832cbf8"
-      url: "https://github.com/Iconica-Development/flutter_community_chat.git"
-    source: git
+      path: "../flutter_community_chat_interface"
+      relative: true
+    source: path
     version: "0.0.1"
   flutter_community_chat_view:
     dependency: "direct main"
     description:
-      path: "packages/flutter_community_chat_view"
-      ref: HEAD
-      resolved-ref: "6a9e88ec8d07118e1543b1a82aa5482d6832cbf8"
-      url: "https://github.com/Iconica-Development/flutter_community_chat.git"
-    source: git
+      path: "../flutter_community_chat_view"
+      relative: true
+    source: path
     version: "0.0.1"
   flutter_data_interface:
     dependency: transitive
@@ -202,7 +198,7 @@ packages:
     source: git
     version: "1.0.0"
   flutter_image_picker:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "."
       ref: "1.0.3"
@@ -319,7 +315,7 @@ packages:
       name: matcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.13"
+    version: "0.12.14"
   material_color_utilities:
     dependency: transitive
     description:
@@ -361,7 +357,7 @@ packages:
       name: path
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.2"
+    version: "1.8.3"
   path_provider:
     dependency: transitive
     description:
@@ -478,7 +474,7 @@ packages:
       name: sqflite
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.0+3"
+    version: "2.2.2"
   sqflite_common:
     dependency: transitive
     description:
@@ -527,7 +523,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.16"
+    version: "0.4.17"
   typed_data:
     dependency: transitive
     description:
