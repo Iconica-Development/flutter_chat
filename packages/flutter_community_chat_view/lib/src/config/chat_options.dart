@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
 import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 import 'package:flutter_community_chat_view/src/components/chat_image.dart';
+import 'package:flutter_image_picker/flutter_image_picker.dart';
 
 class ChatOptions {
   const ChatOptions({
@@ -13,7 +14,6 @@ class ChatOptions {
     this.messageInputBuilder = _createMessageInput,
     this.chatRowContainerBuilder = _createChatRowContainer,
     this.imagePickerContainerBuilder = _createImagePickerContainer,
-    this.closeImagePickerButtonBuilder = _createCloseImagePickerButton,
     this.scaffoldBuilder = _createScaffold,
     this.userAvatarBuilder = _createUserAvatar,
     this.noChatsPlaceholderBuilder = _createNoChatsPlaceholder,
@@ -22,8 +22,7 @@ class ChatOptions {
   final ButtonBuilder newChatButtonBuilder;
   final TextInputBuilder messageInputBuilder;
   final ContainerBuilder chatRowContainerBuilder;
-  final ContainerBuilder imagePickerContainerBuilder;
-  final ButtonBuilder closeImagePickerButtonBuilder;
+  final ImagePickerContainerBuilder imagePickerContainerBuilder;
   final ScaffoldBuilder scaffoldBuilder;
   final UserAvatarBuilder userAvatarBuilder;
   final NoChatsPlaceholderBuilder noChatsPlaceholderBuilder;
@@ -70,23 +69,19 @@ Widget _createChatRowContainer(
     );
 
 Widget _createImagePickerContainer(
-  Widget imagePicker,
+  VoidCallback onClose,
+  ChatTranslations translations,
 ) =>
     Container(
       padding: const EdgeInsets.all(8.0),
       color: Colors.black,
-      child: imagePicker,
-    );
-
-Widget _createCloseImagePickerButton(
-  BuildContext context,
-  VoidCallback onPressed,
-  ChatTranslations translations,
-) =>
-    ElevatedButton(
-      onPressed: onPressed,
-      child: Text(
-        translations.cancelImagePickerBtn,
+      child: ImagePicker(
+        customButton: ElevatedButton(
+          onPressed: onClose,
+          child: Text(
+            translations.cancelImagePickerBtn,
+          ),
+        ),
       ),
     );
 
@@ -136,6 +131,11 @@ typedef TextInputBuilder = Widget Function(
 
 typedef ContainerBuilder = Widget Function(
   Widget child,
+);
+
+typedef ImagePickerContainerBuilder = Widget Function(
+  VoidCallback onClose,
+  ChatTranslations translations,
 );
 
 typedef ScaffoldBuilder = Scaffold Function(

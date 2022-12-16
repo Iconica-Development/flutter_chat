@@ -20,10 +20,10 @@ class ChatScreen extends StatefulWidget {
 
   final ChatOptions options;
   final ChatTranslations translations;
-  final Stream<List<ChatModel>> chats;
+  final Stream<List<PersonalChatModel>> chats;
   final VoidCallback? onPressStartChat;
-  final void Function(ChatModel chat) onDeleteChat;
-  final void Function(ChatModel chat) onPressChat;
+  final void Function(PersonalChatModel chat) onDeleteChat;
+  final void Function(PersonalChatModel chat) onPressChat;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -43,11 +43,11 @@ class _ChatScreenState extends State<ChatScreen> {
               child: ListView(
                 padding: const EdgeInsets.only(top: 15.0),
                 children: [
-                  StreamBuilder<List<ChatModel>>(
+                  StreamBuilder<List<PersonalChatModel>>(
                     stream: widget.chats,
                     builder: (BuildContext context, snapshot) => Column(
                       children: [
-                        for (ChatModel chat in snapshot.data ?? [])
+                        for (PersonalChatModel chat in snapshot.data ?? [])
                           Builder(
                             builder: (context) => Dismissible(
                               confirmDismiss: (_) => showDialog(
@@ -100,15 +100,11 @@ class _ChatScreenState extends State<ChatScreen> {
                                 onTap: () => widget.onPressChat(chat),
                                 child: widget.options.chatRowContainerBuilder(
                                   ChatRow(
-                                    avatar: chat is PersonalChatModel
-                                        ? widget.options.userAvatarBuilder(
-                                            chat.user,
-                                            40.0,
-                                          )
-                                        : Container(),
-                                    title: chat is PersonalChatModel
-                                        ? chat.user.fullName
-                                        : (chat as GroupChatModel).title,
+                                    avatar: widget.options.userAvatarBuilder(
+                                      chat.user,
+                                      40.0,
+                                    ),
+                                    title: chat.user.fullName,
                                     subTitle: chat.lastMessage != null
                                         ? chat.lastMessage
                                                 is ChatTextMessageModel

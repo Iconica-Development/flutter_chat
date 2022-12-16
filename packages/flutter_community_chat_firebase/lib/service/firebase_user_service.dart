@@ -4,25 +4,32 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_community_chat_firebase/config/firebase_chat_options.dart';
 import 'package:flutter_community_chat_firebase/dto/firebase_user_document.dart';
 import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
 
-class FirebaseUserService {
+class FirebaseUserService implements ChatUserService {
   FirebaseUserService({
-    required this.db,
-    required this.auth,
-    required this.options,
-  });
+    FirebaseApp? app,
+    FirebaseChatOptions? options,
+  }) {
+    var appInstance = app ?? Firebase.app();
 
-  FirebaseFirestore db;
-  FirebaseAuth auth;
-  FirebaseChatOptions options;
+    _db = FirebaseFirestore.instanceFor(app: appInstance);
+    _auth = FirebaseAuth.instanceFor(app: appInstance);
+    _options = options ?? const FirebaseChatOptions();
+  }
+
+  late FirebaseFirestore _db;
+  late FirebaseAuth _auth;
+  late FirebaseChatOptions _options;
+
   ChatUserModel? _currentUser;
   final Map<String, ChatUserModel> _users = {};
 
-  CollectionReference<FirebaseUserDocument> get _userCollection => db
-      .collection(options.usersCollectionName)
+  CollectionReference<FirebaseUserDocument> get _userCollection => _db
+      .collection(_options.usersCollectionName)
       .withConverter<FirebaseUserDocument>(
         fromFirestore: (snapshot, _) => FirebaseUserDocument.fromJson(
           snapshot.data()!,
@@ -31,6 +38,7 @@ class FirebaseUserService {
         toFirestore: (user, _) => user.toJson(),
       );
 
+  @override
   Future<ChatUserModel?> getUser(String id) async {
     if (_users.containsKey(id)) {
       return _users[id]!;
@@ -54,11 +62,13 @@ class FirebaseUserService {
     });
   }
 
+  @override
   Future<ChatUserModel?> getCurrentUser() async =>
-      _currentUser == null && auth.currentUser?.uid != null
-          ? _currentUser = await getUser(auth.currentUser!.uid)
+      _currentUser == null && _auth.currentUser?.uid != null
+          ? _currentUser = await getUser(_auth.currentUser!.uid)
           : _currentUser;
 
+  @override
   Future<List<ChatUserModel>> getAllUsers() async {
     var currentUser = await getCurrentUser();
 
@@ -66,13 +76,6 @@ class FirebaseUserService {
       FieldPath.documentId,
       isNotEqualTo: currentUser?.id,
     );
-
-    if (options.userFilter != null) {
-      query = query.where(
-        options.userFilter!.field,
-        isEqualTo: options.userFilter!.expectedValue,
-      );
-    }
 
     var data = await query.get();
 

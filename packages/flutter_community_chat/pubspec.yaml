@@ -19,11 +19,7 @@ dependencies:
     git: 
        url: https://github.com/Iconica-Development/flutter_community_chat.git
        path: packages/flutter_community_chat_interface
-  flutter_image_picker:
-    git:
-      url: https://github.com/Iconica-Development/flutter_image_picker
-      ref: 1.0.3
-  
+
 dev_dependencies:
   flutter_lints: ^2.0.0
 

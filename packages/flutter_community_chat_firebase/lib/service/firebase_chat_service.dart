@@ -4,31 +4,38 @@
 
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_community_chat_firebase/config/firebase_chat_options.dart';
 import 'package:flutter_community_chat_firebase/dto/firebase_chat_document.dart';
 import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
-import 'firebase_user_service.dart';
 
-class FirebaseChatService {
+class FirebaseChatService implements ChatService {
+  late FirebaseFirestore _db;
+  late FirebaseStorage _storage;
+  late ChatUserService _userService;
+  late FirebaseChatOptions _options;
+
   FirebaseChatService({
-    required this.db,
-    required this.storage,
-    required this.userService,
-    required this.options,
-  });
+    required ChatUserService userService,
+    FirebaseApp? app,
+    FirebaseChatOptions? options,
+  }) {
+    var appInstance = app ?? Firebase.app();
 
-  FirebaseFirestore db;
-  FirebaseStorage storage;
-  FirebaseUserService userService;
-  FirebaseChatOptions options;
+    _db = FirebaseFirestore.instanceFor(app: appInstance);
+    _storage = FirebaseStorage.instanceFor(app: appInstance);
+    _userService = userService;
+    _options = options ?? const FirebaseChatOptions();
+  }
 
   StreamSubscription<QuerySnapshot> _addChatSubscription(
     List<String> chatIds,
-    Function(List<ChatModel>) onReceivedChats,
+    Function(List<PersonalChatModel>) onReceivedChats,
   ) {
-    var snapshots = db
-        .collection(options.chatsCollectionName)
+    var snapshots = _db
+        .collection(_options.chatsCollectionName)
         .where(
           FieldPath.documentId,
           whereIn: chatIds,
@@ -41,8 +48,8 @@ class FirebaseChatService {
         .snapshots();
 
     return snapshots.listen((snapshot) async {
-      var currentUser = await userService.getCurrentUser();
-      List<ChatModel> chats = [];
+      var currentUser = await _userService.getCurrentUser();
+      List<PersonalChatModel> chats = [];
 
       for (var chatDoc in snapshot.docs) {
         var chatData = chatDoc.data();
@@ -51,7 +58,7 @@ class FirebaseChatService {
 
         if (chatData.lastMessage != null) {
           var messageData = chatData.lastMessage!;
-          var sender = await userService.getUser(messageData.sender);
+          var sender = await _userService.getUser(messageData.sender);
 
           if (sender != null) {
             var timestamp = DateTime.fromMillisecondsSinceEpoch(
@@ -77,7 +84,7 @@ class FirebaseChatService {
         var otherUserId = List<String>.from(chatData.users).firstWhere(
           (element) => element != currentUser?.id,
         );
-        var otherUser = await userService.getUser(otherUserId);
+        var otherUser = await _userService.getUser(otherUserId);
 
         if (otherUser != null) {
           chats.add(
@@ -117,14 +124,15 @@ class FirebaseChatService {
     return result;
   }
 
-  Stream<List<ChatModel>> _getSpecificChatsStream(List<String> chatIds) {
-    late StreamController<List<ChatModel>> controller;
+  Stream<List<PersonalChatModel>> _getSpecificChatsStream(
+      List<String> chatIds) {
+    late StreamController<List<PersonalChatModel>> controller;
     List<StreamSubscription<QuerySnapshot>> subscriptions = [];
     var splittedChatIds = _splitChatIds(chatIds: chatIds);
 
-    controller = StreamController<List<ChatModel>>(
+    controller = StreamController<List<PersonalChatModel>>(
       onListen: () {
-        var chats = <int, List<ChatModel>>{};
+        var chats = <int, List<PersonalChatModel>>{};
 
         for (var chatIdPair in splittedChatIds.asMap().entries) {
           subscriptions.add(
@@ -133,7 +141,7 @@ class FirebaseChatService {
               (data) {
                 chats[chatIdPair.key] = data;
 
-                List<ChatModel> mergedChats = [];
+                List<PersonalChatModel> mergedChats = [];
 
                 mergedChats.addAll(
                   chats.values.expand((element) => element),
@@ -160,15 +168,17 @@ class FirebaseChatService {
     return controller.stream;
   }
 
-  Stream<List<ChatModel>> getChatsStream() {
-    late StreamController<List<ChatModel>> controller;
+  @override
+  Stream<List<PersonalChatModel>> getChatsStream() {
+    late StreamController<List<PersonalChatModel>> controller;
     StreamSubscription? userChatsSubscription;
     StreamSubscription? chatsSubscription;
     controller = StreamController(
       onListen: () async {
-        var currentUser = await userService.getCurrentUser();
-        userChatsSubscription = db
-            .collection(options.usersCollectionName)
+        debugPrint('Start listening to chats');
+        var currentUser = await _userService.getCurrentUser();
+        userChatsSubscription = _db
+            .collection(_options.usersCollectionName)
             .doc(currentUser?.id)
             .collection('chats')
             .snapshots()
@@ -185,37 +195,34 @@ class FirebaseChatService {
       onCancel: () {
         chatsSubscription?.cancel();
         userChatsSubscription?.cancel();
+        debugPrint('Stop listening to chats');
       },
     );
     return controller.stream;
   }
 
-  Future<ChatModel?> getChatByUser(ChatUserModel user) async {
-    var currentUser = await userService.getCurrentUser();
-    var chatCollection = await db
-        .collection(options.usersCollectionName)
+  @override
+  Future<PersonalChatModel> getOrCreateChatByUser(ChatUserModel user) async {
+    var currentUser = await _userService.getCurrentUser();
+    var collection = await _db
+        .collection(_options.usersCollectionName)
         .doc(currentUser?.id)
         .collection('chats')
+        .where('users', arrayContains: user.id)
         .get();
 
-    for (var element in chatCollection.docs) {
-      var data = element.data();
-      if (data.containsKey('users') && data['users'] is List) {
-        if (data['users'].contains(user.id)) {
-          return PersonalChatModel(
-            id: element.id,
-            user: user,
-          );
-        }
-      }
-    }
+    var doc = collection.docs.isNotEmpty ? collection.docs.first : null;
 
-    return null;
+    return PersonalChatModel(
+      id: doc?.id,
+      user: user,
+    );
   }
 
+  @override
   Future<void> deleteChat(ChatModel chat) async {
-    var chatCollection = await db
-        .collection(options.chatsCollectionName)
+    var chatCollection = await _db
+        .collection(_options.chatsCollectionName)
         .doc(chat.id)
         .withConverter(
           fromFirestore: (snapshot, _) =>
@@ -228,8 +235,8 @@ class FirebaseChatService {
 
     if (chatData != null) {
       for (var userId in chatData.users) {
-        db
-            .collection(options.usersCollectionName)
+        _db
+            .collection(_options.usersCollectionName)
             .doc(userId)
             .collection('chats')
             .doc(chat.id)
@@ -237,9 +244,12 @@ class FirebaseChatService {
       }
 
       if (chat.id != null) {
-        await db.collection(options.chatsCollectionName).doc(chat.id).delete();
-        await storage
-            .ref(options.chatsCollectionName)
+        await _db
+            .collection(_options.chatsCollectionName)
+            .doc(chat.id)
+            .delete();
+        await _storage
+            .ref(_options.chatsCollectionName)
             .child(chat.id!)
             .listAll()
             .then((value) {
@@ -249,5 +259,49 @@ class FirebaseChatService {
         });
       }
     }
+  }
+
+  @override
+  Future<PersonalChatModel> storeChatIfNot(PersonalChatModel chat) async {
+    if (chat.id == null) {
+      var currentUser = await _userService.getCurrentUser();
+
+      if (currentUser?.id == null || chat.user.id == null) {
+        return chat;
+      }
+
+      List<String> userIds = [
+        currentUser!.id!,
+        chat.user.id!,
+      ];
+
+      var reference = await _db
+          .collection(_options.chatsCollectionName)
+          .withConverter(
+            fromFirestore: (snapshot, _) =>
+                FirebaseChatDocument.fromJson(snapshot.data()!, snapshot.id),
+            toFirestore: (chat, _) => chat.toJson(),
+          )
+          .add(
+            FirebaseChatDocument(
+              personal: true,
+              users: userIds,
+              lastUsed: Timestamp.now(),
+            ),
+          );
+
+      for (var userId in userIds) {
+        await _db
+            .collection(_options.usersCollectionName)
+            .doc(userId)
+            .collection('chats')
+            .doc(reference.id)
+            .set({'users': userIds});
+      }
+
+      chat.id = reference.id;
+    }
+
+    return chat;
   }
 }

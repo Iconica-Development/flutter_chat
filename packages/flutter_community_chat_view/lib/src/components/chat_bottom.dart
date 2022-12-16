@@ -16,9 +16,9 @@ class ChatBottom extends StatefulWidget {
     super.key,
   });
 
-  final Future<void> Function(ChatModel chat, String text) onMessageSubmit;
+  final Future<void> Function(String text) onMessageSubmit;
   final TextInputBuilder messageInputBuilder;
-  final Function(ChatModel)? onPressSelectImage;
+  final VoidCallback? onPressSelectImage;
   final ChatModel chat;
   final ChatTranslations translations;
 
@@ -44,17 +44,16 @@ class _ChatBottomState extends State<ChatBottom> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (widget.onPressSelectImage != null)
-                    IconButton(
-                      onPressed: () => widget.onPressSelectImage!(widget.chat),
-                      icon: const Icon(Icons.image),
-                    ),
+                  IconButton(
+                    onPressed: widget.onPressSelectImage,
+                    icon: const Icon(Icons.image),
+                  ),
                   IconButton(
                     onPressed: () {
                       var value = _textEditingController.text;
 
                       if (value.isNotEmpty) {
-                        widget.onMessageSubmit(widget.chat, value);
+                        widget.onMessageSubmit(value);
                         _textEditingController.clear();
                       }
                     },
