@@ -27,13 +27,12 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(bottom: 43.0),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: ChatImage(
-                  image: widget.message.sender.imageUrl,
-                ),
+            Padding(
+              padding: const EdgeInsets.only(left: 10.0),
+              child: ChatImage(
+                image: widget.message.sender.imageUrl,
               ),
             ),
             Expanded(

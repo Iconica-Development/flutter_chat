@@ -179,7 +179,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_interface"
       ref: HEAD
-      resolved-ref: c644e1affb1dd4f570bf0e4ae2e950f5e9d83c37
+      resolved-ref: "2836392011995d4f3e96b333a82b28c26945c7d5"
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
@@ -188,7 +188,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_view"
       ref: HEAD
-      resolved-ref: c644e1affb1dd4f570bf0e4ae2e950f5e9d83c37
+      resolved-ref: "2836392011995d4f3e96b333a82b28c26945c7d5"
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.0.1"
@@ -263,7 +263,7 @@ packages:
       name: image_picker_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.5+3"
+    version: "0.8.5+4"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -277,7 +277,7 @@ packages:
       name: image_picker_ios
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.6+1"
+    version: "0.8.6+2"
   image_picker_platform_interface:
     dependency: transitive
     description:
@@ -562,7 +562,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.2"
+    version: "3.1.3"
   xdg_directories:
     dependency: transitive
     description:
