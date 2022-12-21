@@ -28,8 +28,6 @@ class DateFormatter {
     bool showFullDate = false,
   }) =>
       DateFormat(
-        _isToday(date)
-            ? 'HH:mm'
-            : 'dd-MM-yyyy${showFullDate ? ' - HH:mm' : ''}',
+        _isToday(date) ? 'HH:mm' : 'dd-MM-yyyy${showFullDate ? ' HH:mm' : ''}',
       ).format(date);
 }
