@@ -4,11 +4,12 @@
 
 class FirebaseChatOptions {
   const FirebaseChatOptions({
+    this.groupChatsCollectionName = 'group_chats',
     this.chatsCollectionName = 'chats',
     this.messagesCollectionName = 'messages',
     this.usersCollectionName = 'users',
   });
-
+  final String groupChatsCollectionName;
   final String chatsCollectionName;
   final String messagesCollectionName;
   final String usersCollectionName;
