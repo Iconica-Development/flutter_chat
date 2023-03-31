@@ -1,7 +1,7 @@
 name: flutter_community_chat
 description: A new Flutter package project.
 version: 0.0.1
-homepage:
+
 publish_to: none
 
 environment:
