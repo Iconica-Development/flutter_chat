@@ -43,7 +43,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     user: ChatUserModel(
       firstName: 'Sjoerd',
       lastName: 'Sjagerars',
-      imageUrl:  'https://xsgames.co/randomusers/avatar.php?g=female',
+      imageUrl: 'https://xsgames.co/randomusers/avatar.php?g=female',
     ),
     messages: messages,
   );
