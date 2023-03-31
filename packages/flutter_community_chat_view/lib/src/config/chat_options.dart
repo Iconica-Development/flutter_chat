@@ -15,6 +15,7 @@ class ChatOptions {
     this.imagePickerContainerBuilder = _createImagePickerContainer,
     this.scaffoldBuilder = _createScaffold,
     this.userAvatarBuilder = _createUserAvatar,
+    this.groupAvatarBuilder = _createGroupAvatar,
     this.noChatsPlaceholderBuilder = _createNoChatsPlaceholder,
   });
 
@@ -24,6 +25,7 @@ class ChatOptions {
   final ImagePickerContainerBuilder imagePickerContainerBuilder;
   final ScaffoldBuilder scaffoldBuilder;
   final UserAvatarBuilder userAvatarBuilder;
+  final GroupAvatarBuilder groupAvatarBuilder;
   final NoChatsPlaceholderBuilder noChatsPlaceholderBuilder;
 }
 
@@ -101,6 +103,14 @@ Widget _createUserAvatar(
       image: user.imageUrl,
       size: size,
     );
+Widget _createGroupAvatar(
+  String imageUrl,
+  double size,
+) =>
+    ChatImage(
+      image: imageUrl,
+      size: size,
+    );
 
 Widget _createNoChatsPlaceholder(
   ChatTranslations translations,
@@ -144,6 +154,11 @@ typedef ScaffoldBuilder = Scaffold Function(
 
 typedef UserAvatarBuilder = Widget Function(
   ChatUserModel user,
+  double size,
+);
+
+typedef GroupAvatarBuilder = Widget Function(
+  String imageUrl,
   double size,
 );
 
