@@ -219,7 +219,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_interface"
       ref: "feature/group-chats"
-      resolved-ref: a00e5d81bea4a344093fc08b956af0b6786cb8c3
+      resolved-ref: "2a0d3115e8512a977e1f015f350a89f3732fc4e7"
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.3.0"
