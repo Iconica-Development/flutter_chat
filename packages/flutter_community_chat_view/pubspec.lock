@@ -210,11 +210,11 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/flutter_community_chat_interface"
-      ref: HEAD
-      resolved-ref: "676988bfd1ab9e40edfa16d752424e6506de8bcf"
+      ref: "feature/group-chats"
+      resolved-ref: fa6a8d8b236da32fd181b4bb2cb98e7267300f88
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
-    version: "0.0.1"
+    version: "0.3.0"
   flutter_data_interface:
     dependency: transitive
     description:
