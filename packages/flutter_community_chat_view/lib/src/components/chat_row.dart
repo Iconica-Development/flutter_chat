@@ -57,7 +57,7 @@ class ChatRow extends StatelessWidget {
             ),
           ),
           Text(
-            lastUsed == null ? '' : lastUsed!,
+            lastUsed ?? '',
             style: const TextStyle(
               color: Color(0xFFBBBBBB),
               fontSize: 14,

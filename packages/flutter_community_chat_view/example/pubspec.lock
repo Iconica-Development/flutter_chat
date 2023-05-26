@@ -109,10 +109,10 @@ packages:
     dependency: transitive
     description:
       name: code_builder
-      sha256: "0d43dd1288fd145de1ecc9a3948ad4a6d5a82f0a14c4fdd0892260787d975cbe"
+      sha256: "4ad01d6e56db961d29661561effde45e519939fdaeb46c351275b182eac70189"
       url: "https://pub.dev"
     source: hosted
-    version: "4.4.0"
+    version: "4.5.0"
   collection:
     dependency: transitive
     description:
@@ -219,7 +219,7 @@ packages:
     description:
       path: "packages/flutter_community_chat_interface"
       ref: "feature/group-chats"
-      resolved-ref: "6b32c3f55b51bdbee8c9d8391e481164a5cd6be4"
+      resolved-ref: cc5c5b6e1cd12c150a0aa7e1b363cc45267009c3
       url: "https://github.com/Iconica-Development/flutter_community_chat.git"
     source: git
     version: "0.3.0"
@@ -234,7 +234,7 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: master
+      ref: "1.0.0"
       resolved-ref: "500ed1d08095b33387ae3aa4ed1a2ad4d2fb2ac3"
       url: "https://github.com/Iconica-Development/flutter_data_interface.git"
     source: git
@@ -243,11 +243,11 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "1.0.3"
-      resolved-ref: "20814755cca74296600a0ae3e016e46979e66a7e"
+      ref: "1.0.4"
+      resolved-ref: "829574e5f650cabcbd157f22b95001c9052fce0d"
       url: "https://github.com/Iconica-Development/flutter_image_picker"
     source: git
-    version: "1.0.3"
+    version: "1.0.4"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -310,10 +310,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_android
-      sha256: c2f3c66400649bd132f721c88218945d6406f693092b2f741b79ae9cdb046e59
+      sha256: "80dd8979b54353c6beea42aac82a1ef6d9ae7eb3a4c0d17f87789de9a292e59f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.6+16"
+    version: "0.8.6+17"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -366,10 +366,10 @@ packages:
     dependency: transitive
     description:
       name: logging
-      sha256: "04094f2eb032cbb06c6f6e8d3607edcfcb0455e2bb6cbc010cb01171dcb64e6d"
+      sha256: "623a88c9594aa774443aa3eb2d41807a48486b5613e67599fb4c41c0ad47c340"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.1"
+    version: "1.2.0"
   matcher:
     dependency: transitive
     description:

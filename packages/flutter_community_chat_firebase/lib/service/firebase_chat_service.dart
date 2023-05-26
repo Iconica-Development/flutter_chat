@@ -49,12 +49,12 @@ class FirebaseChatService implements ChatService {
 
     return snapshots.listen((snapshot) async {
       var currentUser = await _userService.getCurrentUser();
-      List<ChatModel> chats = [];
+      var chats = <ChatModel>[];
 
       for (var chatDoc in snapshot.docs) {
         var chatData = chatDoc.data();
 
-        List<ChatMessageModel> messages = [];
+        var messages = <ChatMessageModel>[];
 
         if (chatData.lastMessage != null) {
           var messageData = chatData.lastMessage!;
@@ -103,9 +103,30 @@ class FirebaseChatService implements ChatService {
           }
         } else {
           // group chat
+          var users = <ChatUserModel>[];
+          for (var userId in chatData.users) {
+            var user = await _userService.getUser(userId);
+            if (user != null) {
+              users.add(user);
+            }
+          }
+          chats.add(
+            GroupChatModel(
+              id: chatDoc.id,
+              title: chatData.title ?? '',
+              imageUrl: chatData.imageUrl ?? '',
+              lastMessage: messages.isNotEmpty ? messages.last : null,
+              messages: messages,
+              users: users,
+              lastUsed: chatData.lastUsed == null
+                  ? null
+                  : DateTime.fromMillisecondsSinceEpoch(
+                      chatData.lastUsed!.millisecondsSinceEpoch,
+                    ),
+            ),
+          );
         }
       }
-
       onReceivedChats(chats);
     });
   }
@@ -173,59 +194,35 @@ class FirebaseChatService implements ChatService {
   @override
   Stream<List<ChatModel>> getChatsStream() {
     late StreamController<List<ChatModel>> controller;
-    StreamSubscription? userChatsSubscription;
-    StreamSubscription? groupChatsSubscription;
     StreamSubscription? chatsSubscription;
     controller = StreamController(
       onListen: () async {
         debugPrint('Start listening to chats');
         var currentUser = await _userService.getCurrentUser();
-        userChatsSubscription = _db
+        var userSnapshot = await _db
             .collection(_options.usersCollectionName)
             .doc(currentUser?.id)
             .collection('chats')
-            .snapshots()
-            .listen((snapshot) {
-          List<String> chatIds = snapshot.docs.map((chat) => chat.id).toList();
+            .get();
+        var userChatIds = userSnapshot.docs.map((chat) => chat.id).toList();
 
-          if (chatIds.isNotEmpty) {
-            chatsSubscription = _getSpecificChatsStream(chatIds).listen(
-              (event) => controller.add(event),
-            );
-          }
-        });
-        // get all the group chat ids in the user doc with group_chats collection
-        var groupChatsCollection = await _db
+        var userGroupChatIds = await _db
             .collection(_options.usersCollectionName)
             .doc(currentUser?.id)
-            .collection('group_chats')
-            .get();
-        var groupChatLabels =
-            groupChatsCollection.docs.map((chat) => chat.id).toList();
+            .get()
+            .then((userCollection) =>
+                userCollection.data()?[_options.groupChatsCollectionName])
+            .then((groupChatLabels) => groupChatLabels?.cast<String>());
 
-        // get all the chat ids in the group chats collection
-        var groupChats = await _db
-            .collection(_options.groupChatsCollectionName)
-            .where(
-              FieldPath.documentId,
-              whereIn: groupChatLabels,
-            )
-            .get();
-        // every group chat has a list of chat ids
-        // chat.data()['chats'] is a list of chat ids
-        // squeeze all the chat ids into one list
-        var groupChatIds = groupChats.docs
-            .map((chat) => (chat.data()['chats'] as List<String>))
-            .expand((element) => element)
-            .toList();
-        groupChatsSubscription = _getSpecificChatsStream(groupChatIds).listen(
-          (event) => controller.add(event),
-        );
+        var chatsStream =
+            _getSpecificChatsStream([...userChatIds, ...userGroupChatIds]);
+
+        chatsSubscription = chatsStream.listen((event) {
+          controller.add(event);
+        });
       },
       onCancel: () {
         chatsSubscription?.cancel();
-        userChatsSubscription?.cancel();
-        groupChatsSubscription?.cancel();
         debugPrint('Stop listening to chats');
       },
     );
@@ -248,6 +245,52 @@ class FirebaseChatService implements ChatService {
       id: doc?.id,
       user: user,
     );
+  }
+
+  @override
+  Future<ChatModel> getChatById(String chatId) async {
+    var currentUser = await _userService.getCurrentUser();
+    var chatCollection = await _db
+        .collection(_options.usersCollectionName)
+        .doc(currentUser?.id)
+        .collection(_options.chatsCollectionName)
+        .doc(chatId)
+        .get();
+
+    if (chatCollection.exists) {
+      var otherUser = chatCollection.data()?['users'].firstWhere(
+            (element) => element != currentUser?.id,
+          );
+      var user = await _userService.getUser(otherUser);
+      return PersonalChatModel(
+        id: chatId,
+        user: user!,
+      );
+    } else {
+      var groupChatCollection = await _db
+          .collection(_options.chatsCollectionName)
+          .doc(chatId)
+          .withConverter(
+            fromFirestore: (snapshot, _) =>
+                FirebaseChatDocument.fromJson(snapshot.data()!, snapshot.id),
+            toFirestore: (chat, _) => chat.toJson(),
+          )
+          .get();
+      var chat = groupChatCollection.data();
+      var users = <ChatUserModel>[];
+      for (var userId in chat?.users ?? []) {
+        var user = await _userService.getUser(userId);
+        if (user != null) {
+          users.add(user);
+        }
+      }
+      return GroupChatModel(
+        id: chat?.id ?? '',
+        title: chat?.title ?? '',
+        imageUrl: chat?.imageUrl ?? '',
+        users: users,
+      );
+    }
   }
 
   @override

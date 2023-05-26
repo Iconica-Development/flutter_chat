@@ -34,3 +34,12 @@ migrate_working_dir/
 build/
 .flutter-plugins-dependencies
 .flutter-plugins
+.metadata
+
+pubspec.lock
+packages/flutter_community_chat/pubspec.lock
+packages/flutter_community_chat_firebase/pubspec.lock
+packages/flutter_community_chat_interface/pubspec.lock
+packages/flutter_community_chat_view/pubspec.lock
+
+pubspec_overrides.yaml

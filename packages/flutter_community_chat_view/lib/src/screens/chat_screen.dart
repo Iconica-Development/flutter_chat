@@ -134,6 +134,11 @@ class _ChatScreenState extends State<ChatScreen> {
                                           chat.imageUrl,
                                           40.0,
                                         ),
+                                        lastUsed: chat.lastUsed != null
+                                            ? _dateFormatter.format(
+                                                date: chat.lastUsed!,
+                                              )
+                                            : null,
                                       ),
                               ),
                             ),
