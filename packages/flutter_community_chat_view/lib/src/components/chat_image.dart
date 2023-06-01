@@ -24,7 +24,7 @@ class ChatImage extends StatelessWidget {
         ),
         width: size,
         height: size,
-        child: image == null
+        child: image == null || image!.isEmpty
             ? const Center(child: Icon(Icons.person))
             : CachedNetworkImage(
                 imageUrl: image!,

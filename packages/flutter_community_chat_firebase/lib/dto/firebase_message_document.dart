@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
+@immutable
 class FirebaseMessageDocument {
-  FirebaseMessageDocument({
+  const FirebaseMessageDocument({
     required this.sender,
     required this.timestamp,
     this.id,

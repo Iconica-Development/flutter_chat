@@ -5,7 +5,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
 import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 import 'package:flutter_community_chat_view/src/components/chat_bottom.dart';
 import 'package:flutter_community_chat_view/src/components/chat_detail_row.dart';
@@ -23,7 +22,7 @@ class ChatDetailScreen extends StatelessWidget {
     super.key,
   });
 
-  final PersonalChatModel? chat;
+  final ChatModel? chat;
   final ChatOptions options;
   final ChatTranslations translations;
   final Stream<List<ChatMessageModel>>? chatMessages;
@@ -65,15 +64,27 @@ class ChatDetailScreen extends StatelessWidget {
             children: chat == null
                 ? []
                 : [
-                    options.userAvatarBuilder(
-                      chat!.user,
-                      36.0,
-                    ),
+                    if (chat is GroupChatModel) ...[
+                      options.groupAvatarBuilder(
+                        (chat! as GroupChatModel).imageUrl,
+                        36.0,
+                      ),
+                    ] else if (chat is PersonalChatModel) ...[
+                      options.userAvatarBuilder(
+                        (chat! as PersonalChatModel).user,
+                        36.0,
+                      ),
+                    ] else
+                      ...[],
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 15.5),
                         child: Text(
-                          chat!.user.fullName,
+                          (chat is GroupChatModel)
+                              ? (chat! as GroupChatModel).title
+                              : (chat is PersonalChatModel)
+                                  ? (chat! as PersonalChatModel).user.fullName
+                                  : '',
                           style: const TextStyle(fontSize: 18),
                         ),
                       ),

@@ -4,6 +4,8 @@
 
 library flutter_community_chat_view;
 
+export 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
+
 export 'src/components/chat_row.dart';
 export 'src/config/chat_options.dart';
 export 'src/config/chat_translations.dart';

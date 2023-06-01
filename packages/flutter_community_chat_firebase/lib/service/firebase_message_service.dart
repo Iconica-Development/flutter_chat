@@ -144,7 +144,7 @@ class FirebaseMessageService implements MessageService {
 
     return snapshots.listen(
       (snapshot) async {
-        List<ChatMessageModel> messages = [];
+        var messages = <ChatMessageModel>[];
 
         for (var messageDoc in snapshot.docs) {
           var messageData = messageDoc.data();
