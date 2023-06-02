@@ -253,7 +253,7 @@ class FirebaseChatService implements ChatService {
     var chatCollection = await _db
         .collection(_options.usersCollectionName)
         .doc(currentUser?.id)
-        .collection(_options.chatsCollectionName)
+        .collection('chats')
         .doc(chatId)
         .get();
 
