@@ -43,7 +43,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         imageUrl: 'https://xsgames.co/randomusers/avatar.php?g=male',
       ),
       text: 'Met mij gaat het goed, dankje!',
-      timestamp: DateTime.now(),
+      timestamp: DateTime.now().subtract(const Duration(days: 2)),
     )
   ];
 
@@ -53,21 +53,23 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       lastName: 'Sjagerars',
       imageUrl: 'https://xsgames.co/randomusers/avatar.php?g=female',
     ),
+    lastUsed: DateTime.now(),
     messages: messages,
   );
 
   static final groupChat = GroupChatModel(
-      title: 'Group chat',
-      imageUrl: 'https://xsgames.co/randomusers/avatar.php?g=male',
-      users: [pietUser, janUser],
-      messages: messages);
+    title: 'Group chat',
+    imageUrl: 'https://xsgames.co/randomusers/avatar.php?g=male',
+    users: [pietUser, janUser],
+    lastUsed: DateTime.now().subtract(const Duration(days: 1)),
+    messages: messages,
+  );
 
   Stream<List<ChatModel>> get chatStream => (() {
         late StreamController<List<ChatModel>> controller;
         controller = StreamController<List<ChatModel>>(
           onListen: () {
             controller.add([
-              chat,
               groupChat,
               chat,
             ]);

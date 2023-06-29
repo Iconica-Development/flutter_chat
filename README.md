@@ -1,6 +1,8 @@
 # Flutter Community Chat
 Flutter Community Chat is a package which gives the possibility to add a (personal or group) chat to your Flutter-application. Default this package adds support for a Firebase back-end. You can add your custom back-end (like a Websocket-API) by extending the `CommunityChatInterface` interface from the `flutter_community_chat_interface` package.
 
+![Flutter Community Chat GIF](example.gif)
+
 ## Setup
 To use this package, add flutter_community_chat as a dependency in your pubspec.yaml file:
 
