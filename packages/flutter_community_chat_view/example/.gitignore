@@ -54,3 +54,5 @@ windows
 macos
 linux
 .metadata
+
+pubspec.lock

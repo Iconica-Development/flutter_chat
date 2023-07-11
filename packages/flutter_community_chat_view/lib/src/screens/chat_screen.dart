@@ -33,9 +33,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var translations = widget.translations;
     return widget.options.scaffoldBuilder(
       AppBar(
-        title: Text(widget.translations.chatsTitle),
+        title: Text(translations.chatsTitle),
       ),
       Column(
         children: [
@@ -54,16 +55,15 @@ class _ChatScreenState extends State<ChatScreen> {
                               context: context,
                               builder: (BuildContext context) => AlertDialog(
                                 title: Text(
-                                  widget.translations.deleteChatModalTitle,
+                                  translations.deleteChatModalTitle,
                                 ),
                                 content: Text(
-                                  widget
-                                      .translations.deleteChatModalDescription,
+                                  translations.deleteChatModalDescription,
                                 ),
                                 actions: [
                                   TextButton(
                                     child: Text(
-                                      widget.translations.deleteChatModalCancel,
+                                      translations.deleteChatModalCancel,
                                     ),
                                     onPressed: () =>
                                         Navigator.of(context).pop(false),
@@ -72,8 +72,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     onPressed: () =>
                                         Navigator.of(context).pop(true),
                                     child: Text(
-                                      widget
-                                          .translations.deleteChatModalConfirm,
+                                      translations.deleteChatModalConfirm,
                                     ),
                                   ),
                                 ],
@@ -87,7 +86,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
-                                    widget.translations.deleteChatButton,
+                                    translations.deleteChatButton,
                                   ),
                                 ),
                               ),
@@ -106,13 +105,15 @@ class _ChatScreenState extends State<ChatScreen> {
                                           40.0,
                                         ),
                                         title: chat.user.fullName,
-                                        subTitle: chat.lastMessage != null &&
-                                                chat.lastMessage
+                                        subTitle: chat.lastMessage != null
+                                            ? chat.lastMessage
                                                     is ChatTextMessageModel
-                                            ? (chat.lastMessage!
-                                                    as ChatTextMessageModel)
-                                                .text
-                                            : '📷 ${widget.translations.image}',
+                                                ? (chat.lastMessage!
+                                                        as ChatTextMessageModel)
+                                                    .text
+                                                : '📷 '
+                                                    '${translations.image}'
+                                            : '',
                                         lastUsed: chat.lastUsed != null
                                             ? _dateFormatter.format(
                                                 date: chat.lastUsed!,
@@ -121,14 +122,15 @@ class _ChatScreenState extends State<ChatScreen> {
                                       )
                                     : ChatRow(
                                         title: (chat as GroupChatModel).title,
-                                        subTitle: chat.lastMessage != null &&
-                                                chat.lastMessage
+                                        subTitle: chat.lastMessage != null
+                                            ? chat.lastMessage
                                                     is ChatTextMessageModel
-                                            ? (chat.lastMessage!
-                                                    as ChatTextMessageModel)
-                                                .text
-                                            : '📷 '
-                                                '${widget.translations.image}',
+                                                ? (chat.lastMessage!
+                                                        as ChatTextMessageModel)
+                                                    .text
+                                                : '📷 '
+                                                    '${translations.image}'
+                                            : '',
                                         avatar:
                                             widget.options.groupAvatarBuilder(
                                           chat.imageUrl,
@@ -155,7 +157,7 @@ class _ChatScreenState extends State<ChatScreen> {
             widget.options.newChatButtonBuilder(
               context,
               widget.onPressStartChat!,
-              widget.translations,
+              translations,
             ),
         ],
       ),
