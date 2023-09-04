@@ -14,7 +14,7 @@ dependencies:
   cloud_firestore: ^4.0.5
   firebase_storage: ^11.0.5
   firebase_auth: ^4.1.2
-  uuid: ^3.0.6
+  uuid: ^4.0.0
   flutter_community_chat_interface: 
     git: 
        url: https://github.com/Iconica-Development/flutter_community_chat.git
