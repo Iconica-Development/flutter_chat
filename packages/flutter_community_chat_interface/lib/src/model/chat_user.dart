@@ -15,7 +15,17 @@ class ChatUserModel {
   final String? lastName;
   final String? imageUrl;
 
-  String? get fullName => firstName == null && lastName == null
-      ? null
-      : '${firstName ?? ''} ${lastName ?? ''}';
+  String? get fullName {
+    var fullName = '';
+
+    if (firstName != null) {
+      fullName += firstName!;
+    }
+
+    if (lastName != null) {
+      fullName += ' $lastName';
+    }
+
+    return fullName == '' ? null : fullName;
+  }
 }
