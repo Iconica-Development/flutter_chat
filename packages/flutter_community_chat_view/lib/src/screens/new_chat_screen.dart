@@ -34,9 +34,11 @@ class _NewChatScreenState extends State<NewChatScreen> {
             ? null
             : widget.users
                 .where(
-                  (user) => user.fullName.toLowerCase().contains(
-                        query.toLowerCase(),
-                      ),
+                  (user) =>
+                      user.fullName?.toLowerCase().contains(
+                            query.toLowerCase(),
+                          ) ??
+                      false,
                 )
                 .toList(),
       );
@@ -73,7 +75,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
             icon: Icon(
               _isSearching ? Icons.close : Icons.search,
             ),
-          )
+          ),
         ],
       ),
       body: users.isEmpty
@@ -88,7 +90,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                           user,
                           40.0,
                         ),
-                        title: user.fullName,
+                        title: user.fullName ?? '',
                       ),
                     ),
                     onTap: () => widget.onPressCreateChat(user),

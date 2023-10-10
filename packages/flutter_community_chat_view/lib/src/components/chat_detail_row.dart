@@ -44,7 +44,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        widget.message.sender.fullName.toUpperCase(),
+                        widget.message.sender.fullName?.toUpperCase() ?? '',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,

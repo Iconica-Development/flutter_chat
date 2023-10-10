@@ -19,6 +19,7 @@ class ChatDetailScreen extends StatelessWidget {
     this.chat,
     this.chatMessages,
     this.onPressChatTitle,
+    this.iconColor,
     super.key,
   });
 
@@ -29,6 +30,9 @@ class ChatDetailScreen extends StatelessWidget {
   final Future<void> Function(Uint8List image) onUploadImage;
   final Future<void> Function(String text) onMessageSubmit;
   final VoidCallback? onPressChatTitle;
+
+  /// The color of the icon buttons in the chat bottom.
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +87,10 @@ class ChatDetailScreen extends StatelessWidget {
                           (chat is GroupChatModel)
                               ? (chat! as GroupChatModel).title
                               : (chat is PersonalChatModel)
-                                  ? (chat! as PersonalChatModel).user.fullName
+                                  ? (chat! as PersonalChatModel)
+                                          .user
+                                          .fullName ??
+                                      ''
                                   : '',
                           style: const TextStyle(fontSize: 18),
                         ),
@@ -118,6 +125,7 @@ class ChatDetailScreen extends StatelessWidget {
               onPressSelectImage: onPressSelectImage,
               onMessageSubmit: onMessageSubmit,
               translations: translations,
+              iconColor: iconColor,
             ),
         ],
       ),
