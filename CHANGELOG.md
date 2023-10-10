@@ -1,4 +1,9 @@
+## 0.3.3 - October 10 2023
+
+- Add icon color property for icon buttons
+
 ## 0.3.2 - September 26 2023
+
 - Fix fullname getter for nullable values
 
 ## 0.3.1 - July 11 2023

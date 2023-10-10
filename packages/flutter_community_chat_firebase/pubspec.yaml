@@ -1,6 +1,6 @@
 name: flutter_community_chat_firebase
 description: A new Flutter package project.
-version: 0.3.1
+version: 0.3.3
 publish_to: none
 
 environment:
@@ -19,7 +19,7 @@ dependencies:
     git: 
        url: https://github.com/Iconica-Development/flutter_community_chat.git
        path: packages/flutter_community_chat_interface
-       ref: 0.3.1
+       ref: 0.3.3
 
 dev_dependencies:
   flutter_lints: ^2.0.0
