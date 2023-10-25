@@ -6,7 +6,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_community_chat_firebase/config/firebase_chat_options.dart';
 import 'package:flutter_community_chat_firebase/dto/firebase_chat_document.dart';
 import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
@@ -197,7 +196,6 @@ class FirebaseChatService implements ChatService {
     StreamSubscription? chatsSubscription;
     controller = StreamController(
       onListen: () async {
-        debugPrint('Start listening to chats');
         var currentUser = await _userService.getCurrentUser();
         var userSnapshot = await _db
             .collection(_options.usersCollectionName)
@@ -223,7 +221,6 @@ class FirebaseChatService implements ChatService {
       },
       onCancel: () {
         chatsSubscription?.cancel();
-        debugPrint('Stop listening to chats');
       },
     );
     return controller.stream;
@@ -415,5 +412,52 @@ class FirebaseChatService implements ChatService {
     }
 
     return chat;
+  }
+
+  @override
+  Stream<int> getUnreadChatsCountStream() {
+    // open a stream to the user's chats collection and listen to changes in this collection we will also add the amount of read chats
+    StreamSubscription? unreadChatSubscription;
+    late StreamController<int> controller;
+    controller = StreamController(
+      onListen: () async {
+        var currentUser = await _userService.getCurrentUser();
+        var userSnapshot = _db
+            .collection(_options.usersCollectionName)
+            .doc(currentUser?.id)
+            .collection('chats')
+            .snapshots();
+
+        unreadChatSubscription = userSnapshot.listen((event) {
+          // every chat has a field called amount_unread_messages, combine all of these fields to get the total amount of unread messages
+          var unreadChats = event.docs
+              .map((chat) => chat.data()['amount_unread_messages'] ?? 0)
+              .toList();
+          var totalUnreadChats = unreadChats.fold<int>(
+              0, (previousValue, element) => previousValue + (element as int));
+          controller.add(totalUnreadChats);
+        });
+      },
+      onCancel: () {
+        unreadChatSubscription?.cancel();
+      },
+    );
+    return controller.stream;
+  }
+
+  @override
+  Future<void> readChat(ChatModel chat) async {
+    // set the amount of read chats to the amount of messages in the chat
+    var currentUser = await _userService.getCurrentUser();
+    if (currentUser?.id == null || chat.id == null) {
+      return;
+    }
+    // set the amount of unread messages to 0
+    await _db
+        .collection(_options.usersCollectionName)
+        .doc(currentUser!.id!)
+        .collection('chats')
+        .doc(chat.id)
+        .update({'amount_unread_messages': 0});
   }
 }

@@ -6,5 +6,7 @@ abstract class ChatService {
   Future<ChatModel> getOrCreateChatByUser(ChatUserModel user);
   Future<ChatModel> getChatById(String id);
   Future<void> deleteChat(ChatModel chat);
+  Future<void> readChat(ChatModel chat);
   Future<ChatModel> storeChatIfNot(ChatModel chat);
+  Stream<int> getUnreadChatsCountStream();
 }
