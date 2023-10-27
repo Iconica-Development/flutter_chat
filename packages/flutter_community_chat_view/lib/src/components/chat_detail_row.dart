@@ -4,17 +4,19 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
+import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 import 'package:flutter_community_chat_view/src/components/chat_image.dart';
 import 'package:flutter_community_chat_view/src/services/date_formatter.dart';
 
 class ChatDetailRow extends StatefulWidget {
   const ChatDetailRow({
     required this.message,
+    required this.userAvatarBuilder,
     super.key,
   });
 
   final ChatMessageModel message;
+  final UserAvatarBuilder userAvatarBuilder;
 
   @override
   State<ChatDetailRow> createState() => _ChatDetailRowState();
@@ -31,9 +33,15 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 10.0),
-              child: ChatImage(
-                image: widget.message.sender.imageUrl,
-              ),
+              child: widget.message.sender.imageUrl != null &&
+                      widget.message.sender.imageUrl!.isNotEmpty
+                  ? ChatImage(
+                      image: widget.message.sender.imageUrl!,
+                    )
+                  : widget.userAvatarBuilder(
+                      widget.message.sender,
+                      30,
+                    ),
             ),
             Expanded(
               child: Container(

@@ -1,3 +1,9 @@
+## 0.4.0 - October 27 2023
+
+- Show amount of unread messages per chat
+- More intuitive chat UI
+- Fix default profile avatars
+
 ## 0.3.4 - October 25 2023
 
 - Add interface methods for getting amount of unread messages

@@ -50,8 +50,8 @@ class ChatDetailScreen extends StatefulWidget {
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   // stream listener that needs to be disposed later
-  late StreamSubscription<List<ChatMessageModel>>? _chatMessagesSubscription;
-  late Stream<List<ChatMessageModel>>? _chatMessages;
+  StreamSubscription<List<ChatMessageModel>>? _chatMessagesSubscription;
+  Stream<List<ChatMessageModel>>? _chatMessages;
 
   @override
   void initState() {
@@ -67,10 +67,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         widget.onReadChat(widget.chat!);
       }
     });
-    // set the chat to read when opening the screen
-    if (widget.chat != null) {
-      widget.onReadChat(widget.chat!);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.chat != null) {
+        widget.onReadChat(widget.chat!);
+      }
+    });
   }
 
   @override
@@ -159,6 +160,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           .reversed)
                     ChatDetailRow(
                       message: message,
+                      userAvatarBuilder: widget.options.userAvatarBuilder,
                     ),
                 ],
               ),

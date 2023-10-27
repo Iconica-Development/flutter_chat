@@ -100,7 +100,7 @@ Widget _createUserAvatar(
   double size,
 ) =>
     ChatImage(
-      image: user.imageUrl,
+      image: user.imageUrl ?? '',
       size: size,
     );
 Widget _createGroupAvatar(
