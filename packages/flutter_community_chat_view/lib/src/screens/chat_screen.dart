@@ -99,6 +99,8 @@ class _ChatScreenState extends State<ChatScreen> {
                               child: widget.options.chatRowContainerBuilder(
                                 (chat is PersonalChatModel)
                                     ? ChatRow(
+                                        unreadMessages:
+                                            chat.unreadMessages ?? 0,
                                         avatar:
                                             widget.options.userAvatarBuilder(
                                           chat.user,
@@ -122,6 +124,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                       )
                                     : ChatRow(
                                         title: (chat as GroupChatModel).title,
+                                        unreadMessages:
+                                            chat.unreadMessages ?? 0,
                                         subTitle: chat.lastMessage != null
                                             ? chat.lastMessage
                                                     is ChatTextMessageModel

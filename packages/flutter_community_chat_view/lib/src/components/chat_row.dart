@@ -7,12 +7,14 @@ import 'package:flutter/material.dart';
 class ChatRow extends StatelessWidget {
   const ChatRow({
     required this.title,
+    this.unreadMessages = 0,
     this.lastUsed,
     this.subTitle,
     this.avatar,
     super.key,
   });
   final String title;
+  final int unreadMessages;
   final Widget? avatar;
   final String? subTitle;
   final String? lastUsed;
@@ -35,9 +37,11 @@ class ChatRow extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: unreadMessages > 0
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                     ),
                   ),
                   if (subTitle != null)
@@ -45,8 +49,11 @@ class ChatRow extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 3.0),
                       child: Text(
                         subTitle!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
+                          fontWeight: unreadMessages > 0
+                              ? FontWeight.w600
+                              : FontWeight.w400,
                         ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
@@ -56,12 +63,39 @@ class ChatRow extends StatelessWidget {
               ),
             ),
           ),
-          Text(
-            lastUsed ?? '',
-            style: const TextStyle(
-              color: Color(0xFFBBBBBB),
-              fontSize: 14,
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                lastUsed ?? '',
+                style: const TextStyle(
+                  color: Color(0xFFBBBBBB),
+                  fontSize: 14,
+                ),
+              ),
+              if (unreadMessages > 0) ...[
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        unreadMessages.toString(),
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ],
       );

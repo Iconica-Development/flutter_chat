@@ -29,6 +29,24 @@ class FirebaseChatService implements ChatService {
     _options = options ?? const FirebaseChatOptions();
   }
 
+  StreamSubscription<DocumentSnapshot> _addUnreadChatSubscription(
+    String chatId,
+    String userId,
+    Function(int) onUnreadChatsUpdated,
+  ) {
+    var snapshots = _db
+        .collection(_options.usersCollectionName)
+        .doc(userId)
+        .collection('chats')
+        .doc(chatId)
+        .snapshots();
+
+    return snapshots.listen((snapshot) {
+      var data = snapshot.data();
+      onUnreadChatsUpdated(data?['amount_unread_messages'] ?? 0);
+    });
+  }
+
   StreamSubscription<QuerySnapshot> _addChatSubscription(
     List<String> chatIds,
     Function(List<ChatModel>) onReceivedChats,
@@ -79,6 +97,8 @@ class FirebaseChatService implements ChatService {
             );
           }
         }
+        ChatModel? chatModel;
+
         if (chatData.personal) {
           var otherUserId = List<String>.from(chatData.users).firstWhere(
             (element) => element != currentUser?.id,
@@ -86,18 +106,16 @@ class FirebaseChatService implements ChatService {
           var otherUser = await _userService.getUser(otherUserId);
 
           if (otherUser != null) {
-            chats.add(
-              PersonalChatModel(
-                id: chatDoc.id,
-                user: otherUser,
-                lastMessage: messages.isNotEmpty ? messages.last : null,
-                messages: messages,
-                lastUsed: chatData.lastUsed == null
-                    ? null
-                    : DateTime.fromMillisecondsSinceEpoch(
-                        chatData.lastUsed!.millisecondsSinceEpoch,
-                      ),
-              ),
+            chatModel = PersonalChatModel(
+              id: chatDoc.id,
+              user: otherUser,
+              lastMessage: messages.isNotEmpty ? messages.last : null,
+              messages: messages,
+              lastUsed: chatData.lastUsed == null
+                  ? null
+                  : DateTime.fromMillisecondsSinceEpoch(
+                      chatData.lastUsed!.millisecondsSinceEpoch,
+                    ),
             );
           }
         } else {
@@ -109,21 +127,38 @@ class FirebaseChatService implements ChatService {
               users.add(user);
             }
           }
-          chats.add(
-            GroupChatModel(
-              id: chatDoc.id,
-              title: chatData.title ?? '',
-              imageUrl: chatData.imageUrl ?? '',
-              lastMessage: messages.isNotEmpty ? messages.last : null,
-              messages: messages,
-              users: users,
-              lastUsed: chatData.lastUsed == null
-                  ? null
-                  : DateTime.fromMillisecondsSinceEpoch(
-                      chatData.lastUsed!.millisecondsSinceEpoch,
-                    ),
-            ),
+          chatModel = GroupChatModel(
+            id: chatDoc.id,
+            title: chatData.title ?? '',
+            imageUrl: chatData.imageUrl ?? '',
+            lastMessage: messages.isNotEmpty ? messages.last : null,
+            messages: messages,
+            users: users,
+            lastUsed: chatData.lastUsed == null
+                ? null
+                : DateTime.fromMillisecondsSinceEpoch(
+                    chatData.lastUsed!.millisecondsSinceEpoch,
+                  ),
           );
+        }
+        if (chatModel != null) {
+          _addUnreadChatSubscription(chatModel.id ?? '', currentUser?.id ?? '',
+              (unreadMessages) {
+            // the chatmodel should be updated to reflect the amount of unread messages
+            if (chatModel is PersonalChatModel) {
+              chatModel = (chatModel as PersonalChatModel)
+                  .copyWith(unreadMessages: unreadMessages);
+            } else if (chatModel is GroupChatModel) {
+              chatModel = (chatModel as GroupChatModel)
+                  .copyWith(unreadMessages: unreadMessages);
+            }
+
+            chats = chats
+                .map((chat) => chat.id == chatModel?.id ? chatModel! : chat)
+                .toList();
+            onReceivedChats(chats);
+          });
+          chats.add(chatModel!);
         }
       }
       onReceivedChats(chats);
