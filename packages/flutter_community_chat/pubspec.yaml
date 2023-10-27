@@ -1,11 +1,15 @@
+# SPDX-FileCopyrightText: 2022 Iconica
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 name: flutter_community_chat
 description: A new Flutter package project.
-version: 0.3.3
+version: 0.3.4
 
 publish_to: none
 
 environment:
-  sdk: '>=2.18.2 <3.0.0'
+  sdk: '>=3.1.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
@@ -15,12 +19,12 @@ dependencies:
     git: 
        url: https://github.com/Iconica-Development/flutter_community_chat
        path: packages/flutter_community_chat_view
-       ref: 0.3.3
+       ref: 0.3.4
   flutter_community_chat_interface:
     git: 
        url: https://github.com/Iconica-Development/flutter_community_chat
        path: packages/flutter_community_chat_interface
-       ref: 0.3.3
+       ref: 0.3.4
 
 dev_dependencies:
   flutter_lints: ^2.0.0

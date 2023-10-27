@@ -68,6 +68,28 @@ class FirebaseMessageService implements MessageService {
     if (chat.id != null && _controller.hasListener && (_subscription == null)) {
       _subscription = _startListeningForMessages(chat);
     }
+
+    // update the chat counter for the other users
+    // get all users from the chat
+    // there is a field in the chat document called users that has a list of user ids
+    var fetchedChat = await chatReference.get();
+    var chatUsers = fetchedChat.data()?['users'] as List<dynamic>;
+    // for all users except the message sender update the unread counter
+    for (var userId in chatUsers) {
+      if (userId != currentUser.id) {
+        var userReference = _db
+            .collection(
+              _options.usersCollectionName,
+            )
+            .doc(userId)
+            .collection('chats')
+            .doc(chat.id);
+
+        await userReference.update({
+          'amount_unread_messages': FieldValue.increment(1),
+        });
+      }
+    }
   }
 
   @override

@@ -19,6 +19,7 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   static final pietUser = ChatUserModel(
+    id: 'piet',
     firstName: 'Piet',
     lastName: 'Jansen',
     imageUrl: 'https://xsgames.co/randomusers/avatar.php?g=female',
@@ -37,11 +38,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       timestamp: DateTime.now(),
     ),
     ChatTextMessageModel(
-      sender: ChatUserModel(
-        firstName: 'Jan',
-        lastName: 'Jansen',
-        imageUrl: 'https://xsgames.co/randomusers/avatar.php?g=male',
-      ),
+      sender: janUser,
       text: 'Met mij gaat het goed, dankje!',
       timestamp: DateTime.now().subtract(const Duration(days: 2)),
     )
@@ -109,6 +106,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       onPressChat: (chat) => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => ChatDetailScreen(
+            userId: 'piet',
             chat: chat,
             chatMessages: messageStream,
             options: options,
@@ -120,6 +118,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 () => debugPrint('onMessageSubmit'),
               );
             },
+            onReadChat: (chat) async {},
             onUploadImage: (image) async {},
           ),
         ),
