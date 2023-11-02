@@ -151,19 +151,30 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           Expanded(
             child: StreamBuilder<List<ChatMessageModel>>(
               stream: _chatMessages,
-              builder: (BuildContext context, snapshot) => ListView(
-                reverse: true,
-                padding: const EdgeInsets.only(top: 24.0),
-                children: [
-                  for (var message
-                      in (snapshot.data ?? widget.chat?.messages ?? [])
-                          .reversed)
+              builder: (BuildContext context, snapshot) {
+                var messages = snapshot.data ?? widget.chat?.messages ?? [];
+                ChatMessageModel? lastMessage;
+                var messageWidgets = <Widget>[];
+
+                for (var message in messages) {
+                  var isFirstMessage = lastMessage == null ||
+                      lastMessage.sender.id != message.sender.id;
+                  messageWidgets.add(
                     ChatDetailRow(
                       message: message,
+                      isFirstMessage: isFirstMessage,
                       userAvatarBuilder: widget.options.userAvatarBuilder,
                     ),
-                ],
-              ),
+                  );
+                  lastMessage = message;
+                }
+
+                return ListView(
+                  reverse: true,
+                  padding: const EdgeInsets.only(top: 24.0),
+                  children: messageWidgets.reversed.toList(),
+                );
+              },
             ),
           ),
           if (widget.chat != null)
