@@ -5,6 +5,7 @@
 class ChatTranslations {
   const ChatTranslations({
     this.chatsTitle = 'Chats',
+    this.chatsUnread = 'unread',
     this.newChatButton = 'Start chat',
     this.newChatTitle = 'Start chat',
     this.image = 'Image',
@@ -22,6 +23,7 @@ class ChatTranslations {
   });
 
   final String chatsTitle;
+  final String chatsUnread;
   final String newChatButton;
   final String newChatTitle;
   final String deleteChatButton;
