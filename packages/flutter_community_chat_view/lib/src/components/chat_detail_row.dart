@@ -4,17 +4,23 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
+import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 import 'package:flutter_community_chat_view/src/components/chat_image.dart';
 import 'package:flutter_community_chat_view/src/services/date_formatter.dart';
 
 class ChatDetailRow extends StatefulWidget {
   const ChatDetailRow({
+    required this.translations,
+    required this.isFirstMessage,
     required this.message,
+    required this.userAvatarBuilder,
     super.key,
   });
 
+  final ChatTranslations translations;
+  final bool isFirstMessage;
   final ChatMessageModel message;
+  final UserAvatarBuilder userAvatarBuilder;
 
   @override
   State<ChatDetailRow> createState() => _ChatDetailRowState();
@@ -25,14 +31,23 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 43.0),
+        padding: EdgeInsets.only(top: widget.isFirstMessage ? 25.0 : 0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: ChatImage(
-                image: widget.message.sender.imageUrl,
+            Opacity(
+              opacity: widget.isFirstMessage ? 1 : 0,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: widget.message.sender.imageUrl != null &&
+                        widget.message.sender.imageUrl!.isNotEmpty
+                    ? ChatImage(
+                        image: widget.message.sender.imageUrl!,
+                      )
+                    : widget.userAvatarBuilder(
+                        widget.message.sender,
+                        30,
+                      ),
               ),
             ),
             Expanded(
@@ -43,13 +58,33 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.message.sender.fullName?.toUpperCase() ?? '',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                      if (widget.isFirstMessage)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              widget.message.sender.fullName?.toUpperCase() ??
+                                  widget.translations.anonymousUser,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5.0),
+                              child: Text(
+                                _dateFormatter.format(
+                                  date: widget.message.timestamp,
+                                  showFullDate: true,
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFFBBBBBB),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
                       Padding(
                         padding: const EdgeInsets.only(top: 3.0),
                         child: widget.message is ChatTextMessageModel
@@ -64,19 +99,6 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                                     (widget.message as ChatImageMessageModel)
                                         .imageUrl,
                               ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.0),
-                        child: Text(
-                          _dateFormatter.format(
-                            date: widget.message.timestamp,
-                            showFullDate: true,
-                          ),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFFBBBBBB),
-                          ),
-                        ),
                       ),
                     ],
                   ),

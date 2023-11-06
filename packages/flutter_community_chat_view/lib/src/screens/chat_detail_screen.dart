@@ -50,8 +50,8 @@ class ChatDetailScreen extends StatefulWidget {
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   // stream listener that needs to be disposed later
-  late StreamSubscription<List<ChatMessageModel>>? _chatMessagesSubscription;
-  late Stream<List<ChatMessageModel>>? _chatMessages;
+  StreamSubscription<List<ChatMessageModel>>? _chatMessagesSubscription;
+  Stream<List<ChatMessageModel>>? _chatMessages;
 
   @override
   void initState() {
@@ -67,10 +67,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         widget.onReadChat(widget.chat!);
       }
     });
-    // set the chat to read when opening the screen
-    if (widget.chat != null) {
-      widget.onReadChat(widget.chat!);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.chat != null) {
+        widget.onReadChat(widget.chat!);
+      }
+    });
   }
 
   @override
@@ -135,7 +136,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                   ? (widget.chat! as PersonalChatModel)
                                           .user
                                           .fullName ??
-                                      ''
+                                      widget.translations.anonymousUser
                                   : '',
                           style: const TextStyle(fontSize: 18),
                         ),
@@ -150,18 +151,31 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           Expanded(
             child: StreamBuilder<List<ChatMessageModel>>(
               stream: _chatMessages,
-              builder: (BuildContext context, snapshot) => ListView(
-                reverse: true,
-                padding: const EdgeInsets.only(top: 24.0),
-                children: [
-                  for (var message
-                      in (snapshot.data ?? widget.chat?.messages ?? [])
-                          .reversed)
+              builder: (BuildContext context, snapshot) {
+                var messages = snapshot.data ?? widget.chat?.messages ?? [];
+                ChatMessageModel? lastMessage;
+                var messageWidgets = <Widget>[];
+
+                for (var message in messages) {
+                  var isFirstMessage = lastMessage == null ||
+                      lastMessage.sender.id != message.sender.id;
+                  messageWidgets.add(
                     ChatDetailRow(
+                      translations: widget.translations,
                       message: message,
+                      isFirstMessage: isFirstMessage,
+                      userAvatarBuilder: widget.options.userAvatarBuilder,
                     ),
-                ],
-              ),
+                  );
+                  lastMessage = message;
+                }
+
+                return ListView(
+                  reverse: true,
+                  padding: const EdgeInsets.only(top: 24.0),
+                  children: messageWidgets.reversed.toList(),
+                );
+              },
             ),
           ),
           if (widget.chat != null)

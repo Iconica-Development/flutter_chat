@@ -8,12 +8,14 @@ abstract class ChatModel {
   ChatModel({
     this.id,
     this.messages = const [],
+    this.unreadMessages,
     this.lastUsed,
     this.lastMessage,
   });
 
   String? id;
   List<ChatMessageModel>? messages;
+  int? unreadMessages;
   DateTime? lastUsed;
   ChatMessageModel? lastMessage;
 }

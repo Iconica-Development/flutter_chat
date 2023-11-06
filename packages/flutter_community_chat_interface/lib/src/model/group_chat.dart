@@ -13,9 +13,31 @@ class GroupChatModel extends ChatModel {
     super.messages,
     super.lastUsed,
     super.lastMessage,
+    super.unreadMessages,
   });
 
   final String title;
   final String imageUrl;
   final List<ChatUserModel> users;
+
+  GroupChatModel copyWith({
+    String? id,
+    List<ChatMessageModel>? messages,
+    int? unreadMessages,
+    DateTime? lastUsed,
+    ChatMessageModel? lastMessage,
+    String? title,
+    String? imageUrl,
+    List<ChatUserModel>? users,
+  }) =>
+      GroupChatModel(
+        id: id ?? this.id,
+        messages: messages ?? this.messages,
+        unreadMessages: unreadMessages ?? this.unreadMessages,
+        lastUsed: lastUsed ?? this.lastUsed,
+        lastMessage: lastMessage ?? this.lastMessage,
+        title: title ?? this.title,
+        imageUrl: imageUrl ?? this.imageUrl,
+        users: users ?? this.users,
+      );
 }

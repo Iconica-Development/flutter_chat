@@ -7,12 +7,12 @@ import 'package:flutter/material.dart';
 
 class ChatImage extends StatelessWidget {
   const ChatImage({
-    super.key,
-    this.image,
+    required this.image,
     this.size = 40,
+    super.key,
   });
 
-  final String? image;
+  final String image;
   final double size;
 
   @override
@@ -24,11 +24,9 @@ class ChatImage extends StatelessWidget {
         ),
         width: size,
         height: size,
-        child: image == null || image!.isEmpty
-            ? const Center(child: Icon(Icons.person))
-            : CachedNetworkImage(
-                imageUrl: image!,
-                fit: BoxFit.cover,
-              ),
+        child: CachedNetworkImage(
+          imageUrl: image,
+          fit: BoxFit.cover,
+        ),
       );
 }

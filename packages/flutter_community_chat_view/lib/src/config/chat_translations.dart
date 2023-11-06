@@ -5,6 +5,7 @@
 class ChatTranslations {
   const ChatTranslations({
     this.chatsTitle = 'Chats',
+    this.chatsUnread = 'unread',
     this.newChatButton = 'Start chat',
     this.newChatTitle = 'Start chat',
     this.image = 'Image',
@@ -19,9 +20,11 @@ class ChatTranslations {
     this.deleteChatModalCancel = 'Cancel',
     this.deleteChatModalConfirm = 'Delete',
     this.noUsersFound = 'No users found',
+    this.anonymousUser = 'Anonymous user',
   });
 
   final String chatsTitle;
+  final String chatsUnread;
   final String newChatButton;
   final String newChatTitle;
   final String deleteChatButton;
@@ -35,4 +38,7 @@ class ChatTranslations {
   final String deleteChatModalCancel;
   final String deleteChatModalConfirm;
   final String noUsersFound;
+
+  /// Shown when the user has no name
+  final String anonymousUser;
 }

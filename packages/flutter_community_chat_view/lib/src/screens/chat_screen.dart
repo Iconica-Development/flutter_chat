@@ -13,6 +13,7 @@ class ChatScreen extends StatefulWidget {
     required this.onPressStartChat,
     required this.onPressChat,
     required this.onDeleteChat,
+    this.unreadChats,
     this.translations = const ChatTranslations(),
     super.key,
   });
@@ -20,6 +21,7 @@ class ChatScreen extends StatefulWidget {
   final ChatOptions options;
   final ChatTranslations translations;
   final Stream<List<ChatModel>> chats;
+  final Stream<int>? unreadChats;
   final VoidCallback? onPressStartChat;
   final void Function(ChatModel chat) onDeleteChat;
   final void Function(ChatModel chat) onPressChat;
@@ -37,6 +39,27 @@ class _ChatScreenState extends State<ChatScreen> {
     return widget.options.scaffoldBuilder(
       AppBar(
         title: Text(translations.chatsTitle),
+        centerTitle: true,
+        actions: widget.unreadChats != null
+            ? [
+                StreamBuilder<int>(
+                  stream: widget.unreadChats,
+                  builder: (BuildContext context, snapshot) => Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 22.0),
+                      child: Text(
+                        '${snapshot.data ?? 0} ${translations.chatsUnread}',
+                        style: const TextStyle(
+                          color: Color(0xFFBBBBBB),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ]
+            : [],
       ),
       Column(
         children: [
@@ -99,12 +122,15 @@ class _ChatScreenState extends State<ChatScreen> {
                               child: widget.options.chatRowContainerBuilder(
                                 (chat is PersonalChatModel)
                                     ? ChatRow(
+                                        unreadMessages:
+                                            chat.unreadMessages ?? 0,
                                         avatar:
                                             widget.options.userAvatarBuilder(
                                           chat.user,
                                           40.0,
                                         ),
-                                        title: chat.user.fullName ?? '',
+                                        title: chat.user.fullName ??
+                                            translations.anonymousUser,
                                         subTitle: chat.lastMessage != null
                                             ? chat.lastMessage
                                                     is ChatTextMessageModel
@@ -122,6 +148,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                       )
                                     : ChatRow(
                                         title: (chat as GroupChatModel).title,
+                                        unreadMessages:
+                                            chat.unreadMessages ?? 0,
                                         subTitle: chat.lastMessage != null
                                             ? chat.lastMessage
                                                     is ChatTextMessageModel

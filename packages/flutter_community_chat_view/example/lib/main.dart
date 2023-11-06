@@ -41,7 +41,22 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       sender: janUser,
       text: 'Met mij gaat het goed, dankje!',
       timestamp: DateTime.now().subtract(const Duration(days: 2)),
-    )
+    ),
+    ChatTextMessageModel(
+      sender: pietUser,
+      text: 'Mooi zo!',
+      timestamp: DateTime.now().subtract(const Duration(days: 1)),
+    ),
+    ChatTextMessageModel(
+      sender: pietUser,
+      text: 'Hoe gaat het?',
+      timestamp: DateTime.now(),
+    ),
+    ChatTextMessageModel(
+      sender: janUser,
+      text: 'Met mij gaat het goed, dankje!',
+      timestamp: DateTime.now().subtract(const Duration(days: 2)),
+    ),
   ];
 
   static final chat = PersonalChatModel(
