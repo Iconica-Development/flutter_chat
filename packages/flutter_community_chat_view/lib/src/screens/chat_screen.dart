@@ -129,7 +129,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                           chat.user,
                                           40.0,
                                         ),
-                                        title: chat.user.fullName ?? '',
+                                        title: chat.user.fullName ??
+                                            translations.anonymousUser,
                                         subTitle: chat.lastMessage != null
                                             ? chat.lastMessage
                                                     is ChatTextMessageModel

@@ -10,12 +10,14 @@ import 'package:flutter_community_chat_view/src/services/date_formatter.dart';
 
 class ChatDetailRow extends StatefulWidget {
   const ChatDetailRow({
+    required this.translations,
     required this.isFirstMessage,
     required this.message,
     required this.userAvatarBuilder,
     super.key,
   });
 
+  final ChatTranslations translations;
   final bool isFirstMessage;
   final ChatMessageModel message;
   final UserAvatarBuilder userAvatarBuilder;
@@ -62,7 +64,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                           children: [
                             Text(
                               widget.message.sender.fullName?.toUpperCase() ??
-                                  '',
+                                  widget.translations.anonymousUser,
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,

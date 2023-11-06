@@ -20,6 +20,7 @@ class ChatTranslations {
     this.deleteChatModalCancel = 'Cancel',
     this.deleteChatModalConfirm = 'Delete',
     this.noUsersFound = 'No users found',
+    this.anonymousUser = 'Anonymous user',
   });
 
   final String chatsTitle;
@@ -37,4 +38,7 @@ class ChatTranslations {
   final String deleteChatModalCancel;
   final String deleteChatModalConfirm;
   final String noUsersFound;
+
+  /// Shown when the user has no name
+  final String anonymousUser;
 }

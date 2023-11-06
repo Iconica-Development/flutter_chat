@@ -1,4 +1,4 @@
-## 0.4.0 - October 27 2023
+## 0.4.0 - November 6 2023
 
 - Show amount of unread messages per chat
 - More intuitive chat UI

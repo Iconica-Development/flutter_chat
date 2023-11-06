@@ -136,7 +136,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                   ? (widget.chat! as PersonalChatModel)
                                           .user
                                           .fullName ??
-                                      ''
+                                      widget.translations.anonymousUser
                                   : '',
                           style: const TextStyle(fontSize: 18),
                         ),
@@ -161,6 +161,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       lastMessage.sender.id != message.sender.id;
                   messageWidgets.add(
                     ChatDetailRow(
+                      translations: widget.translations,
                       message: message,
                       isFirstMessage: isFirstMessage,
                       userAvatarBuilder: widget.options.userAvatarBuilder,
