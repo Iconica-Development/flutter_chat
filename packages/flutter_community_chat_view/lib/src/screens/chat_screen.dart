@@ -161,6 +161,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                             : '',
                                         avatar:
                                             widget.options.groupAvatarBuilder(
+                                          chat.title,
                                           chat.imageUrl,
                                           40.0,
                                         ),

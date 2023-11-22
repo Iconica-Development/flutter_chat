@@ -1,3 +1,7 @@
+## 0.4.1 - November 22 2023
+
+- Add groupName for groupchat avatarbuilder
+
 ## 0.4.0 - November 6 2023
 
 - Show amount of unread messages per chat
