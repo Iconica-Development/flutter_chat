@@ -493,6 +493,6 @@ class FirebaseChatService implements ChatService {
         .doc(currentUser!.id!)
         .collection('chats')
         .doc(chat.id)
-        .update({'amount_unread_messages': 0});
+        .set({'amount_unread_messages': 0}, SetOptions(merge: true));
   }
 }

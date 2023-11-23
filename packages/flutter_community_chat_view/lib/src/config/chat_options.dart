@@ -104,6 +104,7 @@ Widget _createUserAvatar(
       size: size,
     );
 Widget _createGroupAvatar(
+  String groupName,
   String imageUrl,
   double size,
 ) =>
@@ -158,6 +159,7 @@ typedef UserAvatarBuilder = Widget Function(
 );
 
 typedef GroupAvatarBuilder = Widget Function(
+  String groupName,
   String imageUrl,
   double size,
 );

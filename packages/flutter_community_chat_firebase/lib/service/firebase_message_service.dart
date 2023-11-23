@@ -84,10 +84,20 @@ class FirebaseMessageService implements MessageService {
             .doc(userId)
             .collection('chats')
             .doc(chat.id);
-
-        await userReference.update({
-          'amount_unread_messages': FieldValue.increment(1),
-        });
+        // what if the amount_unread_messages field does not exist?
+        // it should be created when the chat is create
+        if ((await userReference.get())
+                .data()
+                ?.containsKey('amount_unread_messages') ??
+            false) {
+          await userReference.update({
+            'amount_unread_messages': FieldValue.increment(1),
+          });
+        } else {
+          await userReference.set({
+            'amount_unread_messages': 1,
+          });
+        }
       }
     }
   }

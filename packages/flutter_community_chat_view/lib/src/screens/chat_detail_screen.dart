@@ -116,6 +116,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 : [
                     if (widget.chat is GroupChatModel) ...[
                       widget.options.groupAvatarBuilder(
+                        (widget.chat! as GroupChatModel).title,
                         (widget.chat! as GroupChatModel).imageUrl,
                         36.0,
                       ),
