@@ -289,7 +289,7 @@ class FirebaseChatService implements ChatService {
         .doc(chatId)
         .get();
 
-    if (chatCollection.exists) {
+    if (chatCollection.exists && chatCollection.data()?['users'] != null) {
       var otherUser = chatCollection.data()?['users'].firstWhere(
             (element) => element != currentUser?.id,
           );
@@ -317,7 +317,7 @@ class FirebaseChatService implements ChatService {
         }
       }
       return GroupChatModel(
-        id: chat?.id ?? '',
+        id: chat?.id ?? chatId,
         title: chat?.title ?? '',
         imageUrl: chat?.imageUrl ?? '',
         users: users,
@@ -376,7 +376,7 @@ class FirebaseChatService implements ChatService {
           return chat;
         }
 
-        List<String> userIds = [
+        var userIds = <String>[
           currentUser!.id!,
           chat.user.id!,
         ];

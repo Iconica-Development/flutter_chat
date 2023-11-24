@@ -1,3 +1,7 @@
+## 0.4.2 - November 24 2023
+
+- Fix groupchats seen as personal chat when there are unread messages
+
 ## 0.4.1 - November 22 2023
 
 - Add groupName for groupchat avatarbuilder

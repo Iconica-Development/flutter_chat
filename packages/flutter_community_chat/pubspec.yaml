@@ -4,7 +4,7 @@
 
 name: flutter_community_chat
 description: A new Flutter package project.
-version: 0.4.1
+version: 0.4.2
 
 publish_to: none
 
@@ -19,12 +19,12 @@ dependencies:
     git: 
        url: https://github.com/Iconica-Development/flutter_community_chat
        path: packages/flutter_community_chat_view
-       ref: 0.4.1
+       ref: 0.4.2
   flutter_community_chat_interface:
     git: 
        url: https://github.com/Iconica-Development/flutter_community_chat
        path: packages/flutter_community_chat_interface
-       ref: 0.4.1
+       ref: 0.4.2
 
 dev_dependencies:
   flutter_lints: ^2.0.0
