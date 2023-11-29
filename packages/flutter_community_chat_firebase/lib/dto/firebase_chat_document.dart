@@ -10,6 +10,7 @@ import 'package:flutter_community_chat_firebase/dto/firebase_message_document.da
 class FirebaseChatDocument {
   const FirebaseChatDocument({
     required this.personal,
+    required this.canBeDeleted,
     this.users = const [],
     this.id,
     this.lastUsed,
@@ -22,6 +23,7 @@ class FirebaseChatDocument {
   final String? title;
   final String? imageUrl;
   final bool personal;
+  final bool canBeDeleted;
   final Timestamp? lastUsed;
   final List<String> users;
   final FirebaseMessageDocument? lastMessage;
@@ -30,6 +32,7 @@ class FirebaseChatDocument {
       : title = json['title'],
         imageUrl = json['image_url'],
         personal = json['personal'],
+        canBeDeleted = json['can_be_deleted'] ?? true,
         lastUsed = json['last_used'],
         users = json['users'] != null ? List<String>.from(json['users']) : [],
         lastMessage = json['last_message'] == null
@@ -44,6 +47,7 @@ class FirebaseChatDocument {
         'image_url': imageUrl,
         'personal': personal,
         'last_used': lastUsed,
+        'can_be_deleted': canBeDeleted,
         'users': users,
       };
 }

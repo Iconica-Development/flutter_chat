@@ -14,6 +14,7 @@ class GroupChatModel extends ChatModel {
     super.lastUsed,
     super.lastMessage,
     super.unreadMessages,
+    super.canBeDeleted,
   });
 
   final String title;
@@ -29,6 +30,7 @@ class GroupChatModel extends ChatModel {
     String? title,
     String? imageUrl,
     List<ChatUserModel>? users,
+    bool? canBeDeleted,
   }) =>
       GroupChatModel(
         id: id ?? this.id,
@@ -39,5 +41,6 @@ class GroupChatModel extends ChatModel {
         title: title ?? this.title,
         imageUrl: imageUrl ?? this.imageUrl,
         users: users ?? this.users,
+        canBeDeleted: canBeDeleted ?? this.canBeDeleted,
       );
 }

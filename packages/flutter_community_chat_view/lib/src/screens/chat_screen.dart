@@ -13,6 +13,7 @@ class ChatScreen extends StatefulWidget {
     required this.onPressStartChat,
     required this.onPressChat,
     required this.onDeleteChat,
+    this.deleteChatDialog,
     this.unreadChats,
     this.translations = const ChatTranslations(),
     super.key,
@@ -26,6 +27,8 @@ class ChatScreen extends StatefulWidget {
   final void Function(ChatModel chat) onDeleteChat;
   final void Function(ChatModel chat) onPressChat;
 
+  /// Method to optionally change the bottomsheetdialog
+  final Future<bool?> Function(BuildContext, ChatModel)? deleteChatDialog;
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
@@ -74,33 +77,69 @@ class _ChatScreenState extends State<ChatScreen> {
                       for (ChatModel chat in snapshot.data ?? []) ...[
                         Builder(
                           builder: (context) => Dismissible(
-                            confirmDismiss: (_) => showDialog(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: Text(
-                                  translations.deleteChatModalTitle,
-                                ),
-                                content: Text(
-                                  translations.deleteChatModalDescription,
-                                ),
-                                actions: [
-                                  TextButton(
-                                    child: Text(
-                                      translations.deleteChatModalCancel,
+                            confirmDismiss: (_) =>
+                                widget.deleteChatDialog?.call(context, chat) ??
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (BuildContext context) => Container(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          chat.canBeDeleted
+                                              ? translations
+                                                  .deleteChatModalTitle
+                                              : translations.chatCantBeDeleted,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        if (chat.canBeDeleted)
+                                          Text(
+                                            translations
+                                                .deleteChatModalDescription,
+                                            style:
+                                                const TextStyle(fontSize: 16),
+                                          ),
+                                        const SizedBox(height: 16),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            TextButton(
+                                              child: Text(
+                                                translations
+                                                    .deleteChatModalCancel,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(false),
+                                            ),
+                                            if (chat.canBeDeleted)
+                                              ElevatedButton(
+                                                onPressed: () =>
+                                                    Navigator.of(context)
+                                                        .pop(true),
+                                                child: Text(
+                                                  translations
+                                                      .deleteChatModalConfirm,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(true),
-                                    child: Text(
-                                      translations.deleteChatModalConfirm,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                                ),
                             onDismissed: (_) => widget.onDeleteChat(chat),
                             background: Container(
                               color: Colors.red,
