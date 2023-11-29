@@ -11,6 +11,7 @@ abstract class ChatModel {
     this.unreadMessages,
     this.lastUsed,
     this.lastMessage,
+    this.canBeDeleted = true,
   });
 
   String? id;
@@ -18,4 +19,5 @@ abstract class ChatModel {
   int? unreadMessages;
   DateTime? lastUsed;
   ChatMessageModel? lastMessage;
+  bool canBeDeleted;
 }

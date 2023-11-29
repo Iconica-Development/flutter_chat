@@ -111,6 +111,7 @@ class FirebaseChatService implements ChatService {
               user: otherUser,
               lastMessage: messages.isNotEmpty ? messages.last : null,
               messages: messages,
+              canBeDeleted: chatData.canBeDeleted,
               lastUsed: chatData.lastUsed == null
                   ? null
                   : DateTime.fromMillisecondsSinceEpoch(
@@ -134,6 +135,7 @@ class FirebaseChatService implements ChatService {
             lastMessage: messages.isNotEmpty ? messages.last : null,
             messages: messages,
             users: users,
+            canBeDeleted: chatData.canBeDeleted,
             lastUsed: chatData.lastUsed == null
                 ? null
                 : DateTime.fromMillisecondsSinceEpoch(
@@ -297,6 +299,7 @@ class FirebaseChatService implements ChatService {
       return PersonalChatModel(
         id: chatId,
         user: user!,
+        canBeDeleted: chatCollection.data()?['can_be_deleted'] ?? true,
       );
     } else {
       var groupChatCollection = await _db
@@ -321,6 +324,7 @@ class FirebaseChatService implements ChatService {
         title: chat?.title ?? '',
         imageUrl: chat?.imageUrl ?? '',
         users: users,
+        canBeDeleted: chat?.canBeDeleted ?? true,
       );
     }
   }
@@ -391,6 +395,7 @@ class FirebaseChatService implements ChatService {
             .add(
               FirebaseChatDocument(
                 personal: true,
+                canBeDeleted: chat.canBeDeleted,
                 users: userIds,
                 lastUsed: Timestamp.now(),
               ),
@@ -426,6 +431,7 @@ class FirebaseChatService implements ChatService {
             .add(
               FirebaseChatDocument(
                 personal: false,
+                canBeDeleted: chat.canBeDeleted,
                 users: userIds,
                 lastUsed: Timestamp.now(),
               ),

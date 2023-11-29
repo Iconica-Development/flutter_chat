@@ -12,6 +12,7 @@ class PersonalChatModel extends ChatModel {
     super.unreadMessages,
     super.lastUsed,
     super.lastMessage,
+    super.canBeDeleted,
   });
 
   final ChatUserModel user;
@@ -23,6 +24,7 @@ class PersonalChatModel extends ChatModel {
     DateTime? lastUsed,
     ChatMessageModel? lastMessage,
     ChatUserModel? user,
+    bool? canBeDeleted,
   }) =>
       PersonalChatModel(
         id: id ?? this.id,
@@ -31,5 +33,6 @@ class PersonalChatModel extends ChatModel {
         lastUsed: lastUsed ?? this.lastUsed,
         lastMessage: lastMessage ?? this.lastMessage,
         user: user ?? this.user,
+        canBeDeleted: canBeDeleted ?? this.canBeDeleted,
       );
 }
