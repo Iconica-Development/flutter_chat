@@ -19,7 +19,7 @@ class FirebaseMessageService implements MessageService {
   late final ChatUserService _userService;
   late FirebaseChatOptions _options;
 
-  late StreamController<List<ChatMessageModel>> _controller;
+  StreamController<List<ChatMessageModel>>? _controller;
   StreamSubscription<QuerySnapshot>? _subscription;
 
   FirebaseMessageService({
@@ -65,8 +65,12 @@ class FirebaseMessageService implements MessageService {
       'last_message': message,
     });
 
-    if (chat.id != null && _controller.hasListener && (_subscription == null)) {
-      _subscription = _startListeningForMessages(chat);
+    if (_controller != null) {
+      if (chat.id != null &&
+          _controller!.hasListener &&
+          (_subscription == null)) {
+        _subscription = _startListeningForMessages(chat);
+      }
     }
 
     // update the chat counter for the other users
@@ -166,7 +170,7 @@ class FirebaseMessageService implements MessageService {
       },
     );
 
-    return _controller.stream;
+    return _controller!.stream;
   }
 
   StreamSubscription<QuerySnapshot> _startListeningForMessages(ChatModel chat) {
@@ -204,7 +208,7 @@ class FirebaseMessageService implements MessageService {
           }
         }
 
-        _controller.add(messages);
+        _controller?.add(messages);
       },
     );
   }

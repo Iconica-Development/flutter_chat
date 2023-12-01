@@ -18,7 +18,7 @@ dependencies:
     git:
       url: https://github.com/Iconica-Development/flutter_community_chat
       path: packages/flutter_community_chat_view
-      ref: 0.5.0
+      ref: 0.6.0
 
 dev_dependencies:
   flutter_test:
