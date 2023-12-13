@@ -1,3 +1,8 @@
+## 0.6.0 - December 1 2023
+
+- Made the message controller nullable
+- Improved chat UI and added showTime option for chatDetailScreen to always show the time
+
 ## 0.5.0 - November 29 2023
 
 - Added the option to add your own dialog on chat delete and addded the option to make the chat not deletable
