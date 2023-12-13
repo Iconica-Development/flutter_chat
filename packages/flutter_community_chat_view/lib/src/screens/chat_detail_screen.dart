@@ -23,6 +23,7 @@ class ChatDetailScreen extends StatefulWidget {
     this.chatMessages,
     this.onPressChatTitle,
     this.iconColor,
+    this.showTime = false,
     super.key,
   });
 
@@ -43,6 +44,7 @@ class ChatDetailScreen extends StatefulWidget {
 
   /// The color of the icon buttons in the chat bottom.
   final Color? iconColor;
+  final bool showTime;
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -154,21 +156,21 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               stream: _chatMessages,
               builder: (BuildContext context, snapshot) {
                 var messages = snapshot.data ?? widget.chat?.messages ?? [];
-                ChatMessageModel? lastMessage;
+                ChatMessageModel? previousMessage;
+
                 var messageWidgets = <Widget>[];
 
                 for (var message in messages) {
-                  var isFirstMessage = lastMessage == null ||
-                      lastMessage.sender.id != message.sender.id;
                   messageWidgets.add(
                     ChatDetailRow(
+                      previousMessage: previousMessage,
+                      showTime: widget.showTime,
                       translations: widget.translations,
                       message: message,
-                      isFirstMessage: isFirstMessage,
                       userAvatarBuilder: widget.options.userAvatarBuilder,
                     ),
                   );
-                  lastMessage = message;
+                  previousMessage = message;
                 }
 
                 return ListView(

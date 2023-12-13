@@ -75,6 +75,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     users: [pietUser, janUser],
     lastUsed: DateTime.now().subtract(const Duration(days: 1)),
     messages: messages,
+    canBeDeleted: false,
   );
 
   Stream<List<ChatModel>> get chatStream => (() {
