@@ -3,7 +3,9 @@ Flutter Community Chat is a package which gives the possibility to add a (person
 
 ![Flutter Community Chat GIF](example.gif)
 
-Figma clickable prototype that demonstrates this component (only accessible for Iconica developers): https://www.figma.com/proto/IIN8nHoGPLpN1wSCen4Mqm/Safino-%7C-Design-%5BAPP%5D?node-id=20-17598 
+Figma Design that defines this component (only accessible for Iconica developers): https://www.figma.com/file/4WkjwynOz5wFeFBRqTHPeP/Iconica-Design-System?type=design&node-id=357%3A3342&mode=design&t=XulkAJNPQ32ARxWh-1
+Figma clickable prototype that demonstrates this component (only accessible for Iconica developers): https://www.figma.com/proto/PRJoVXQ5aOjAICfkQdAq2A/Iconica-User-Stories?page-id=1%3A2&type=design&node-id=56-6837&viewport=279%2C2452%2C0.2&t=E7Al3Xng2WXnbCEQ-1&scaling=scale-down&starting-point-node-id=56%3A6837&mode=design
+
 ## Setup
 To use this package, add flutter_community_chat as a dependency in your pubspec.yaml file:
 
