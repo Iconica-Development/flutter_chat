@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-library flutter_community_chat_view;
-
 export 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
 
 export 'src/components/chat_row.dart';

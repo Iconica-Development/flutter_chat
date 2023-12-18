@@ -14,14 +14,6 @@ import 'package:flutter_community_chat_interface/flutter_community_chat_interfac
 import 'package:uuid/uuid.dart';
 
 class FirebaseMessageService implements MessageService {
-  late final FirebaseFirestore _db;
-  late final FirebaseStorage _storage;
-  late final ChatUserService _userService;
-  late FirebaseChatOptions _options;
-
-  StreamController<List<ChatMessageModel>>? _controller;
-  StreamSubscription<QuerySnapshot>? _subscription;
-
   FirebaseMessageService({
     required ChatUserService userService,
     FirebaseApp? app,
@@ -34,6 +26,13 @@ class FirebaseMessageService implements MessageService {
     _userService = userService;
     _options = options ?? const FirebaseChatOptions();
   }
+  late final FirebaseFirestore _db;
+  late final FirebaseStorage _storage;
+  late final ChatUserService _userService;
+  late FirebaseChatOptions _options;
+
+  StreamController<List<ChatMessageModel>>? _controller;
+  StreamSubscription<QuerySnapshot>? _subscription;
 
   Future<void> _sendMessage(ChatModel chat, Map<String, dynamic> data) async {
     var currentUser = await _userService.getCurrentUser();
@@ -45,7 +44,7 @@ class FirebaseMessageService implements MessageService {
     var message = {
       'sender': currentUser.id,
       'timestamp': DateTime.now(),
-      ...data
+      ...data,
     };
 
     var chatReference = _db
@@ -75,7 +74,8 @@ class FirebaseMessageService implements MessageService {
 
     // update the chat counter for the other users
     // get all users from the chat
-    // there is a field in the chat document called users that has a list of user ids
+    // there is a field in the chat document called users
+    // that has a list of user ids
     var fetchedChat = await chatReference.get();
     var chatUsers = fetchedChat.data()?['users'] as List<dynamic>;
     // for all users except the message sender update the unread counter
@@ -163,8 +163,8 @@ class FirebaseMessageService implements MessageService {
           _subscription = _startListeningForMessages(chat);
         }
       },
-      onCancel: () {
-        _subscription?.cancel();
+      onCancel: () async {
+        await _subscription?.cancel();
         _subscription = null;
         debugPrint('Canceling messages stream');
       },
@@ -189,7 +189,7 @@ class FirebaseMessageService implements MessageService {
 
           if (sender != null) {
             var timestamp = DateTime.fromMillisecondsSinceEpoch(
-              (messageData.timestamp).millisecondsSinceEpoch,
+              messageData.timestamp.millisecondsSinceEpoch,
             );
 
             messages.add(

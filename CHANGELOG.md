@@ -1,3 +1,7 @@
+## 0.6.1 - December 18 2023
+
+-Added Iconica linter
+
 ## 0.6.0 - December 1 2023
 
 - Made the message controller nullable

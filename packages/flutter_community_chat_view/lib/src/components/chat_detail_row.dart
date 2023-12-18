@@ -68,78 +68,75 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
             ),
           ],
           Expanded(
-            child: Container(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    if (isNewDate ||
-                        widget.previousMessage == null ||
-                        widget.previousMessage?.sender.id !=
-                            widget.message.sender.id)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            widget.message.sender.fullName?.toUpperCase() ??
-                                widget.translations.anonymousUser,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (isNewDate ||
+                      widget.previousMessage == null ||
+                      widget.previousMessage?.sender.id !=
+                          widget.message.sender.id)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.message.sender.fullName?.toUpperCase() ??
+                              widget.translations.anonymousUser,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5.0),
+                          child: Text(
+                            _dateFormatter.format(
+                              date: widget.message.timestamp,
+                              showFullDate: true,
+                            ),
                             style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                              color: Color(0xFFBBBBBB),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 5.0),
-                            child: Text(
-                              _dateFormatter.format(
-                                date: widget.message.timestamp,
-                                showFullDate: true,
-                              ),
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFFBBBBBB),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 3.0),
-                      child: widget.message is ChatTextMessageModel
-                          ? RichText(
-                              text: TextSpan(
-                                text: (widget.message as ChatTextMessageModel)
-                                    .text,
-                                style: const TextStyle(fontSize: 16),
-                                children: <TextSpan>[
-                                  if (widget.showTime)
-                                    TextSpan(
-                                      text: " ${_dateFormatter.format(
-                                            date: widget.message.timestamp,
-                                            showFullDate: true,
-                                          ).split(' ').last}",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Color(0xFFBBBBBB),
-                                      ),
-                                    )
-                                  else
-                                    const TextSpan(),
-                                ],
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 999,
-                            )
-                          : CachedNetworkImage(
-                              imageUrl:
-                                  (widget.message as ChatImageMessageModel)
-                                      .imageUrl,
-                            ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 3.0),
+                    child: widget.message is ChatTextMessageModel
+                        ? RichText(
+                            text: TextSpan(
+                              text:
+                                  (widget.message as ChatTextMessageModel).text,
+                              style: const TextStyle(fontSize: 16),
+                              children: <TextSpan>[
+                                if (widget.showTime)
+                                  TextSpan(
+                                    text: " ${_dateFormatter.format(
+                                          date: widget.message.timestamp,
+                                          showFullDate: true,
+                                        ).split(' ').last}",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFFBBBBBB),
+                                    ),
+                                  )
+                                else
+                                  const TextSpan(),
+                              ],
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 999,
+                          )
+                        : CachedNetworkImage(
+                            imageUrl: (widget.message as ChatImageMessageModel)
+                                .imageUrl,
+                          ),
+                  ),
+                ],
               ),
             ),
           ),

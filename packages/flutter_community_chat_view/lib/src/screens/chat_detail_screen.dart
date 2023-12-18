@@ -60,31 +60,31 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     super.initState();
     // create a broadcast stream from the chat messages
     _chatMessages = widget.chatMessages?.asBroadcastStream();
-    _chatMessagesSubscription = _chatMessages?.listen((event) {
+    _chatMessagesSubscription = _chatMessages?.listen((event) async {
       // check if the last message is from the current user
       // if so, set the chat to read
       if (event.isNotEmpty &&
           event.last.sender.id != widget.userId &&
           widget.chat != null) {
-        widget.onReadChat(widget.chat!);
+        await widget.onReadChat(widget.chat!);
       }
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (widget.chat != null) {
-        widget.onReadChat(widget.chat!);
+        await widget.onReadChat(widget.chat!);
       }
     });
   }
 
   @override
-  void dispose() {
-    _chatMessagesSubscription?.cancel();
+  Future<void> dispose() async {
+    await _chatMessagesSubscription?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> onPressSelectImage() => showModalBottomSheet<Uint8List?>(
+    Future<void> onPressSelectImage() async => showModalBottomSheet<Uint8List?>(
           context: context,
           builder: (BuildContext context) =>
               widget.options.imagePickerContainerBuilder(

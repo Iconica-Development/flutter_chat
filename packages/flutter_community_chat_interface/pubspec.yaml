@@ -4,7 +4,7 @@
 
 name: flutter_community_chat_interface
 description: A new Flutter package project.
-version: 0.6.0
+version: 0.6.1
 publish_to: none
 
 environment:
@@ -20,6 +20,9 @@ dependencies:
       ref: 1.0.0
 
 dev_dependencies:
-  flutter_lints: ^2.0.0
-
+  flutter_lints: any
+  flutter_iconica_analysis:
+    git:
+      url: https://github.com/Iconica-Development/flutter_iconica_analysis
+      ref: 6.0.0
 flutter:

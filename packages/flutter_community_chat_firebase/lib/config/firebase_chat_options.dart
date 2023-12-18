@@ -23,14 +23,13 @@ class FirebaseChatOptions {
     String? chatsCollectionName,
     String? messagesCollectionName,
     String? usersCollectionName,
-  }) {
-    return FirebaseChatOptions(
-      groupChatsCollectionName:
-          groupChatsCollectionName ?? this.groupChatsCollectionName,
-      chatsCollectionName: chatsCollectionName ?? this.chatsCollectionName,
-      messagesCollectionName:
-          messagesCollectionName ?? this.messagesCollectionName,
-      usersCollectionName: usersCollectionName ?? this.usersCollectionName,
-    );
-  }
+  }) =>
+      FirebaseChatOptions(
+        groupChatsCollectionName:
+            groupChatsCollectionName ?? this.groupChatsCollectionName,
+        chatsCollectionName: chatsCollectionName ?? this.chatsCollectionName,
+        messagesCollectionName:
+            messagesCollectionName ?? this.messagesCollectionName,
+        usersCollectionName: usersCollectionName ?? this.usersCollectionName,
+      );
 }

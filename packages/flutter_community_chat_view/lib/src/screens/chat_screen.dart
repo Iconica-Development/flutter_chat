@@ -29,6 +29,7 @@ class ChatScreen extends StatefulWidget {
   final VoidCallback? onPressStartChat;
   final void Function(ChatModel chat) onDeleteChat;
   final void Function(ChatModel chat) onPressChat;
+
   /// Disable the swipe to dismiss feature for chats that are not deletable
   final bool disableDismissForPermanentChats;
 
@@ -81,9 +82,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     children: [
                       for (ChatModel chat in snapshot.data ?? []) ...[
                         Builder(
-                          builder: (context) => !(widget.disableDismissForPermanentChats && !chat.canBeDeleted)
+                          builder: (context) => !(widget
+                                      .disableDismissForPermanentChats &&
+                                  !chat.canBeDeleted)
                               ? Dismissible(
-                                  confirmDismiss: (_) =>
+                                  confirmDismiss: (_) async =>
                                       widget.deleteChatDialog
                                           ?.call(context, chat) ??
                                       showModalBottomSheet(
@@ -214,52 +217,50 @@ class ChatListItem extends StatelessWidget {
   final DateFormatter _dateFormatter;
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => widget.onPressChat(chat),
-      child: widget.options.chatRowContainerBuilder(
-        (chat is PersonalChatModel)
-            ? ChatRow(
-                unreadMessages: chat.unreadMessages ?? 0,
-                avatar: widget.options.userAvatarBuilder(
-                  (chat as PersonalChatModel).user,
-                  40.0,
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: () => widget.onPressChat(chat),
+        child: widget.options.chatRowContainerBuilder(
+          (chat is PersonalChatModel)
+              ? ChatRow(
+                  unreadMessages: chat.unreadMessages ?? 0,
+                  avatar: widget.options.userAvatarBuilder(
+                    (chat as PersonalChatModel).user,
+                    40.0,
+                  ),
+                  title: (chat as PersonalChatModel).user.fullName ??
+                      translations.anonymousUser,
+                  subTitle: chat.lastMessage != null
+                      ? chat.lastMessage is ChatTextMessageModel
+                          ? (chat.lastMessage! as ChatTextMessageModel).text
+                          : '📷 '
+                              '${translations.image}'
+                      : '',
+                  lastUsed: chat.lastUsed != null
+                      ? _dateFormatter.format(
+                          date: chat.lastUsed!,
+                        )
+                      : null,
+                )
+              : ChatRow(
+                  title: (chat as GroupChatModel).title,
+                  unreadMessages: chat.unreadMessages ?? 0,
+                  subTitle: chat.lastMessage != null
+                      ? chat.lastMessage is ChatTextMessageModel
+                          ? (chat.lastMessage! as ChatTextMessageModel).text
+                          : '📷 '
+                              '${translations.image}'
+                      : '',
+                  avatar: widget.options.groupAvatarBuilder(
+                    (chat as GroupChatModel).title,
+                    (chat as GroupChatModel).imageUrl,
+                    40.0,
+                  ),
+                  lastUsed: chat.lastUsed != null
+                      ? _dateFormatter.format(
+                          date: chat.lastUsed!,
+                        )
+                      : null,
                 ),
-                title: (chat as PersonalChatModel).user.fullName ??
-                    translations.anonymousUser,
-                subTitle: chat.lastMessage != null
-                    ? chat.lastMessage is ChatTextMessageModel
-                        ? (chat.lastMessage! as ChatTextMessageModel).text
-                        : '📷 '
-                            '${translations.image}'
-                    : '',
-                lastUsed: chat.lastUsed != null
-                    ? _dateFormatter.format(
-                        date: chat.lastUsed!,
-                      )
-                    : null,
-              )
-            : ChatRow(
-                title: (chat as GroupChatModel).title,
-                unreadMessages: chat.unreadMessages ?? 0,
-                subTitle: chat.lastMessage != null
-                    ? chat.lastMessage is ChatTextMessageModel
-                        ? (chat.lastMessage! as ChatTextMessageModel).text
-                        : '📷 '
-                            '${translations.image}'
-                    : '',
-                avatar: widget.options.groupAvatarBuilder(
-                  (chat as GroupChatModel).title,
-                  (chat as GroupChatModel).imageUrl,
-                  40.0,
-                ),
-                lastUsed: chat.lastUsed != null
-                    ? _dateFormatter.format(
-                        date: chat.lastUsed!,
-                      )
-                    : null,
-              ),
-      ),
-    );
-  }
+        ),
+      );
 }
