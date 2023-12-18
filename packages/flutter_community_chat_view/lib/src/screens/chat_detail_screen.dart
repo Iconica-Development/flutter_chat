@@ -13,14 +13,15 @@ import 'package:flutter_community_chat_view/src/components/image_loading_snackba
 
 class ChatDetailScreen extends StatefulWidget {
   const ChatDetailScreen({
-    required this.userId,
     required this.options,
     required this.onMessageSubmit,
     required this.onUploadImage,
     required this.onReadChat,
+    required this.service,
+    required this.chatUserService,
+    required this.messageService,
     this.translations = const ChatTranslations(),
     this.chat,
-    this.chatMessages,
     this.onPressChatTitle,
     this.iconColor,
     this.showTime = false,
@@ -30,21 +31,22 @@ class ChatDetailScreen extends StatefulWidget {
   final ChatModel? chat;
 
   /// The id of the current user that is viewing the chat.
-  final String userId;
 
   final ChatOptions options;
   final ChatTranslations translations;
-  final Stream<List<ChatMessageModel>>? chatMessages;
   final Future<void> Function(Uint8List image) onUploadImage;
   final Future<void> Function(String text) onMessageSubmit;
   // called at the start of the screen to set the chat to read
   // or when a new message is received
   final Future<void> Function(ChatModel chat) onReadChat;
-  final VoidCallback? onPressChatTitle;
+  final Function(BuildContext context, ChatModel chat)? onPressChatTitle;
 
   /// The color of the icon buttons in the chat bottom.
   final Color? iconColor;
   final bool showTime;
+  final ChatService service;
+  final ChatUserService chatUserService;
+  final MessageService messageService;
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -54,17 +56,26 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   // stream listener that needs to be disposed later
   StreamSubscription<List<ChatMessageModel>>? _chatMessagesSubscription;
   Stream<List<ChatMessageModel>>? _chatMessages;
+  ChatModel? chat;
+  ChatUserModel? currentUser;
 
   @override
   void initState() {
     super.initState();
     // create a broadcast stream from the chat messages
-    _chatMessages = widget.chatMessages?.asBroadcastStream();
+    if (widget.chat != null) {
+      _chatMessages = widget.messageService
+          .getMessagesStream(widget.chat!)
+          .asBroadcastStream();
+    }
     _chatMessagesSubscription = _chatMessages?.listen((event) {
       // check if the last message is from the current user
       // if so, set the chat to read
+      Future.delayed(Duration.zero, () async {
+        currentUser = await widget.chatUserService.getCurrentUser();
+      });
       if (event.isNotEmpty &&
-          event.last.sender.id != widget.userId &&
+          event.last.sender.id != currentUser?.id &&
           widget.chat != null) {
         widget.onReadChat(widget.chat!);
       }
@@ -106,92 +117,97 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           },
         );
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: GestureDetector(
-          onTap: widget.onPressChatTitle,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: widget.chat == null
-                ? []
-                : [
-                    if (widget.chat is GroupChatModel) ...[
-                      widget.options.groupAvatarBuilder(
-                        (widget.chat! as GroupChatModel).title,
-                        (widget.chat! as GroupChatModel).imageUrl,
-                        36.0,
-                      ),
-                    ] else if (widget.chat is PersonalChatModel) ...[
-                      widget.options.userAvatarBuilder(
-                        (widget.chat! as PersonalChatModel).user,
-                        36.0,
-                      ),
-                    ] else
-                      ...[],
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 15.5),
-                        child: Text(
-                          (widget.chat is GroupChatModel)
-                              ? (widget.chat! as GroupChatModel).title
-                              : (widget.chat is PersonalChatModel)
-                                  ? (widget.chat! as PersonalChatModel)
-                                          .user
-                                          .fullName ??
-                                      widget.translations.anonymousUser
-                                  : '',
-                          style: const TextStyle(fontSize: 18),
+    return FutureBuilder<ChatModel>(
+      future: widget.service.getChatById(widget.chat?.id ?? ''),
+      builder: (context, AsyncSnapshot<ChatModel> snapshot) {
+        var chatModel = snapshot.data;
+
+        return Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            title: GestureDetector(
+              onTap: () => widget.onPressChatTitle?.call(context, chatModel!),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: widget.chat == null
+                    ? []
+                    : [
+                        if (chatModel is GroupChatModel) ...[
+                          widget.options.groupAvatarBuilder(
+                            chatModel.title,
+                            chatModel.imageUrl,
+                            36.0,
+                          ),
+                        ] else if (chatModel is PersonalChatModel) ...[
+                          widget.options.userAvatarBuilder(
+                            chatModel.user,
+                            36.0,
+                          ),
+                        ] else
+                          ...[],
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 15.5),
+                            child: Text(
+                              (chatModel is GroupChatModel)
+                                  ? chatModel.title
+                                  : (chatModel is PersonalChatModel)
+                                      ? chatModel.user.fullName ??
+                                          widget.translations.anonymousUser
+                                      : '',
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<List<ChatMessageModel>>(
-              stream: _chatMessages,
-              builder: (BuildContext context, snapshot) {
-                var messages = snapshot.data ?? widget.chat?.messages ?? [];
-                ChatMessageModel? previousMessage;
-
-                var messageWidgets = <Widget>[];
-
-                for (var message in messages) {
-                  messageWidgets.add(
-                    ChatDetailRow(
-                      previousMessage: previousMessage,
-                      showTime: widget.showTime,
-                      translations: widget.translations,
-                      message: message,
-                      userAvatarBuilder: widget.options.userAvatarBuilder,
-                    ),
-                  );
-                  previousMessage = message;
-                }
-
-                return ListView(
-                  reverse: true,
-                  padding: const EdgeInsets.only(top: 24.0),
-                  children: messageWidgets.reversed.toList(),
-                );
-              },
+                      ],
+              ),
             ),
           ),
-          if (widget.chat != null)
-            ChatBottom(
-              chat: widget.chat!,
-              messageInputBuilder: widget.options.messageInputBuilder,
-              onPressSelectImage: onPressSelectImage,
-              onMessageSubmit: widget.onMessageSubmit,
-              translations: widget.translations,
-              iconColor: widget.iconColor,
-            ),
-        ],
-      ),
+          body: Column(
+            children: [
+              Expanded(
+                child: StreamBuilder<List<ChatMessageModel>>(
+                  stream: _chatMessages,
+                  builder: (context, snapshot) {
+                    var messages = snapshot.data ?? chatModel?.messages ?? [];
+                    ChatMessageModel? previousMessage;
+
+                    var messageWidgets = <Widget>[];
+
+                    for (var message in messages) {
+                      messageWidgets.add(
+                        ChatDetailRow(
+                          previousMessage: previousMessage,
+                          showTime: widget.showTime,
+                          translations: widget.translations,
+                          message: message,
+                          userAvatarBuilder: widget.options.userAvatarBuilder,
+                        ),
+                      );
+                      previousMessage = message;
+                    }
+
+                    return ListView(
+                      reverse: true,
+                      padding: const EdgeInsets.only(top: 24.0),
+                      children: messageWidgets.reversed.toList(),
+                    );
+                  },
+                ),
+              ),
+              if (chatModel != null)
+                ChatBottom(
+                  chat: chatModel,
+                  messageInputBuilder: widget.options.messageInputBuilder,
+                  onPressSelectImage: onPressSelectImage,
+                  onMessageSubmit: widget.onMessageSubmit,
+                  translations: widget.translations,
+                  iconColor: widget.iconColor,
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

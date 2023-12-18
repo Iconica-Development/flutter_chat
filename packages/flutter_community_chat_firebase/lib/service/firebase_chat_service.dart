@@ -234,6 +234,7 @@ class FirebaseChatService implements ChatService {
     controller = StreamController(
       onListen: () async {
         var currentUser = await _userService.getCurrentUser();
+
         var userSnapshot = await _db
             .collection(_options.usersCollectionName)
             .doc(currentUser?.id)
@@ -264,7 +265,7 @@ class FirebaseChatService implements ChatService {
   }
 
   @override
-  Future<ChatModel> getOrCreateChatByUser(ChatUserModel user) async {
+  Future<ChatModel> getChatByUser(ChatUserModel user) async {
     var currentUser = await _userService.getCurrentUser();
     var collection = await _db
         .collection(_options.usersCollectionName)
