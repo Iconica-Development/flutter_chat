@@ -115,37 +115,37 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var options = const ChatOptions();
-    return ChatScreen(
-      chats: chatStream,
-      options: options,
-      onPressChat: (chat) => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ChatDetailScreen(
-            userId: 'piet',
-            chat: chat,
-            chatMessages: messageStream,
-            options: options,
-            onMessageSubmit: (text) async {
-              return Future.delayed(
-                const Duration(
-                  milliseconds: 500,
-                ),
-                () => debugPrint('onMessageSubmit'),
-              );
-            },
-            onReadChat: (chat) async {},
-            onUploadImage: (image) async {},
-          ),
-        ),
-      ),
-      onDeleteChat: (chat) => Future.delayed(
-        const Duration(
-          milliseconds: 500,
-        ),
-        () => debugPrint('onDeleteChat'),
-      ),
-      onPressStartChat: () => debugPrint('onPressStartChat'),
-    );
+    // return ChatScreen(
+    //   service: ,
+    //   options: options,
+    //   onPressChat: (chat) => Navigator.of(context).push(
+    //     MaterialPageRoute(
+    //       builder: (context) => ChatDetailScreen(
+    //         userId: 'piet',
+    //         chat: chat,
+    //         chatMessages: messageStream,
+    //         options: options,
+    //         onMessageSubmit: (text) async {
+    //           return Future.delayed(
+    //             const Duration(
+    //               milliseconds: 500,
+    //             ),
+    //             () => debugPrint('onMessageSubmit'),
+    //           );
+    //         },
+    //         onReadChat: (chat) async {},
+    //         onUploadImage: (image) async {},
+    //       ),
+    //     ),
+    //   ),
+    //   onDeleteChat: (chat) => Future.delayed(
+    //     const Duration(
+    //       milliseconds: 500,
+    //     ),
+    //     () => debugPrint('onDeleteChat'),
+    //   ),
+    //   onPressStartChat: () => debugPrint('onPressStartChat'),
+    // );
+    return const Text('Example ');
   }
 }

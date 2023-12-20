@@ -8,15 +8,17 @@ import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 class NewChatScreen extends StatefulWidget {
   const NewChatScreen({
     required this.options,
-    required this.users,
     required this.onPressCreateChat,
+    required this.service,
+    required this.userService,
     this.translations = const ChatTranslations(),
     super.key,
   });
 
   final ChatOptions options;
   final ChatTranslations translations;
-  final List<ChatUserModel> users;
+  final ChatService service;
+  final ChatUserService userService;
   final Function(ChatUserModel) onPressCreateChat;
 
   @override
@@ -25,79 +27,104 @@ class NewChatScreen extends StatefulWidget {
 
 class _NewChatScreenState extends State<NewChatScreen> {
   final FocusNode _textFieldFocusNode = FocusNode();
-
   bool _isSearching = false;
-  List<ChatUserModel>? _filteredUsers;
-
-  void filterUsers(String query) => setState(
-        () => _filteredUsers = query.isEmpty
-            ? null
-            : widget.users
-                .where(
-                  (user) =>
-                      user.fullName?.toLowerCase().contains(
-                            query.toLowerCase(),
-                          ) ??
-                      false,
-                )
-                .toList(),
-      );
+  String query = '';
 
   @override
   Widget build(BuildContext context) {
-    var users = _filteredUsers ?? widget.users;
-
     return Scaffold(
       appBar: AppBar(
-        title: _isSearching
-            ? Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: TextField(
-                  focusNode: _textFieldFocusNode,
-                  onChanged: filterUsers,
-                  decoration: InputDecoration(
-                    hintText: widget.translations.searchPlaceholder,
-                  ),
-                ),
-              )
-            : Text(widget.translations.newChatButton),
+        title: _buildSearchField(),
         actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _isSearching = !_isSearching;
-              });
-
-              if (_isSearching) {
-                _textFieldFocusNode.requestFocus();
-              }
-            },
-            icon: Icon(
-              _isSearching ? Icons.close : Icons.search,
-            ),
-          ),
+          _buildSearchIcon(),
         ],
       ),
-      body: users.isEmpty
-          ? widget.options.noChatsPlaceholderBuilder(widget.translations)
-          : ListView(
-              children: [
-                for (var user in users)
-                  GestureDetector(
-                    child: widget.options.chatRowContainerBuilder(
-                      ChatRow(
-                        avatar: widget.options.userAvatarBuilder(
-                          user,
-                          40.0,
-                        ),
-                        title:
-                            user.fullName ?? widget.translations.anonymousUser,
-                      ),
-                    ),
-                    onTap: () => widget.onPressCreateChat(user),
-                  ),
-              ],
+      body: FutureBuilder<List<ChatUserModel>>(
+        future: widget.userService.getAllUsers(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            return _buildUserList(snapshot.data!);
+          } else {
+            return widget.options
+                .noChatsPlaceholderBuilder(widget.translations);
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildSearchField() {
+    return _isSearching
+        ? Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: TextField(
+              focusNode: _textFieldFocusNode,
+              onChanged: (value) {
+                setState(() {
+                  query = value;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: widget.translations.searchPlaceholder,
+              ),
             ),
+          )
+        : Text(widget.translations.newChatButton);
+  }
+
+  Widget _buildSearchIcon() {
+    return IconButton(
+      onPressed: () {
+        setState(() {
+          _isSearching = !_isSearching;
+        });
+
+        if (_isSearching) {
+          _textFieldFocusNode.requestFocus();
+        }
+      },
+      icon: Icon(
+        _isSearching ? Icons.close : Icons.search,
+      ),
+    );
+  }
+
+  Widget _buildUserList(List<ChatUserModel> users) {
+    var filteredUsers = users
+        .where(
+          (user) =>
+              user.fullName?.toLowerCase().contains(
+                    query.toLowerCase(),
+                  ) ??
+              false,
+        )
+        .toList();
+
+    if (filteredUsers.isEmpty) {
+      return widget.options.noChatsPlaceholderBuilder(widget.translations);
+    }
+
+    return ListView.builder(
+      itemCount: filteredUsers.length,
+      itemBuilder: (context, index) {
+        var user = filteredUsers[index];
+        return GestureDetector(
+          child: widget.options.chatRowContainerBuilder(
+            ChatRow(
+              avatar: widget.options.userAvatarBuilder(
+                user,
+                40.0,
+              ),
+              title: user.fullName ?? widget.translations.anonymousUser,
+            ),
+          ),
+          onTap: () => widget.onPressCreateChat(user),
+        );
+      },
     );
   }
 }
