@@ -21,6 +21,10 @@ class FirebaseMessageService implements MessageService {
 
   StreamController<List<ChatMessageModel>>? _controller;
   StreamSubscription<QuerySnapshot>? _subscription;
+  DocumentSnapshot<Object>? lastMessage;
+  List<ChatMessageModel> _cumulativeMessages = [];
+  ChatModel? lastChat;
+  int? chatPageSize;
 
   FirebaseMessageService({
     required ChatUserService userService,
@@ -60,7 +64,13 @@ class FirebaseMessageService implements MessageService {
         )
         .add(message);
 
-    await chatReference.update({
+    var metadataReference = _db
+        .collection(
+          _options.chatsMetaDataCollectionName,
+        )
+        .doc(chat.id);
+
+    await metadataReference.update({
       'last_used': DateTime.now(),
       'last_message': message,
     });
@@ -76,7 +86,7 @@ class FirebaseMessageService implements MessageService {
     // update the chat counter for the other users
     // get all users from the chat
     // there is a field in the chat document called users that has a list of user ids
-    var fetchedChat = await chatReference.get();
+    var fetchedChat = await metadataReference.get();
     var chatUsers = fetchedChat.data()?['users'] as List<dynamic>;
     // for all users except the message sender update the unread counter
     for (var userId in chatUsers) {
@@ -86,7 +96,7 @@ class FirebaseMessageService implements MessageService {
               _options.usersCollectionName,
             )
             .doc(userId)
-            .collection('chats')
+            .collection(_options.userChatsCollectionName)
             .doc(chat.id);
         // what if the amount_unread_messages field does not exist?
         // it should be created when the chat is create
@@ -110,13 +120,14 @@ class FirebaseMessageService implements MessageService {
   Future<void> sendTextMessage({
     required String text,
     required ChatModel chat,
-  }) =>
-      _sendMessage(
-        chat,
-        {
-          'text': text,
-        },
-      );
+  }) {
+    return _sendMessage(
+      chat,
+      {
+        'text': text,
+      },
+    );
+  }
 
   @override
   Future<void> sendImageMessage({
@@ -144,19 +155,42 @@ class FirebaseMessageService implements MessageService {
         );
   }
 
-  Query<FirebaseMessageDocument> _getMessagesQuery(ChatModel chat) => _db
-      .collection(_options.chatsCollectionName)
-      .doc(chat.id)
-      .collection(_options.messagesCollectionName)
-      .orderBy('timestamp', descending: false)
-      .withConverter<FirebaseMessageDocument>(
+  Query<FirebaseMessageDocument> _getMessagesQuery(ChatModel chat) {
+    if (lastChat == null) {
+      lastChat = chat;
+    } else if (lastChat?.id != chat.id) {
+      _cumulativeMessages = [];
+      lastChat = chat;
+      lastMessage = null;
+    }
+
+    var query = _db
+        .collection(_options.chatsCollectionName)
+        .doc(chat.id)
+        .collection(_options.messagesCollectionName)
+        .orderBy('timestamp', descending: true)
+        .limit(chatPageSize!);
+
+    if (lastMessage == null) {
+      return query.withConverter<FirebaseMessageDocument>(
         fromFirestore: (snapshot, _) =>
             FirebaseMessageDocument.fromJson(snapshot.data()!, snapshot.id),
         toFirestore: (user, _) => user.toJson(),
       );
+    }
+    return query
+        .startAfterDocument(lastMessage!)
+        .withConverter<FirebaseMessageDocument>(
+          fromFirestore: (snapshot, _) =>
+              FirebaseMessageDocument.fromJson(snapshot.data()!, snapshot.id),
+          toFirestore: (user, _) => user.toJson(),
+        );
+  }
 
   @override
-  Stream<List<ChatMessageModel>> getMessagesStream(ChatModel chat) {
+  Stream<List<ChatMessageModel>> getMessagesStream(
+      ChatModel chat, int pageSize) {
+    chatPageSize = pageSize;
     _controller = StreamController<List<ChatMessageModel>>(
       onListen: () {
         if (chat.id != null) {
@@ -175,38 +209,53 @@ class FirebaseMessageService implements MessageService {
 
   StreamSubscription<QuerySnapshot> _startListeningForMessages(ChatModel chat) {
     debugPrint('Start listening for messages in chat ${chat.id}');
-
     var snapshots = _getMessagesQuery(chat).snapshots();
-
     return snapshots.listen(
       (snapshot) async {
-        var messages = <ChatMessageModel>[];
+        List<ChatMessageModel> messages =
+            List<ChatMessageModel>.from(_cumulativeMessages);
 
-        for (var messageDoc in snapshot.docs) {
-          var messageData = messageDoc.data();
+        if (snapshot.docs.isNotEmpty) {
+          lastMessage = snapshot.docs.last;
 
-          var sender = await _userService.getUser(messageData.sender);
+          for (var messageDoc in snapshot.docs) {
+            var messageData = messageDoc.data();
 
-          if (sender != null) {
-            var timestamp = DateTime.fromMillisecondsSinceEpoch(
-              (messageData.timestamp).millisecondsSinceEpoch,
-            );
+            // Check if the message is already in the list to avoid duplicates
+            if (!messages.any((message) {
+              var timestamp = DateTime.fromMillisecondsSinceEpoch(
+                (messageData.timestamp).millisecondsSinceEpoch,
+              );
+              return timestamp == message.timestamp;
+            })) {
+              var sender = await _userService.getUser(messageData.sender);
 
-            messages.add(
-              messageData.imageUrl != null
-                  ? ChatImageMessageModel(
-                      sender: sender,
-                      imageUrl: messageData.imageUrl!,
-                      timestamp: timestamp,
-                    )
-                  : ChatTextMessageModel(
-                      sender: sender,
-                      text: messageData.text!,
-                      timestamp: timestamp,
-                    ),
-            );
+              if (sender != null) {
+                var timestamp = DateTime.fromMillisecondsSinceEpoch(
+                  (messageData.timestamp).millisecondsSinceEpoch,
+                );
+
+                messages.add(
+                  messageData.imageUrl != null
+                      ? ChatImageMessageModel(
+                          sender: sender,
+                          imageUrl: messageData.imageUrl!,
+                          timestamp: timestamp,
+                        )
+                      : ChatTextMessageModel(
+                          sender: sender,
+                          text: messageData.text!,
+                          timestamp: timestamp,
+                        ),
+                );
+              }
+            }
           }
         }
+
+        _cumulativeMessages = messages;
+
+        messages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
         _controller?.add(messages);
       },

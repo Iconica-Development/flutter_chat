@@ -4,7 +4,10 @@
 
 // ignore_for_file: lines_longer_than_80_chars
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 import 'package:flutter_community_chat_view/src/services/date_formatter.dart';
 
@@ -15,6 +18,7 @@ class ChatScreen extends StatefulWidget {
     required this.onPressChat,
     required this.onDeleteChat,
     required this.service,
+    required this.pageSize,
     this.onNoChats,
     this.deleteChatDialog,
     this.translations = const ChatTranslations(),
@@ -25,10 +29,11 @@ class ChatScreen extends StatefulWidget {
   final ChatOptions options;
   final ChatTranslations translations;
   final ChatService service;
-  final VoidCallback? onPressStartChat;
-  final VoidCallback? onNoChats;
+  final Function? onPressStartChat;
+  final Function? onNoChats;
   final void Function(ChatModel chat) onDeleteChat;
   final void Function(ChatModel chat) onPressChat;
+  final int pageSize;
 
   /// Disable the swipe to dismiss feature for chats that are not deletable
   final bool disableDismissForPermanentChats;
@@ -42,6 +47,28 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final DateFormatter _dateFormatter = DateFormatter();
   bool _hasCalledOnNoChats = false;
+  ScrollController controller = ScrollController();
+  bool showIndicator = false;
+  Stream<List<ChatModel>>? chats;
+  List<String> deletedChats = [];
+
+  @override
+  void initState() {
+    getChats();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void getChats() {
+    setState(() {
+      chats = widget.service.getChatsStream(widget.pageSize);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,145 +99,197 @@ class _ChatScreenState extends State<ChatScreen> {
       Column(
         children: [
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.only(top: 15.0),
-              children: [
-                StreamBuilder<List<ChatModel>>(
-                  stream: widget.service.getChatsStream(),
-                  builder: (BuildContext context, snapshot) {
-                    // if the stream is done, empty and noChats is set we should call that
-                    if (snapshot.connectionState == ConnectionState.done &&
-                        (snapshot.data?.isEmpty ?? true)) {
-                      if (widget.onNoChats != null && !_hasCalledOnNoChats) {
-                        _hasCalledOnNoChats = true; // Set the flag to true
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          widget.onNoChats!.call();
-                        });
-                      }
-                    } else {
-                      _hasCalledOnNoChats =
-                          false; // Reset the flag if there are chats
+            child: Listener(
+              onPointerMove: (event) {
+                var isTop = controller.position.pixels ==
+                    controller.position.maxScrollExtent;
+
+                if (showIndicator == false &&
+                    !isTop &&
+                    controller.position.userScrollDirection ==
+                        ScrollDirection.reverse) {
+                  setState(() {
+                    showIndicator = true;
+                  });
+                  getChats();
+                  Future.delayed(const Duration(seconds: 2), () {
+                    if (mounted) {
+                      setState(() {
+                        showIndicator = false;
+                      });
                     }
-                    return Column(
-                      children: [
-                        for (ChatModel chat in snapshot.data ?? []) ...[
-                          Builder(
-                            builder: (context) => !(widget
-                                        .disableDismissForPermanentChats &&
-                                    !chat.canBeDeleted)
-                                ? Dismissible(
-                                    confirmDismiss: (_) =>
-                                        widget.deleteChatDialog
-                                            ?.call(context, chat) ??
-                                        showModalBottomSheet(
-                                          context: context,
-                                          builder: (BuildContext context) =>
-                                              Container(
-                                            padding: const EdgeInsets.all(16.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  chat.canBeDeleted
-                                                      ? translations
-                                                          .deleteChatModalTitle
-                                                      : translations
-                                                          .chatCantBeDeleted,
-                                                  style: const TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 16),
-                                                if (chat.canBeDeleted)
+                  });
+                }
+              },
+              child: ListView(
+                controller: controller,
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(top: 15.0),
+                children: [
+                  StreamBuilder<List<ChatModel>>(
+                    stream: chats,
+                    builder: (BuildContext context, snapshot) {
+                      // if the stream is done, empty and noChats is set we should call that
+                      if (snapshot.connectionState == ConnectionState.done &&
+                          (snapshot.data?.isEmpty ?? true)) {
+                        if (widget.onNoChats != null && !_hasCalledOnNoChats) {
+                          _hasCalledOnNoChats = true; // Set the flag to true
+                          WidgetsBinding.instance
+                              .addPostFrameCallback((_) async {
+                            await widget.onNoChats!.call();
+                            getChats();
+                          });
+                        }
+                      } else {
+                        _hasCalledOnNoChats =
+                            false; // Reset the flag if there are chats
+                      }
+                      return Column(
+                        children: [
+                          for (ChatModel chat in (snapshot.data ?? []).where(
+                            (chat) => !deletedChats.contains(chat.id),
+                          )) ...[
+                            Builder(
+                              builder: (context) => !(widget
+                                          .disableDismissForPermanentChats &&
+                                      !chat.canBeDeleted)
+                                  ? Dismissible(
+                                      confirmDismiss: (_) async =>
+                                          widget.deleteChatDialog
+                                              ?.call(context, chat) ??
+                                          showModalBottomSheet(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                Container(
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
                                                   Text(
-                                                    translations
-                                                        .deleteChatModalDescription,
+                                                    chat.canBeDeleted
+                                                        ? translations
+                                                            .deleteChatModalTitle
+                                                        : translations
+                                                            .chatCantBeDeleted,
                                                     style: const TextStyle(
-                                                      fontSize: 16,
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                                   ),
-                                                const SizedBox(height: 16),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    TextButton(
-                                                      child: Text(
-                                                        translations
-                                                            .deleteChatModalCancel,
-                                                        style: const TextStyle(
-                                                          fontSize: 16,
-                                                        ),
+                                                  const SizedBox(height: 16),
+                                                  if (chat.canBeDeleted)
+                                                    Text(
+                                                      translations
+                                                          .deleteChatModalDescription,
+                                                      style: const TextStyle(
+                                                        fontSize: 16,
                                                       ),
-                                                      onPressed: () =>
-                                                          Navigator.of(context)
-                                                              .pop(false),
                                                     ),
-                                                    if (chat.canBeDeleted)
-                                                      ElevatedButton(
-                                                        onPressed: () =>
-                                                            Navigator.of(
-                                                          context,
-                                                        ).pop(true),
+                                                  const SizedBox(height: 16),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      TextButton(
                                                         child: Text(
                                                           translations
-                                                              .deleteChatModalConfirm,
+                                                              .deleteChatModalCancel,
                                                           style:
                                                               const TextStyle(
                                                             fontSize: 16,
                                                           ),
                                                         ),
+                                                        onPressed: () =>
+                                                            Navigator.of(
+                                                          context,
+                                                        ).pop(false),
                                                       ),
-                                                  ],
-                                                ),
-                                              ],
+                                                      if (chat.canBeDeleted)
+                                                        ElevatedButton(
+                                                          onPressed: () =>
+                                                              Navigator.of(
+                                                            context,
+                                                          ).pop(true),
+                                                          child: Text(
+                                                            translations
+                                                                .deleteChatModalConfirm,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 16,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                      onDismissed: (_) {
+                                        setState(() {
+                                          deletedChats.add(chat.id!);
+                                        });
+                                        widget.onDeleteChat(chat);
+                                      },
+                                      background: Container(
+                                        color: Colors.red,
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              translations.deleteChatButton,
                                             ),
                                           ),
                                         ),
-                                    onDismissed: (_) =>
-                                        widget.onDeleteChat(chat),
-                                    background: Container(
-                                      color: Colors.red,
-                                      child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            translations.deleteChatButton,
-                                          ),
-                                        ),
                                       ),
-                                    ),
-                                    key: ValueKey(
-                                      chat.id.toString(),
-                                    ),
-                                    child: ChatListItem(
+                                      key: ValueKey(
+                                        chat.id.toString(),
+                                      ),
+                                      child: ChatListItem(
+                                        widget: widget,
+                                        chat: chat,
+                                        translations: translations,
+                                        dateFormatter: _dateFormatter,
+                                      ),
+                                    )
+                                  : ChatListItem(
                                       widget: widget,
                                       chat: chat,
                                       translations: translations,
                                       dateFormatter: _dateFormatter,
                                     ),
-                                  )
-                                : ChatListItem(
-                                    widget: widget,
-                                    chat: chat,
-                                    translations: translations,
-                                    dateFormatter: _dateFormatter,
-                                  ),
-                          ),
+                            ),
+                          ],
+                          if (showIndicator &&
+                              snapshot.connectionState !=
+                                  ConnectionState.done) ...[
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const CircularProgressIndicator(),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                          ],
                         ],
-                      ],
-                    );
-                  },
-                ),
-              ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
           if (widget.onPressStartChat != null)
             widget.options.newChatButtonBuilder(
               context,
-              widget.onPressStartChat!,
+              () async {
+                await widget.onPressStartChat!.call();
+                getChats();
+              },
               translations,
             ),
         ],

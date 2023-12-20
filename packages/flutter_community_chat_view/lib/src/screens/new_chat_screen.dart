@@ -122,7 +122,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
               title: user.fullName ?? widget.translations.anonymousUser,
             ),
           ),
-          onTap: () => widget.onPressCreateChat(user),
+          onTap: () async {
+            await widget.onPressCreateChat(user);
+          },
         );
       },
     );

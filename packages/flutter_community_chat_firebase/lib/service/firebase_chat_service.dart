@@ -15,6 +15,10 @@ class FirebaseChatService implements ChatService {
   late FirebaseStorage _storage;
   late ChatUserService _userService;
   late FirebaseChatOptions _options;
+  DocumentSnapshot<Object?>? lastUserDocument;
+  String? lastGroupId;
+  List<String> chatIds = [];
+  int pageNumber = 1;
 
   FirebaseChatService({
     required ChatUserService userService,
@@ -37,7 +41,7 @@ class FirebaseChatService implements ChatService {
     var snapshots = _db
         .collection(_options.usersCollectionName)
         .doc(userId)
-        .collection('chats')
+        .collection(_options.userChatsCollectionName)
         .doc(chatId)
         .snapshots();
 
@@ -52,7 +56,7 @@ class FirebaseChatService implements ChatService {
     Function(List<ChatModel>) onReceivedChats,
   ) {
     var snapshots = _db
-        .collection(_options.chatsCollectionName)
+        .collection(_options.chatsMetaDataCollectionName)
         .where(
           FieldPath.documentId,
           whereIn: chatIds,
@@ -228,19 +232,29 @@ class FirebaseChatService implements ChatService {
   }
 
   @override
-  Stream<List<ChatModel>> getChatsStream() {
+  Stream<List<ChatModel>> getChatsStream(int pageSize) {
     late StreamController<List<ChatModel>> controller;
     StreamSubscription? chatsSubscription;
     controller = StreamController(
       onListen: () async {
+        QuerySnapshot<Map<String, dynamic>> userSnapshot;
+        List<String> userChatIds;
         var currentUser = await _userService.getCurrentUser();
 
-        var userSnapshot = await _db
+        var userQuery = _db
             .collection(_options.usersCollectionName)
             .doc(currentUser?.id)
-            .collection('chats')
-            .get();
-        var userChatIds = userSnapshot.docs.map((chat) => chat.id).toList();
+            .collection(_options.userChatsCollectionName);
+        if (lastUserDocument == null) {
+          userSnapshot = await userQuery.limit(pageSize).get();
+          userChatIds = userSnapshot.docs.map((chat) => chat.id).toList();
+        } else {
+          userSnapshot = await userQuery
+              .limit(pageSize)
+              .startAfterDocument(lastUserDocument!)
+              .get();
+          userChatIds = userSnapshot.docs.map((chat) => chat.id).toList();
+        }
 
         var userGroupChatIds = await _db
             .collection(_options.usersCollectionName)
@@ -248,10 +262,27 @@ class FirebaseChatService implements ChatService {
             .get()
             .then((userCollection) =>
                 userCollection.data()?[_options.groupChatsCollectionName])
-            .then((groupChatLabels) => groupChatLabels?.cast<String>());
+            .then((groupChatLabels) => groupChatLabels?.cast<String>())
+            .then((groupChatIds) {
+          var startIndex = (pageNumber - 1) * pageSize;
+          var endIndex = startIndex + pageSize;
 
-        var chatsStream =
-            _getSpecificChatsStream([...userChatIds, ...userGroupChatIds]);
+          if (startIndex >= groupChatIds.length) {
+            return [];
+          }
+          var groupIds = groupChatIds.sublist(
+              startIndex, endIndex.clamp(0, groupChatIds.length));
+          lastGroupId = groupIds.last;
+          return groupIds;
+        });
+
+        if (userSnapshot.docs.isNotEmpty) {
+          lastUserDocument = userSnapshot.docs.last;
+        }
+
+        pageNumber++;
+        chatIds.addAll([...userChatIds, ...userGroupChatIds]);
+        var chatsStream = _getSpecificChatsStream(chatIds);
 
         chatsSubscription = chatsStream.listen((event) {
           controller.add(event);
@@ -270,7 +301,7 @@ class FirebaseChatService implements ChatService {
     var collection = await _db
         .collection(_options.usersCollectionName)
         .doc(currentUser?.id)
-        .collection('chats')
+        .collection(_options.userChatsCollectionName)
         .where('users', arrayContains: user.id)
         .get();
 
@@ -288,7 +319,7 @@ class FirebaseChatService implements ChatService {
     var chatCollection = await _db
         .collection(_options.usersCollectionName)
         .doc(currentUser?.id)
-        .collection('chats')
+        .collection(_options.userChatsCollectionName)
         .doc(chatId)
         .get();
 
@@ -333,7 +364,7 @@ class FirebaseChatService implements ChatService {
   @override
   Future<void> deleteChat(ChatModel chat) async {
     var chatCollection = await _db
-        .collection(_options.chatsCollectionName)
+        .collection(_options.chatsMetaDataCollectionName)
         .doc(chat.id)
         .withConverter(
           fromFirestore: (snapshot, _) =>
@@ -349,7 +380,7 @@ class FirebaseChatService implements ChatService {
         _db
             .collection(_options.usersCollectionName)
             .doc(userId)
-            .collection('chats')
+            .collection(_options.userChatsCollectionName)
             .doc(chat.id)
             .delete();
       }
@@ -387,7 +418,7 @@ class FirebaseChatService implements ChatService {
         ];
 
         var reference = await _db
-            .collection(_options.chatsCollectionName)
+            .collection(_options.chatsMetaDataCollectionName)
             .withConverter(
               fromFirestore: (snapshot, _) =>
                   FirebaseChatDocument.fromJson(snapshot.data()!, snapshot.id),
@@ -406,12 +437,13 @@ class FirebaseChatService implements ChatService {
           await _db
               .collection(_options.usersCollectionName)
               .doc(userId)
-              .collection('chats')
+              .collection(_options.userChatsCollectionName)
               .doc(reference.id)
               .set({'users': userIds});
         }
 
         chat.id = reference.id;
+        chatIds.add(chat.id!);
       } else if (chat is GroupChatModel) {
         if (currentUser?.id == null) {
           return chat;
@@ -448,6 +480,7 @@ class FirebaseChatService implements ChatService {
         }
 
         chat.id = reference.id;
+        chatIds.add(chat.id!);
       } else {
         throw Exception('Chat type not supported for firebase');
       }
@@ -467,7 +500,7 @@ class FirebaseChatService implements ChatService {
         var userSnapshot = _db
             .collection(_options.usersCollectionName)
             .doc(currentUser?.id)
-            .collection('chats')
+            .collection(_options.userChatsCollectionName)
             .snapshots();
 
         unreadChatSubscription = userSnapshot.listen((event) {
@@ -498,7 +531,7 @@ class FirebaseChatService implements ChatService {
     await _db
         .collection(_options.usersCollectionName)
         .doc(currentUser!.id!)
-        .collection('chats')
+        .collection(_options.userChatsCollectionName)
         .doc(chat.id)
         .set({'amount_unread_messages': 0}, SetOptions(merge: true));
   }

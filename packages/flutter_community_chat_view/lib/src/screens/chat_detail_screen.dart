@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 import 'package:flutter_community_chat_view/src/components/chat_bottom.dart';
 import 'package:flutter_community_chat_view/src/components/chat_detail_row.dart';
@@ -20,6 +21,7 @@ class ChatDetailScreen extends StatefulWidget {
     required this.service,
     required this.chatUserService,
     required this.messageService,
+    required this.pageSize,
     this.translations = const ChatTranslations(),
     this.chat,
     this.onPressChatTitle,
@@ -47,6 +49,7 @@ class ChatDetailScreen extends StatefulWidget {
   final ChatService service;
   final ChatUserService chatUserService;
   final MessageService messageService;
+  final int pageSize;
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -58,6 +61,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   Stream<List<ChatMessageModel>>? _chatMessages;
   ChatModel? chat;
   ChatUserModel? currentUser;
+  ScrollController controller = ScrollController();
+  bool showIndicator = false;
 
   @override
   void initState() {
@@ -65,7 +70,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     // create a broadcast stream from the chat messages
     if (widget.chat != null) {
       _chatMessages = widget.messageService
-          .getMessagesStream(widget.chat!)
+          .getMessagesStream(widget.chat!, widget.pageSize)
           .asBroadcastStream();
     }
     _chatMessagesSubscription = _chatMessages?.listen((event) {
@@ -121,7 +126,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       future: widget.service.getChatById(widget.chat?.id ?? ''),
       builder: (context, AsyncSnapshot<ChatModel> snapshot) {
         var chatModel = snapshot.data;
-
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
@@ -186,11 +190,44 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       );
                       previousMessage = message;
                     }
+                    return Listener(
+                      onPointerMove: (event) {
+                        var isTop = controller.position.pixels ==
+                            controller.position.maxScrollExtent;
 
-                    return ListView(
-                      reverse: true,
-                      padding: const EdgeInsets.only(top: 24.0),
-                      children: messageWidgets.reversed.toList(),
+                        if (showIndicator == false &&
+                            isTop &&
+                            !(controller.position.userScrollDirection ==
+                                ScrollDirection.reverse)) {
+                          setState(() {
+                            showIndicator = true;
+                          });
+                          _chatMessages = widget.messageService
+                              .getMessagesStream(widget.chat!, widget.pageSize)
+                              .asBroadcastStream();
+                          Future.delayed(const Duration(seconds: 2), () {
+                            if (mounted) {
+                              setState(() {
+                                showIndicator = false;
+                              });
+                            }
+                          });
+                        }
+                      },
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        controller: controller,
+                        reverse: true,
+                        padding: const EdgeInsets.only(top: 24.0),
+                        children: [
+                          ...messageWidgets.reversed.toList(),
+                          if (snapshot.connectionState !=
+                                  ConnectionState.active ||
+                              showIndicator) ...[
+                            const Center(child: CircularProgressIndicator()),
+                          ],
+                        ],
+                      ),
                     );
                   },
                 ),

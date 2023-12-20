@@ -14,5 +14,6 @@ abstract class MessageService {
 
   Stream<List<ChatMessageModel>> getMessagesStream(
     ChatModel chat,
+    int pageSize,
   );
 }

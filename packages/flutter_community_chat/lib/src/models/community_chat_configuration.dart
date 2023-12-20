@@ -14,6 +14,7 @@ class CommunityChatUserStoryConfiguration {
     required this.messageService,
     required this.service,
     required this.chatOptionsBuilder,
+    this.pageSize = 10,
     this.onPressStartChat,
     this.onPressChat,
     this.onDeleteChat,
@@ -29,6 +30,7 @@ class CommunityChatUserStoryConfiguration {
     this.chatPageBuilder,
     this.onPressChatTitle,
     this.afterMessageSent,
+    this.messagePageSize = 20,
   });
   final ChatService service;
   final ChatUserService userService;
@@ -48,6 +50,8 @@ class CommunityChatUserStoryConfiguration {
 
   /// If true, the user will be routed to the new chat screen if there are no chats.
   final bool routeToNewChatIfEmpty;
+  final int pageSize;
+  final int messagePageSize;
 
   final Future<bool?> Function(BuildContext, ChatModel)? deleteChatDialog;
   final Function(BuildContext context, ChatModel chat)? onPressChatTitle;
