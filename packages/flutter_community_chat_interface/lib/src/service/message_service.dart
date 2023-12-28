@@ -1,7 +1,8 @@
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:flutter_community_chat_interface/flutter_community_chat_interface.dart';
 
-abstract class MessageService {
+abstract class MessageService with ChangeNotifier {
   Future<void> sendTextMessage({
     required ChatModel chat,
     required String text,
@@ -14,6 +15,9 @@ abstract class MessageService {
 
   Stream<List<ChatMessageModel>> getMessagesStream(
     ChatModel chat,
-    int pageSize,
   );
+
+  Future<void> fetchMoreMessage(int pageSize, ChatModel chat);
+
+  List<ChatMessageModel> getMessages();
 }

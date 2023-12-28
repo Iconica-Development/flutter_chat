@@ -22,9 +22,14 @@ List<GoRoute> getCommunityChatStoryRoutes(
             options: configuration.chatOptionsBuilder(context),
             onNoChats: () async =>
                 await context.push(CommunityChatUserStoryRoutes.newChatScreen),
-            onPressStartChat: () async =>
-                await configuration.onPressStartChat?.call() ??
-                await context.push(CommunityChatUserStoryRoutes.newChatScreen),
+            onPressStartChat: () async {
+              if (configuration.onPressStartChat != null) {
+                return await configuration.onPressStartChat?.call();
+              }
+
+              return await context
+                  .push(CommunityChatUserStoryRoutes.newChatScreen);
+            },
             onPressChat: (chat) =>
                 configuration.onPressChat?.call(context, chat) ??
                 context.push(

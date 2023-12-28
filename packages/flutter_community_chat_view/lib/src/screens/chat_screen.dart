@@ -29,8 +29,8 @@ class ChatScreen extends StatefulWidget {
   final ChatOptions options;
   final ChatTranslations translations;
   final ChatService service;
-  final Function? onPressStartChat;
-  final Function? onNoChats;
+  final Function()? onPressStartChat;
+  final Function()? onNoChats;
   final void Function(ChatModel chat) onDeleteChat;
   final void Function(ChatModel chat) onPressChat;
   final int pageSize;
