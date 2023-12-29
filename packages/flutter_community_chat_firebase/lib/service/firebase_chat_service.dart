@@ -267,13 +267,16 @@ class FirebaseChatService implements ChatService {
           var startIndex = (pageNumber - 1) * pageSize;
           var endIndex = startIndex + pageSize;
 
-          if (startIndex >= groupChatIds.length) {
-            return [];
+          if (groupChatIds != null) {
+            if (startIndex >= groupChatIds.length) {
+              return [];
+            }
+            var groupIds = groupChatIds.sublist(
+                startIndex, endIndex.clamp(0, groupChatIds.length));
+            lastGroupId = groupIds.last;
+            return groupIds;
           }
-          var groupIds = groupChatIds.sublist(
-              startIndex, endIndex.clamp(0, groupChatIds.length));
-          lastGroupId = groupIds.last;
-          return groupIds;
+          return [];
         });
 
         if (userSnapshot.docs.isNotEmpty) {

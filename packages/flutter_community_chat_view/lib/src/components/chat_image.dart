@@ -24,9 +24,11 @@ class ChatImage extends StatelessWidget {
         ),
         width: size,
         height: size,
-        child: CachedNetworkImage(
-          imageUrl: image,
-          fit: BoxFit.cover,
-        ),
+        child: image != ''
+            ? CachedNetworkImage(
+                imageUrl: image,
+                fit: BoxFit.cover,
+              )
+            : null,
       );
 }

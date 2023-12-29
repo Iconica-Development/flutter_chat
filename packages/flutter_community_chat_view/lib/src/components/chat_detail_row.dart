@@ -37,7 +37,6 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
         widget.message.timestamp.day != widget.previousMessage?.timestamp.day;
     var isSameSender = widget.previousMessage == null ||
         widget.previousMessage?.sender.id != widget.message.sender.id;
-    print(isNewDate);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -79,9 +78,13 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                           Text(
                             widget.message.sender.fullName?.toUpperCase() ??
                                 widget.translations.anonymousUser,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium
+                                  ?.color,
                             ),
                           ),
                           Padding(
@@ -106,7 +109,13 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                               text: TextSpan(
                                 text: (widget.message as ChatTextMessageModel)
                                     .text,
-                                style: const TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .labelMedium
+                                      ?.color,
+                                ),
                                 children: <TextSpan>[
                                   if (widget.showTime)
                                     TextSpan(

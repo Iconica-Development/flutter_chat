@@ -75,7 +75,7 @@ Widget _createImagePickerContainer(
 ) =>
     Container(
       padding: const EdgeInsets.all(8.0),
-      color: Colors.black,
+      color: Colors.white,
       child: ImagePicker(
         customButton: ElevatedButton(
           onPressed: onClose,
