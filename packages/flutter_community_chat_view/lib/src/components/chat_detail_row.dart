@@ -34,22 +34,18 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
   @override
   Widget build(BuildContext context) {
     var isNewDate = widget.previousMessage != null &&
-        widget.message.timestamp.day != widget.previousMessage!.timestamp.day;
+        widget.message.timestamp.day != widget.previousMessage?.timestamp.day;
+    var isSameSender = widget.previousMessage == null ||
+        widget.previousMessage?.sender.id != widget.message.sender.id;
+
     return Padding(
       padding: EdgeInsets.only(
-        top: isNewDate ||
-                widget.previousMessage == null ||
-                widget.previousMessage?.sender.id != widget.message.sender.id
-            ? 25.0
-            : 0,
+        top: isNewDate || isSameSender ? 25.0 : 0,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isNewDate ||
-              widget.previousMessage == null ||
-              widget.previousMessage?.sender.id !=
-                  widget.message.sender.id) ...[
+          if (isNewDate || isSameSender) ...[
             Padding(
               padding: const EdgeInsets.only(left: 10.0),
               child: widget.message.sender.imageUrl != null &&
@@ -75,19 +71,20 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    if (isNewDate ||
-                        widget.previousMessage == null ||
-                        widget.previousMessage?.sender.id !=
-                            widget.message.sender.id)
+                    if (isNewDate || isSameSender)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             widget.message.sender.fullName?.toUpperCase() ??
                                 widget.translations.anonymousUser,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium
+                                  ?.color,
                             ),
                           ),
                           Padding(
@@ -112,7 +109,13 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                               text: TextSpan(
                                 text: (widget.message as ChatTextMessageModel)
                                     .text,
-                                style: const TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .labelMedium
+                                      ?.color,
+                                ),
                                 children: <TextSpan>[
                                   if (widget.showTime)
                                     TextSpan(

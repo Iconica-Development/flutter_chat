@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_community_chat_view/flutter_community_chat_view.dart';
 import 'package:flutter_community_chat_view/src/components/chat_bottom.dart';
 import 'package:flutter_community_chat_view/src/components/chat_detail_row.dart';
@@ -20,6 +21,7 @@ class ChatDetailScreen extends StatefulWidget {
     required this.service,
     required this.chatUserService,
     required this.messageService,
+    required this.pageSize,
     this.translations = const ChatTranslations(),
     this.chat,
     this.onPressChatTitle,
@@ -47,6 +49,7 @@ class ChatDetailScreen extends StatefulWidget {
   final ChatService service;
   final ChatUserService chatUserService;
   final MessageService messageService;
+  final int pageSize;
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -54,32 +57,29 @@ class ChatDetailScreen extends StatefulWidget {
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   // stream listener that needs to be disposed later
-  StreamSubscription<List<ChatMessageModel>>? _chatMessagesSubscription;
-  Stream<List<ChatMessageModel>>? _chatMessages;
-  ChatModel? chat;
   ChatUserModel? currentUser;
+  ScrollController controller = ScrollController();
+  bool showIndicator = false;
+  late MessageService messageSubscription;
+  Stream<List<ChatMessageModel>>? stream;
+  ChatMessageModel? previousMessage;
+  List<Widget> detailRows = [];
 
   @override
   void initState() {
     super.initState();
-    // create a broadcast stream from the chat messages
+    messageSubscription = widget.messageService;
+    messageSubscription.addListener(onListen);
     if (widget.chat != null) {
-      _chatMessages = widget.messageService
-          .getMessagesStream(widget.chat!)
-          .asBroadcastStream();
-    }
-    _chatMessagesSubscription = _chatMessages?.listen((event) {
-      // check if the last message is from the current user
-      // if so, set the chat to read
+      stream = widget.messageService.getMessagesStream(widget.chat!);
+      stream?.listen((event) {});
       Future.delayed(Duration.zero, () async {
-        currentUser = await widget.chatUserService.getCurrentUser();
+        if (detailRows.isEmpty) {
+          await widget.messageService
+              .fetchMoreMessage(widget.pageSize, widget.chat!);
+        }
       });
-      if (event.isNotEmpty &&
-          event.last.sender.id != currentUser?.id &&
-          widget.chat != null) {
-        widget.onReadChat(widget.chat!);
-      }
-    });
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.chat != null) {
         widget.onReadChat(widget.chat!);
@@ -87,9 +87,34 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     });
   }
 
+  void onListen() {
+    var chatMessages = [];
+    chatMessages = widget.messageService.getMessages();
+    detailRows = [];
+    previousMessage = null;
+    for (var message in chatMessages) {
+      detailRows.add(
+        ChatDetailRow(
+          showTime: true,
+          message: message,
+          translations: widget.translations,
+          userAvatarBuilder: widget.options.userAvatarBuilder,
+          previousMessage: previousMessage,
+        ),
+      );
+      previousMessage = message;
+    }
+    detailRows = detailRows.reversed.toList();
+
+    widget.onReadChat(widget.chat!);
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void dispose() {
-    _chatMessagesSubscription?.cancel();
+    messageSubscription.removeListener(onListen);
     super.dispose();
   }
 
@@ -121,7 +146,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       future: widget.service.getChatById(widget.chat?.id ?? ''),
       builder: (context, AsyncSnapshot<ChatModel> snapshot) {
         var chatModel = snapshot.data;
-
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
@@ -166,33 +190,48 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           body: Column(
             children: [
               Expanded(
-                child: StreamBuilder<List<ChatMessageModel>>(
-                  stream: _chatMessages,
-                  builder: (context, snapshot) {
-                    var messages = snapshot.data ?? chatModel?.messages ?? [];
-                    ChatMessageModel? previousMessage;
+                child: Listener(
+                  onPointerMove: (event) async {
+                    var isTop = controller.position.pixels ==
+                        controller.position.maxScrollExtent;
 
-                    var messageWidgets = <Widget>[];
-
-                    for (var message in messages) {
-                      messageWidgets.add(
-                        ChatDetailRow(
-                          previousMessage: previousMessage,
-                          showTime: widget.showTime,
-                          translations: widget.translations,
-                          message: message,
-                          userAvatarBuilder: widget.options.userAvatarBuilder,
-                        ),
-                      );
-                      previousMessage = message;
+                    if (showIndicator == false &&
+                        !isTop &&
+                        controller.position.userScrollDirection ==
+                            ScrollDirection.reverse) {
+                      setState(() {
+                        showIndicator = true;
+                      });
+                      await widget.messageService
+                          .fetchMoreMessage(widget.pageSize, widget.chat!);
+                      Future.delayed(const Duration(seconds: 2), () {
+                        if (mounted) {
+                          setState(() {
+                            showIndicator = false;
+                          });
+                        }
+                      });
                     }
-
-                    return ListView(
-                      reverse: true,
-                      padding: const EdgeInsets.only(top: 24.0),
-                      children: messageWidgets.reversed.toList(),
-                    );
                   },
+                  child: ListView(
+                    shrinkWrap: true,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    controller: controller,
+                    reverse: true,
+                    padding: const EdgeInsets.only(top: 24.0),
+                    children: [
+                      ...detailRows,
+                      if (showIndicator) ...[
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Center(child: CircularProgressIndicator()),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
               ),
               if (chatModel != null)

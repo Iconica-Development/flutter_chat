@@ -17,19 +17,26 @@ List<GoRoute> getCommunityChatStoryRoutes(
         path: CommunityChatUserStoryRoutes.chatScreen,
         pageBuilder: (context, state) {
           var chatScreen = ChatScreen(
+            pageSize: configuration.pageSize,
             service: configuration.service,
             options: configuration.chatOptionsBuilder(context),
-            onNoChats: () =>
-                context.push(CommunityChatUserStoryRoutes.newChatScreen),
-            onPressStartChat: () =>
-                configuration.onPressStartChat?.call() ??
-                context.push(CommunityChatUserStoryRoutes.newChatScreen),
+            onNoChats: () async =>
+                await context.push(CommunityChatUserStoryRoutes.newChatScreen),
+            onPressStartChat: () async {
+              if (configuration.onPressStartChat != null) {
+                return await configuration.onPressStartChat?.call();
+              }
+
+              return await context
+                  .push(CommunityChatUserStoryRoutes.newChatScreen);
+            },
             onPressChat: (chat) =>
                 configuration.onPressChat?.call(context, chat) ??
                 context.push(
                     CommunityChatUserStoryRoutes.chatDetailViewPath(chat.id!)),
             onDeleteChat: (chat) =>
-                configuration.onDeleteChat?.call(context, chat),
+                configuration.onDeleteChat?.call(context, chat) ??
+                configuration.service.deleteChat(chat),
             deleteChatDialog: configuration.deleteChatDialog,
             translations: configuration.translations,
           );
@@ -52,6 +59,7 @@ List<GoRoute> getCommunityChatStoryRoutes(
           var chatId = state.pathParameters['id'];
           var chat = PersonalChatModel(user: ChatUserModel(), id: chatId);
           var chatDetailScreen = ChatDetailScreen(
+            pageSize: configuration.messagePageSize,
             options: configuration.chatOptionsBuilder(context),
             translations: configuration.translations,
             chatUserService: configuration.userService,
@@ -110,8 +118,9 @@ List<GoRoute> getCommunityChatStoryRoutes(
                   );
                 }
                 if (context.mounted) {
-                  context.push(CommunityChatUserStoryRoutes.chatDetailViewPath(
-                      chat.id ?? ''));
+                  await context.push(
+                      CommunityChatUserStoryRoutes.chatDetailViewPath(
+                          chat.id ?? ''));
                 }
               });
           return buildScreenWithoutTransition(
