@@ -2,22 +2,21 @@ version: 2
 
 updates:
   - package-ecosystem: "pub"
-    directory: "/packages/flutter_community_chat"
+    directory: "/packages/flutter_chat"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "pub"
-    directory: "/packages/flutter_community_chat_firebase"
+    directory: "/packages/flutter_chat_firebase"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "pub"
-    directory: "/packages/flutter_community_chat_interface"
+    directory: "/packages/flutter_chat_interface"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "pub"
-    directory: "/packages/flutter_community_chat_view"
+    directory: "/packages/flutter_chat_view"
     schedule:
       interval: "weekly"
-
