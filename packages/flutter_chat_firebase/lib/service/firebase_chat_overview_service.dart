@@ -163,8 +163,22 @@ class FirebaseChatOverviewService implements ChatOverviewService {
             for (ChatModel chatModel in chats) {
               if (uniqueIds.add(chatModel.id!)) {
                 uniqueChatModels.add(chatModel);
+              } else {
+                var index = uniqueChatModels.indexWhere(
+                  (element) => element.id == chatModel.id,
+                );
+                if (index != -1) {
+                  if (chatModel.lastUsed != null &&
+                      uniqueChatModels[index].lastUsed != null) {
+                    if (chatModel.lastUsed!
+                        .isAfter(uniqueChatModels[index].lastUsed!)) {
+                      uniqueChatModels[index] = chatModel;
+                    }
+                  }
+                }
               }
             }
+
             uniqueChatModels.sort(
               (a, b) => (b.lastUsed ?? DateTime.now()).compareTo(
                 a.lastUsed ?? DateTime.now(),

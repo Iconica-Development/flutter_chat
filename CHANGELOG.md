@@ -1,3 +1,9 @@
+## 1.0.0
+
+- Added pagination for the ChatDetailScreen
+- Added routes with Go_router and Navigator
+- Added ChatEntryWidget
+
 ## 0.6.0 - December 1 2023
 
 - Made the message controller nullable

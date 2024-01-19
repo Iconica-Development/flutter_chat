@@ -105,7 +105,7 @@ List<GoRoute> getChatStoryRoutes(
               service: configuration.chatService,
               onPressCreateChat: (user) async {
                 configuration.onPressCreateChat?.call(user);
-                if (configuration.onPressChat != null) return;
+                if (configuration.onPressCreateChat != null) return;
                 var chat = await configuration.chatService.chatOverviewService
                     .getChatByUser(user);
                 if (chat.id == null) {

@@ -12,7 +12,6 @@ class ChatUserStoryConfiguration {
   const ChatUserStoryConfiguration({
     required this.chatService,
     required this.chatOptionsBuilder,
-    this.pageSize = 10,
     this.onPressStartChat,
     this.onPressChat,
     this.onDeleteChat,
@@ -47,7 +46,6 @@ class ChatUserStoryConfiguration {
 
   /// If true, the user will be routed to the new chat screen if there are no chats.
   final bool routeToNewChatIfEmpty;
-  final int pageSize;
   final int messagePageSize;
 
   final Future<bool?> Function(BuildContext, ChatModel)? deleteChatDialog;
