@@ -14,8 +14,8 @@ To use this package, add flutter_chat as a dependency in your pubspec.yaml file:
 ```
   flutter_chat:
     git:
-        url: https://github.com/Iconica-Development/flutter_chat
-        path: packages/flutter_chat
+      url: https://github.com/Iconica-Development/flutter_chat
+      path: packages/flutter_chat
 ```
 
 If you are going to use Firebase as the back-end of the Chat, you should also add the following package as a dependency to your pubspec.yaml file:
@@ -23,8 +23,8 @@ If you are going to use Firebase as the back-end of the Chat, you should also ad
 ```
   flutter_chat_firebase:
     git:
-        url: https://github.com/Iconica-Development/flutter_chat
-        path: packages/flutter_chat_firebase
+      url: https://github.com/Iconica-Development/flutter_chat
+      path: packages/flutter_chat_firebase
 ```
 
 Create a Firebase project for your application and add firebase firestore and storage.
