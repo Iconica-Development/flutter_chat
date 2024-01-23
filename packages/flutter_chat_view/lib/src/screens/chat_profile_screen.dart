@@ -79,6 +79,9 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
                       width: size.width,
                       child: ProfilePage(
                         user: user!,
+                        itemBuilderOptions: ItemBuilderOptions(
+                          readOnly: true,
+                        ),
                         service: ChatProfileService(),
                       ),
                     ),
