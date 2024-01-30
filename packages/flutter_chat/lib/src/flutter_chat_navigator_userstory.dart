@@ -4,10 +4,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat/flutter_chat.dart';
+import 'package:flutter_chat_local/service/local_chat_service.dart';
 
 Widget chatNavigatorUserStory(
-    ChatUserStoryConfiguration configuration, BuildContext context) {
-  return _chatScreenRoute(configuration, context);
+  BuildContext context, {
+  ChatUserStoryConfiguration? configuration,
+}) {
+  return _chatScreenRoute(
+    configuration ??
+        ChatUserStoryConfiguration(
+          chatService: LocalChatService(),
+          chatOptionsBuilder: (ctx) => const ChatOptions(),
+        ),
+    context,
+  );
 }
 
 Widget _chatScreenRoute(

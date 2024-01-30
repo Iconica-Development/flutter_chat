@@ -1,3 +1,7 @@
+## 1.1.0
+
+- Added LocalChatService for example app
+
 ## 1.0.0
 
 - Added pagination for the ChatDetailScreen

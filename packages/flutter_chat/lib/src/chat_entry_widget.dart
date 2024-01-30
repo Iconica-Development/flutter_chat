@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_view/flutter_chat_view.dart';
+import 'package:flutter_chat/flutter_chat.dart';
+import 'package:flutter_chat_local/local_chat_service.dart';
 
 class ChatEntryWidget extends StatefulWidget {
   const ChatEntryWidget({
-    required this.chatService,
-    required this.onTap,
+    this.chatService,
+    this.onTap,
     this.widgetSize = 75,
     this.backgroundColor = Colors.grey,
     this.icon = Icons.chat,
@@ -16,11 +17,11 @@ class ChatEntryWidget extends StatefulWidget {
     super.key,
   });
 
-  final ChatService chatService;
+  final ChatService? chatService;
   final Color backgroundColor;
   final double widgetSize;
   final Color counterBackgroundColor;
-  final Function() onTap;
+  final Function()? onTap;
   final IconData icon;
   final Color iconColor;
   final TextStyle? textStyle;
@@ -30,13 +31,32 @@ class ChatEntryWidget extends StatefulWidget {
 }
 
 class _ChatEntryWidgetState extends State<ChatEntryWidget> {
+  ChatService? chatService;
+
+  @override
+  void initState() {
+    super.initState();
+    chatService ??= widget.chatService ?? LocalChatService();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => widget.onTap.call(),
+      onTap: () =>
+          widget.onTap?.call() ??
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => chatNavigatorUserStory(
+                context,
+                configuration: ChatUserStoryConfiguration(
+                  chatService: chatService!,
+                  chatOptionsBuilder: (ctx) => const ChatOptions(),
+                ),
+              ),
+            ),
+          ),
       child: StreamBuilder<int>(
-        stream:
-            widget.chatService.chatOverviewService.getUnreadChatsCountStream(),
+        stream: chatService!.chatOverviewService.getUnreadChatsCountStream(),
         builder: (BuildContext context, snapshot) {
           return Stack(
             alignment: Alignment.center,
