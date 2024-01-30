@@ -1,24 +1,16 @@
-# SPDX-FileCopyrightText: 2022 Iconica
-#
-# SPDX-License-Identifier: GPL-3.0-or-later
-
-name: flutter_chat_firebase
-description: A new Flutter package project.
+name: flutter_chat_local
+description: "A new Flutter package project."
 version: 1.1.0
 publish_to: none
+homepage:
 
 environment:
-  sdk: ">=3.1.0 <4.0.0"
+  sdk: ">=3.2.5 <4.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  firebase_core: ^2.1.1
-  cloud_firestore: ^4.0.5
-  firebase_storage: ^11.0.5
-  firebase_auth: ^4.1.2
-  uuid: ^4.0.0
   flutter_chat_interface:
     git:
       url: https://github.com/Iconica-Development/flutter_chat
@@ -26,6 +18,7 @@ dependencies:
       ref: 1.1.0
 
 dev_dependencies:
+  flutter_test:
+    sdk: flutter
   flutter_lints: ^2.0.0
-
 flutter:
