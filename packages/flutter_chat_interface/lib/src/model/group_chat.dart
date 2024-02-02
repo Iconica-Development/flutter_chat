@@ -34,15 +34,15 @@ abstract class GroupChatModelInterface extends ChatModel {
 
 class GroupChatModel implements GroupChatModelInterface {
   GroupChatModel({
+    required this.canBeDeleted,
+    required this.title,
+    required this.imageUrl,
+    required this.users,
     this.id,
     this.messages,
     this.unreadMessages,
     this.lastUsed,
     this.lastMessage,
-    required this.canBeDeleted,
-    required this.title,
-    required this.imageUrl,
-    required this.users,
   });
 
   @override
@@ -75,17 +75,16 @@ class GroupChatModel implements GroupChatModelInterface {
     String? title,
     String? imageUrl,
     List<ChatUserModel>? users,
-  }) {
-    return GroupChatModel(
-      id: id ?? this.id,
-      messages: messages ?? this.messages,
-      unreadMessages: unreadMessages ?? this.unreadMessages,
-      lastUsed: lastUsed ?? this.lastUsed,
-      lastMessage: lastMessage ?? this.lastMessage,
-      canBeDeleted: canBeDeleted ?? this.canBeDeleted,
-      title: title ?? this.title,
-      imageUrl: imageUrl ?? this.imageUrl,
-      users: users ?? this.users,
-    );
-  }
+  }) =>
+      GroupChatModel(
+        id: id ?? this.id,
+        messages: messages ?? this.messages,
+        unreadMessages: unreadMessages ?? this.unreadMessages,
+        lastUsed: lastUsed ?? this.lastUsed,
+        lastMessage: lastMessage ?? this.lastMessage,
+        canBeDeleted: canBeDeleted ?? this.canBeDeleted,
+        title: title ?? this.title,
+        imageUrl: imageUrl ?? this.imageUrl,
+        users: users ?? this.users,
+      );
 }

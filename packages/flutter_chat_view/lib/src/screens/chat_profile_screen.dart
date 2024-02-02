@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_view/flutter_chat_view.dart';
 import 'package:flutter_chat_view/src/services/profile_service.dart';

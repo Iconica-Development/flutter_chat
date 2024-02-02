@@ -16,6 +16,18 @@ import 'package:uuid/uuid.dart';
 class FirebaseChatDetailService
     with ChangeNotifier
     implements ChatDetailService {
+  FirebaseChatDetailService({
+    required ChatUserService userService,
+    FirebaseApp? app,
+    FirebaseChatOptions? options,
+  }) {
+    var appInstance = app ?? Firebase.app();
+
+    _db = FirebaseFirestore.instanceFor(app: appInstance);
+    _storage = FirebaseStorage.instanceFor(app: appInstance);
+    _userService = userService;
+    _options = options ?? const FirebaseChatOptions();
+  }
   late final FirebaseFirestore _db;
   late final FirebaseStorage _storage;
   late final ChatUserService _userService;
@@ -29,19 +41,6 @@ class FirebaseChatDetailService
   int? chatPageSize;
   DateTime timestampToFilter = DateTime.now();
 
-  FirebaseChatDetailService({
-    required ChatUserService userService,
-    FirebaseApp? app,
-    FirebaseChatOptions? options,
-  }) {
-    var appInstance = app ?? Firebase.app();
-
-    _db = FirebaseFirestore.instanceFor(app: appInstance);
-    _storage = FirebaseStorage.instanceFor(app: appInstance);
-    _userService = userService;
-    _options = options ?? const FirebaseChatOptions();
-  }
-
   Future<void> _sendMessage(String chatId, Map<String, dynamic> data) async {
     var currentUser = await _userService.getCurrentUser();
 
@@ -52,7 +51,7 @@ class FirebaseChatDetailService
     var message = {
       'sender': currentUser.id,
       'timestamp': DateTime.now(),
-      ...data
+      ...data,
     };
 
     var chatReference = _db
@@ -89,7 +88,8 @@ class FirebaseChatDetailService
 
     // update the chat counter for the other users
     // get all users from the chat
-    // there is a field in the chat document called users that has a list of user ids
+    // there is a field in the chat document called users that has a list
+    // of user ids
     var fetchedChat = await metadataReference.get();
     var chatUsers = fetchedChat.data()?['users'] as List<dynamic>;
     // for all users except the message sender update the unread counter
@@ -112,9 +112,12 @@ class FirebaseChatDetailService
             'amount_unread_messages': FieldValue.increment(1),
           });
         } else {
-          await userReference.set({
-            'amount_unread_messages': 1,
-          }, SetOptions(merge: true));
+          await userReference.set(
+            {
+              'amount_unread_messages': 1,
+            },
+            SetOptions(merge: true),
+          );
         }
       }
     }
@@ -124,14 +127,13 @@ class FirebaseChatDetailService
   Future<void> sendTextMessage({
     required String text,
     required String chatId,
-  }) {
-    return _sendMessage(
-      chatId,
-      {
-        'text': text,
-      },
-    );
-  }
+  }) =>
+      _sendMessage(
+        chatId,
+        {
+          'text': text,
+        },
+      );
 
   @override
   Future<void> sendImageMessage({
@@ -171,7 +173,9 @@ class FirebaseChatDetailService
             )
             .withConverter<FirebaseMessageDocument>(
               fromFirestore: (snapshot, _) => FirebaseMessageDocument.fromJson(
-                  snapshot.data()!, snapshot.id),
+                snapshot.data()!,
+                snapshot.id,
+              ),
               toFirestore: (user, _) => user.toJson(),
             )
             .snapshots();
@@ -181,7 +185,7 @@ class FirebaseChatDetailService
             var data = message.doc.data();
             var sender = await _userService.getUser(data!.sender);
             var timestamp = DateTime.fromMillisecondsSinceEpoch(
-              (data.timestamp).millisecondsSinceEpoch,
+              data.timestamp.millisecondsSinceEpoch,
             );
 
             if (timestamp.isBefore(timestampToFilter)) {
@@ -206,16 +210,15 @@ class FirebaseChatDetailService
             ..._cumulativeMessages,
             ...messages,
           ];
-          List<ChatMessageModel> uniqueObjects =
-              _cumulativeMessages.toSet().toList();
+          var uniqueObjects = _cumulativeMessages.toSet().toList();
           _cumulativeMessages = uniqueObjects;
           _cumulativeMessages
               .sort((a, b) => a.timestamp.compareTo(b.timestamp));
           notifyListeners();
         });
       },
-      onCancel: () {
-        _subscription?.cancel();
+      onCancel: () async {
+        await _subscription?.cancel();
         _subscription = null;
         debugPrint('Canceling messages stream');
       },
@@ -225,10 +228,10 @@ class FirebaseChatDetailService
   }
 
   @override
-  void stopListeningForMessages() {
-    _subscription?.cancel();
+  Future<void> stopListeningForMessages() async {
+    await _subscription?.cancel();
     _subscription = null;
-    _controller?.close();
+    await _controller?.close();
     _controller = null;
   }
 
@@ -241,8 +244,9 @@ class FirebaseChatDetailService
       lastChat = chatId;
       lastMessage = null;
     }
-    // get the x amount of last messages from the oldest message that is in cumulative messages and add that to the list
-    List<ChatMessageModel> messages = [];
+    // get the x amount of last messages from the oldest message that is in
+    //cumulative messages and add that to the list
+    var messages = <ChatMessageModel>[];
     QuerySnapshot<FirebaseMessageDocument>? messagesQuerySnapshot;
     var query = _db
         .collection(_options.chatsCollectionName)
@@ -275,14 +279,14 @@ class FirebaseChatDetailService
       }
     }
 
-    List<FirebaseMessageDocument> messageDocuments = messagesQuerySnapshot.docs
+    var messageDocuments = messagesQuerySnapshot.docs
         .map((QueryDocumentSnapshot<FirebaseMessageDocument> doc) => doc.data())
         .toList();
     for (var message in messageDocuments) {
       var sender = await _userService.getUser(message.sender);
       if (sender != null) {
         var timestamp = DateTime.fromMillisecondsSinceEpoch(
-          (message.timestamp).millisecondsSinceEpoch,
+          message.timestamp.millisecondsSinceEpoch,
         );
 
         messages.add(
@@ -310,7 +314,5 @@ class FirebaseChatDetailService
   }
 
   @override
-  List<ChatMessageModel> getMessages() {
-    return _cumulativeMessages;
-  }
+  List<ChatMessageModel> getMessages() => _cumulativeMessages;
 }

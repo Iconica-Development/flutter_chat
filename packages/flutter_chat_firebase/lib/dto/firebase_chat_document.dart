@@ -19,15 +19,6 @@ class FirebaseChatDocument {
     this.lastMessage,
   });
 
-  final String? id;
-  final String? title;
-  final String? imageUrl;
-  final bool personal;
-  final bool canBeDeleted;
-  final Timestamp? lastUsed;
-  final List<String> users;
-  final FirebaseMessageDocument? lastMessage;
-
   FirebaseChatDocument.fromJson(Map<String, dynamic> json, this.id)
       : title = json['title'],
         imageUrl = json['image_url'],
@@ -41,6 +32,15 @@ class FirebaseChatDocument {
                 json['last_message'],
                 null,
               );
+
+  final String? id;
+  final String? title;
+  final String? imageUrl;
+  final bool personal;
+  final bool canBeDeleted;
+  final Timestamp? lastUsed;
+  final List<String> users;
+  final FirebaseMessageDocument? lastMessage;
 
   Map<String, dynamic> toJson() => {
         'title': title,

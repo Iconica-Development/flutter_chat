@@ -1,4 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore: lines_longer_than_80_chars
+// ignore_for_file: public_member_api_docs, sort_constructors_first, close_sinks, avoid_dynamic_calls
 // SPDX-FileCopyrightText: 2022 Iconica
 //
 // SPDX-License-Identifier: BSD-3-Clause
@@ -49,6 +50,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
   Stream<List<ChatModel>> getChatsStream() {
     StreamSubscription? chatSubscription;
     late StreamController<List<ChatModel>> controller;
+
     controller = StreamController(
       onListen: () async {
         var currentUser = await _userService.getCurrentUser();
@@ -68,11 +70,13 @@ class FirebaseChatOverviewService implements ChatOverviewService {
               )
               .withConverter(
                 fromFirestore: (snapshot, _) => FirebaseChatDocument.fromJson(
-                    snapshot.data()!, snapshot.id),
+                  snapshot.data()!,
+                  snapshot.id,
+                ),
                 toFirestore: (chat, _) => chat.toJson(),
               )
               .snapshots();
-          List<ChatModel> chats = [];
+          var chats = <ChatModel>[];
           ChatModel? chatModel;
 
           chatSubscription = chatSnapshot.listen((event) async {
@@ -84,7 +88,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
                   (element) => element != currentUser?.id,
                 ),
               );
-              int? unread =
+              var unread =
                   await _addUnreadChatSubscription(chat.id!, currentUser!.id!);
 
               if (chat.personal) {
@@ -157,10 +161,10 @@ class FirebaseChatOverviewService implements ChatOverviewService {
               }
               chats.add(chatModel!);
             }
-            Set<String> uniqueIds = <String>{};
-            List<ChatModel> uniqueChatModels = [];
+            var uniqueIds = <String>{};
+            var uniqueChatModels = <ChatModel>[];
 
-            for (ChatModel chatModel in chats) {
+            for (var chatModel in chats) {
               if (uniqueIds.add(chatModel.id!)) {
                 uniqueChatModels.add(chatModel);
               } else {
@@ -189,8 +193,8 @@ class FirebaseChatOverviewService implements ChatOverviewService {
           });
         });
       },
-      onCancel: () {
-        chatSubscription?.cancel();
+      onCancel: () async {
+        await chatSubscription?.cancel();
       },
     );
     return controller.stream;
@@ -278,7 +282,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
 
     if (chatData != null) {
       for (var userId in chatData.users) {
-        _db
+        await _db
             .collection(_options.usersCollectionName)
             .doc(userId)
             .collection(_options.userChatsCollectionName)
@@ -349,7 +353,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
           return chat;
         }
 
-        List<String> userIds = [
+        var userIds = <String>[
           currentUser!.id!,
           ...chat.users.map((e) => e.id!),
         ];
@@ -390,9 +394,11 @@ class FirebaseChatOverviewService implements ChatOverviewService {
 
   @override
   Stream<int> getUnreadChatsCountStream() {
-    // open a stream to the user's chats collection and listen to changes in this collection we will also add the amount of read chats
+    // open a stream to the user's chats collection and listen to changes in
+    // this collection we will also add the amount of read chats
     StreamSubscription? unreadChatSubscription;
     late StreamController<int> controller;
+
     controller = StreamController(
       onListen: () async {
         var currentUser = await _userService.getCurrentUser();
@@ -403,17 +409,20 @@ class FirebaseChatOverviewService implements ChatOverviewService {
             .snapshots();
 
         unreadChatSubscription = userSnapshot.listen((event) {
-          // every chat has a field called amount_unread_messages, combine all of these fields to get the total amount of unread messages
+          // every chat has a field called amount_unread_messages, combine all
+          // of these fields to get the total amount of unread messages
           var unreadChats = event.docs
               .map((chat) => chat.data()['amount_unread_messages'] ?? 0)
               .toList();
           var totalUnreadChats = unreadChats.fold<int>(
-              0, (previousValue, element) => previousValue + (element as int));
+            0,
+            (previousValue, element) => previousValue + (element as int),
+          );
           controller.add(totalUnreadChats);
         });
       },
-      onCancel: () {
-        unreadChatSubscription?.cancel();
+      onCancel: () async {
+        await unreadChatSubscription?.cancel();
       },
     );
     return controller.stream;
@@ -429,7 +438,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
     // set the amount of unread messages to 0
     await _db
         .collection(_options.usersCollectionName)
-        .doc(currentUser!.id!)
+        .doc(currentUser!.id)
         .collection(_options.userChatsCollectionName)
         .doc(chat.id)
         .set({'amount_unread_messages': 0}, SetOptions(merge: true));

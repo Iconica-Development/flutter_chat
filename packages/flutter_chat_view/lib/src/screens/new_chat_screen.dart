@@ -29,67 +29,62 @@ class _NewChatScreenState extends State<NewChatScreen> {
   String query = '';
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: _buildSearchField(),
-        actions: [
-          _buildSearchIcon(),
-        ],
-      ),
-      body: FutureBuilder<List<ChatUserModel>>(
-        future: widget.service.chatUserService.getAllUsers(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (snapshot.hasData) {
-            return _buildUserList(snapshot.data!);
-          } else {
-            return widget.options
-                .noChatsPlaceholderBuilder(widget.translations);
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: _buildSearchField(),
+          actions: [
+            _buildSearchIcon(),
+          ],
+        ),
+        body: FutureBuilder<List<ChatUserModel>>(
+          // ignore: discarded_futures
+          future: widget.service.chatUserService.getAllUsers(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else if (snapshot.hasData) {
+              return _buildUserList(snapshot.data!);
+            } else {
+              return widget.options
+                  .noChatsPlaceholderBuilder(widget.translations);
+            }
+          },
+        ),
+      );
+
+  Widget _buildSearchField() => _isSearching
+      ? Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: TextField(
+            focusNode: _textFieldFocusNode,
+            onChanged: (value) {
+              setState(() {
+                query = value;
+              });
+            },
+            decoration: InputDecoration(
+              hintText: widget.translations.searchPlaceholder,
+            ),
+          ),
+        )
+      : Text(widget.translations.newChatButton);
+
+  Widget _buildSearchIcon() => IconButton(
+        onPressed: () {
+          setState(() {
+            _isSearching = !_isSearching;
+          });
+
+          if (_isSearching) {
+            _textFieldFocusNode.requestFocus();
           }
         },
-      ),
-    );
-  }
-
-  Widget _buildSearchField() {
-    return _isSearching
-        ? Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: TextField(
-              focusNode: _textFieldFocusNode,
-              onChanged: (value) {
-                setState(() {
-                  query = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: widget.translations.searchPlaceholder,
-              ),
-            ),
-          )
-        : Text(widget.translations.newChatButton);
-  }
-
-  Widget _buildSearchIcon() {
-    return IconButton(
-      onPressed: () {
-        setState(() {
-          _isSearching = !_isSearching;
-        });
-
-        if (_isSearching) {
-          _textFieldFocusNode.requestFocus();
-        }
-      },
-      icon: Icon(
-        _isSearching ? Icons.close : Icons.search,
-      ),
-    );
-  }
+        icon: Icon(
+          _isSearching ? Icons.close : Icons.search,
+        ),
+      );
 
   Widget _buildUserList(List<ChatUserModel> users) {
     var filteredUsers = users

@@ -18,18 +18,18 @@ List<GoRoute> getChatStoryRoutes(
             service: configuration.chatService,
             options: configuration.chatOptionsBuilder(context),
             onNoChats: () async =>
-                await context.push(ChatUserStoryRoutes.newChatScreen),
+                context.push(ChatUserStoryRoutes.newChatScreen),
             onPressStartChat: () async {
               if (configuration.onPressStartChat != null) {
                 return await configuration.onPressStartChat?.call();
               }
 
-              return await context.push(ChatUserStoryRoutes.newChatScreen);
+              return context.push(ChatUserStoryRoutes.newChatScreen);
             },
-            onPressChat: (chat) =>
+            onPressChat: (chat) async =>
                 configuration.onPressChat?.call(context, chat) ??
                 context.push(ChatUserStoryRoutes.chatDetailViewPath(chat.id!)),
-            onDeleteChat: (chat) =>
+            onDeleteChat: (chat) async =>
                 configuration.onDeleteChat?.call(context, chat) ??
                 configuration.chatService.chatOverviewService.deleteChat(chat),
             deleteChatDialog: configuration.deleteChatDialog,
@@ -59,27 +59,36 @@ List<GoRoute> getChatStoryRoutes(
             service: configuration.chatService,
             chatId: chatId!,
             onMessageSubmit: (message) async {
-              configuration.onMessageSubmit?.call(message) ??
-                  configuration.chatService.chatDetailService
-                      .sendTextMessage(chatId: chatId, text: message);
+              if (configuration.onMessageSubmit != null) {
+                return configuration.onMessageSubmit?.call(message);
+              } else {
+                await configuration.chatService.chatDetailService
+                    .sendTextMessage(chatId: chatId, text: message);
+              }
+
               configuration.afterMessageSent?.call(chatId);
             },
             onUploadImage: (image) async {
-              configuration.onUploadImage?.call(image) ??
-                  configuration.chatService.chatDetailService
-                      .sendImageMessage(chatId: chatId, image: image);
+              if (configuration.onUploadImage != null) {
+                return await configuration.onUploadImage?.call(image);
+              } else {
+                await configuration.chatService.chatDetailService
+                    .sendImageMessage(chatId: chatId, image: image);
+              }
+
               configuration.afterMessageSent?.call(chatId);
             },
-            onReadChat: (chat) =>
+            onReadChat: (chat) async =>
                 configuration.onReadChat?.call(chat) ??
                 configuration.chatService.chatOverviewService.readChat(chat),
-            onPressChatTitle: (context, chat) {
+            onPressChatTitle: (context, chat) async {
               if (configuration.onPressChatTitle?.call(context, chat) != null) {
                 return configuration.onPressChatTitle?.call(context, chat);
               }
 
               return context.push(
-                  ChatUserStoryRoutes.chatProfileScreenPath(chat.id!, null));
+                ChatUserStoryRoutes.chatProfileScreenPath(chat.id!, null),
+              );
             },
             iconColor: configuration.iconColor,
           );
@@ -100,27 +109,29 @@ List<GoRoute> getChatStoryRoutes(
         path: ChatUserStoryRoutes.newChatScreen,
         pageBuilder: (context, state) {
           var newChatScreen = NewChatScreen(
-              options: configuration.chatOptionsBuilder(context),
-              translations: configuration.translations,
-              service: configuration.chatService,
-              onPressCreateChat: (user) async {
-                configuration.onPressCreateChat?.call(user);
-                if (configuration.onPressCreateChat != null) return;
-                var chat = await configuration.chatService.chatOverviewService
-                    .getChatByUser(user);
-                if (chat.id == null) {
-                  chat = await configuration.chatService.chatOverviewService
-                      .storeChatIfNot(
-                    PersonalChatModel(
-                      user: user,
-                    ),
-                  );
-                }
-                if (context.mounted) {
-                  await context.push(
-                      ChatUserStoryRoutes.chatDetailViewPath(chat.id ?? ''));
-                }
-              });
+            options: configuration.chatOptionsBuilder(context),
+            translations: configuration.translations,
+            service: configuration.chatService,
+            onPressCreateChat: (user) async {
+              configuration.onPressCreateChat?.call(user);
+              if (configuration.onPressCreateChat != null) return;
+              var chat = await configuration.chatService.chatOverviewService
+                  .getChatByUser(user);
+              if (chat.id == null) {
+                chat = await configuration.chatService.chatOverviewService
+                    .storeChatIfNot(
+                  PersonalChatModel(
+                    user: user,
+                  ),
+                );
+              }
+              if (context.mounted) {
+                await context.push(
+                  ChatUserStoryRoutes.chatDetailViewPath(chat.id ?? ''),
+                );
+              }
+            },
+          );
           return buildScreenWithoutTransition(
             context: context,
             state: state,
@@ -150,7 +161,7 @@ List<GoRoute> getChatStoryRoutes(
                 return configuration.onPressUserProfile!.call();
               }
 
-              return await context.push(
+              return context.push(
                 ChatUserStoryRoutes.chatProfileScreenPath(chatId, user),
               );
             },

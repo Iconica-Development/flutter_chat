@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
+// ignore_for_file: discarded_futures
+
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -123,7 +125,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> onPressSelectImage() => showModalBottomSheet<Uint8List?>(
+    Future<void> onPressSelectImage() async => showModalBottomSheet<Uint8List?>(
           context: context,
           builder: (BuildContext context) =>
               widget.options.imagePickerContainerBuilder(
@@ -199,7 +201,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     var isTop = controller.position.pixels ==
                         controller.position.maxScrollExtent;
 
-                    if (showIndicator == false &&
+                    if (!showIndicator &&
                         !isTop &&
                         controller.position.userScrollDirection ==
                             ScrollDirection.reverse) {
