@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat/flutter_chat.dart';
-import 'package:flutter_chat_local/service/local_chat_service.dart';
 
 Widget chatNavigatorUserStory(
   BuildContext context, {
