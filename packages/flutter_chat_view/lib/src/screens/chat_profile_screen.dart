@@ -30,7 +30,9 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
     var hasUser = widget.userId == null;
     return FutureBuilder<dynamic>(
       future: hasUser
+          // ignore: discarded_futures
           ? widget.chatService.chatOverviewService.getChatById(widget.chatId)
+          // ignore: discarded_futures
           : widget.chatService.chatUserService.getUser(widget.userId!),
       builder: (context, snapshot) {
         var data = snapshot.data;

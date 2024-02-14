@@ -15,17 +15,17 @@ class FirebaseMessageDocument {
     this.imageUrl,
   });
 
-  final String? id;
-  final String sender;
-  final String? text;
-  final String? imageUrl;
-  final Timestamp timestamp;
-
   FirebaseMessageDocument.fromJson(Map<String, dynamic> json, this.id)
       : sender = json['sender'],
         text = json['text'],
         imageUrl = json['image_url'],
         timestamp = json['timestamp'];
+
+  final String? id;
+  final String sender;
+  final String? text;
+  final String? imageUrl;
+  final Timestamp timestamp;
 
   Map<String, dynamic> toJson() => {
         'sender': sender,

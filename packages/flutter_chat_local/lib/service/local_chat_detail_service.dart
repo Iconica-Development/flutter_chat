@@ -5,9 +5,8 @@ import 'package:flutter_chat_interface/flutter_chat_interface.dart';
 import 'package:flutter_chat_local/local_chat_service.dart';
 
 class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
-  final ChatOverviewService chatOverviewService;
-
   LocalChatDetailService({required this.chatOverviewService});
+  final ChatOverviewService chatOverviewService;
   final List<ChatMessageModel> _cumulativeMessages = [];
   final StreamController<List<ChatMessageModel>> _controller =
       StreamController<List<ChatMessageModel>>.broadcast();
@@ -25,13 +24,11 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
   }
 
   @override
-  List<ChatMessageModel> getMessages() {
-    return _cumulativeMessages;
-  }
+  List<ChatMessageModel> getMessages() => _cumulativeMessages;
 
   @override
   Stream<List<ChatMessageModel>> getMessagesStream(String chatId) {
-    _controller.onListen = () {
+    _controller.onListen = () async {
       _subscription =
           chatOverviewService.getChatById(chatId).asStream().listen((event) {
         _cumulativeMessages.clear();
@@ -44,20 +41,22 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
   }
 
   @override
-  Future<void> sendImageMessage(
-      {required String chatId, required Uint8List image}) async {
+  Future<void> sendImageMessage({
+    required String chatId,
+    required Uint8List image,
+  }) async {
     var chat = (chatOverviewService as LocalChatOverviewService)
         .chats
         .firstWhere((element) => element.id == chatId);
     var message = ChatImageMessageModel(
       sender: ChatUserModel(
-        id: "3",
-        firstName: "ico",
-        lastName: "nica",
-        imageUrl: "https://picsum.photos/100/200",
+        id: '3',
+        firstName: 'ico',
+        lastName: 'nica',
+        imageUrl: 'https://picsum.photos/100/200',
       ),
       timestamp: DateTime.now(),
-      imageUrl: "https://picsum.photos/200/300",
+      imageUrl: 'https://picsum.photos/200/300',
     );
 
     await (chatOverviewService as LocalChatOverviewService).updateChat(
@@ -75,17 +74,19 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
   }
 
   @override
-  Future<void> sendTextMessage(
-      {required String chatId, required String text}) async {
+  Future<void> sendTextMessage({
+    required String chatId,
+    required String text,
+  }) async {
     var chat = (chatOverviewService as LocalChatOverviewService)
         .chats
         .firstWhere((element) => element.id == chatId);
     var message = ChatTextMessageModel(
       sender: ChatUserModel(
-        id: "3",
-        firstName: "ico",
-        lastName: "nica",
-        imageUrl: "https://picsum.photos/100/200",
+        id: '3',
+        firstName: 'ico',
+        lastName: 'nica',
+        imageUrl: 'https://picsum.photos/100/200',
       ),
       timestamp: DateTime.now(),
       text: text,
@@ -106,8 +107,8 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
   }
 
   @override
-  void stopListeningForMessages() {
-    _subscription?.cancel();
+  Future<void> stopListeningForMessages() async {
+    await _subscription?.cancel();
     _subscription = null;
   }
 }
