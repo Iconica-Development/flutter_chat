@@ -53,11 +53,11 @@ class _ChatBottomState extends State<ChatBottom> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {
+                    onPressed: () async {
                       var value = _textEditingController.text;
 
                       if (value.isNotEmpty) {
-                        widget.onMessageSubmit(value);
+                        await widget.onMessageSubmit(value);
                         _textEditingController.clear();
                       }
                     },

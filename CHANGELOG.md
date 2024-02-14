@@ -1,3 +1,7 @@
+## 1.2.0
+
+- Added linter and workflow
+
 ## 1.1.0
 
 - Added LocalChatService for example app

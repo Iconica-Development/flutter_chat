@@ -38,13 +38,15 @@ class ChatUserStoryConfiguration {
   final Future<void> Function(Uint8List image)? onUploadImage;
   final Future<void> Function(String text)? onMessageSubmit;
 
-  /// Called after a new message is sent. This can be used to do something extra like sending a push notification.
+  /// Called after a new message is sent. This can be used to do something
+  /// extra like sending a push notification.
   final Function(String chatId)? afterMessageSent;
   final Future<void> Function(ChatModel chat)? onReadChat;
   final Function(ChatUserModel)? onPressCreateChat;
   final ChatOptions Function(BuildContext context) chatOptionsBuilder;
 
-  /// If true, the user will be routed to the new chat screen if there are no chats.
+  /// If true, the user will be routed to the new chat screen if there are
+  /// no chats.
   final bool routeToNewChatIfEmpty;
   final int messagePageSize;
 

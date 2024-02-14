@@ -29,16 +29,15 @@ class LocalChatOverviewService
   }
 
   @override
-  Future<ChatModel> getChatById(String id) {
-    return Future.value(_chats.firstWhere((element) => element.id == id));
-  }
+  Future<ChatModel> getChatById(String id) =>
+      Future.value(_chats.firstWhere((element) => element.id == id));
 
   @override
   Future<ChatModel> getChatByUser(ChatUserModel user) {
     PersonalChatModel? chat;
     try {
       chat = _chats.firstWhere((element) => element.user.id == user.id);
-    } catch (e) {
+    } on Exception catch (_) {
       chat = PersonalChatModel(
         user: user,
         messages: [],
@@ -54,22 +53,14 @@ class LocalChatOverviewService
   }
 
   @override
-  Stream<List<ChatModel>> getChatsStream() {
-    return _chatsController.stream;
-  }
+  Stream<List<ChatModel>> getChatsStream() => _chatsController.stream;
 
   @override
-  Stream<int> getUnreadChatsCountStream() {
-    return Stream.value(0);
-  }
+  Stream<int> getUnreadChatsCountStream() => Stream.value(0);
 
   @override
-  Future<void> readChat(ChatModel chat) async {
-    return Future.value();
-  }
+  Future<void> readChat(ChatModel chat) async => Future.value();
 
   @override
-  Future<ChatModel> storeChatIfNot(ChatModel chat) {
-    return Future.value(chat);
-  }
+  Future<ChatModel> storeChatIfNot(ChatModel chat) => Future.value(chat);
 }

@@ -31,18 +31,17 @@ class FirebaseChatOptions {
     String? usersCollectionName,
     String? chatsMetaDataCollectionName,
     String? userChatsCollectionName,
-  }) {
-    return FirebaseChatOptions(
-      groupChatsCollectionName:
-          groupChatsCollectionName ?? this.groupChatsCollectionName,
-      chatsCollectionName: chatsCollectionName ?? this.chatsCollectionName,
-      messagesCollectionName:
-          messagesCollectionName ?? this.messagesCollectionName,
-      usersCollectionName: usersCollectionName ?? this.usersCollectionName,
-      chatsMetaDataCollectionName:
-          chatsMetaDataCollectionName ?? this.chatsMetaDataCollectionName,
-      userChatsCollectionName:
-          userChatsCollectionName ?? this.userChatsCollectionName,
-    );
-  }
+  }) =>
+      FirebaseChatOptions(
+        groupChatsCollectionName:
+            groupChatsCollectionName ?? this.groupChatsCollectionName,
+        chatsCollectionName: chatsCollectionName ?? this.chatsCollectionName,
+        messagesCollectionName:
+            messagesCollectionName ?? this.messagesCollectionName,
+        usersCollectionName: usersCollectionName ?? this.usersCollectionName,
+        chatsMetaDataCollectionName:
+            chatsMetaDataCollectionName ?? this.chatsMetaDataCollectionName,
+        userChatsCollectionName:
+            userChatsCollectionName ?? this.userChatsCollectionName,
+      );
 }

@@ -123,7 +123,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> onPressSelectImage() => showModalBottomSheet<Uint8List?>(
+    Future<void> onPressSelectImage() async => showModalBottomSheet<Uint8List?>(
           context: context,
           builder: (BuildContext context) =>
               widget.options.imagePickerContainerBuilder(
@@ -147,6 +147,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         );
 
     return FutureBuilder<ChatModel>(
+      // ignore: discarded_futures
       future: widget.service.chatOverviewService.getChatById(widget.chatId),
       builder: (context, AsyncSnapshot<ChatModel> snapshot) {
         var chatModel = snapshot.data;
@@ -199,7 +200,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     var isTop = controller.position.pixels ==
                         controller.position.maxScrollExtent;
 
-                    if (showIndicator == false &&
+                    if (!showIndicator &&
                         !isTop &&
                         controller.position.userScrollDirection ==
                             ScrollDirection.reverse) {

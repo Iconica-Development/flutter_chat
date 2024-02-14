@@ -39,25 +39,23 @@ class _ChatEntryWidgetState extends State<ChatEntryWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () =>
-          widget.onTap?.call() ??
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => chatNavigatorUserStory(
-                context,
-                configuration: ChatUserStoryConfiguration(
-                  chatService: chatService!,
-                  chatOptionsBuilder: (ctx) => const ChatOptions(),
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: () async =>
+            widget.onTap?.call() ??
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => chatNavigatorUserStory(
+                  context,
+                  configuration: ChatUserStoryConfiguration(
+                    chatService: chatService!,
+                    chatOptionsBuilder: (ctx) => const ChatOptions(),
+                  ),
                 ),
               ),
             ),
-          ),
-      child: StreamBuilder<int>(
-        stream: chatService!.chatOverviewService.getUnreadChatsCountStream(),
-        builder: (BuildContext context, snapshot) {
-          return Stack(
+        child: StreamBuilder<int>(
+          stream: chatService!.chatOverviewService.getUnreadChatsCountStream(),
+          builder: (BuildContext context, snapshot) => Stack(
             alignment: Alignment.center,
             children: [
               Container(
@@ -95,11 +93,9 @@ class _ChatEntryWidgetState extends State<ChatEntryWidget> {
                 ),
               ),
             ],
-          );
-        },
-      ),
-    );
-  }
+          ),
+        ),
+      );
 }
 
 class _AnimatedNotificationIcon extends StatefulWidget {
@@ -144,7 +140,7 @@ class _AnimatedNotificationIconState extends State<_AnimatedNotificationIcon>
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.notifications != widget.notifications) {
-      _runAnimation();
+      unawaited(_runAnimation());
     }
   }
 
@@ -154,12 +150,10 @@ class _AnimatedNotificationIconState extends State<_AnimatedNotificationIcon>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return RotationTransition(
-      turns: Tween(begin: 0.0, end: -.1)
-          .chain(CurveTween(curve: Curves.elasticIn))
-          .animate(_animationController),
-      child: widget.icon,
-    );
-  }
+  Widget build(BuildContext context) => RotationTransition(
+        turns: Tween(begin: 0.0, end: -.1)
+            .chain(CurveTween(curve: Curves.elasticIn))
+            .animate(_animationController),
+        child: widget.icon,
+      );
 }

@@ -30,13 +30,13 @@ abstract class PersonalChatModelInterface extends ChatModel {
 
 class PersonalChatModel implements PersonalChatModelInterface {
   PersonalChatModel({
+    required this.user,
     this.id,
     this.messages = const [],
     this.unreadMessages,
     this.lastUsed,
     this.lastMessage,
     this.canBeDeleted = true,
-    required this.user,
   });
 
   @override
@@ -64,15 +64,14 @@ class PersonalChatModel implements PersonalChatModelInterface {
     ChatMessageModel? lastMessage,
     bool? canBeDeleted,
     ChatUserModel? user,
-  }) {
-    return PersonalChatModel(
-      id: id ?? this.id,
-      messages: messages ?? this.messages,
-      unreadMessages: unreadMessages ?? this.unreadMessages,
-      lastUsed: lastUsed ?? this.lastUsed,
-      lastMessage: lastMessage ?? this.lastMessage,
-      user: user ?? this.user,
-      canBeDeleted: canBeDeleted ?? this.canBeDeleted,
-    );
-  }
+  }) =>
+      PersonalChatModel(
+        id: id ?? this.id,
+        messages: messages ?? this.messages,
+        unreadMessages: unreadMessages ?? this.unreadMessages,
+        lastUsed: lastUsed ?? this.lastUsed,
+        lastMessage: lastMessage ?? this.lastMessage,
+        user: user ?? this.user,
+        canBeDeleted: canBeDeleted ?? this.canBeDeleted,
+      );
 }
