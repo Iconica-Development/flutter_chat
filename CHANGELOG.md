@@ -1,3 +1,7 @@
+## 1.2.1
+
+- Fixed bug in the LocalChatService
+
 ## 1.2.0
 
 - Added linter and workflow

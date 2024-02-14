@@ -36,7 +36,12 @@ class LocalChatOverviewService
   Future<ChatModel> getChatByUser(ChatUserModel user) {
     PersonalChatModel? chat;
     try {
-      chat = _chats.firstWhere((element) => element.user.id == user.id);
+      chat = _chats.firstWhere(
+        (element) => element.user.id == user.id,
+        orElse: () {
+          throw Exception();
+        },
+      );
     } on Exception catch (_) {
       chat = PersonalChatModel(
         user: user,
