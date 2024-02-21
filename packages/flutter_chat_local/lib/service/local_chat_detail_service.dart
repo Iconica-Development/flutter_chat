@@ -4,12 +4,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_chat_interface/flutter_chat_interface.dart';
 import 'package:flutter_chat_local/local_chat_service.dart';
 
+/// A class providing local chat detail service implementation.
 class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
+  /// Constructs a [LocalChatDetailService] instance.
+  ///
+  /// [chatOverviewService]: The chat overview service.
   LocalChatDetailService({required this.chatOverviewService});
+
+  /// The chat overview service.
   final ChatOverviewService chatOverviewService;
+
+  /// The list of cumulative messages.
   final List<ChatMessageModel> _cumulativeMessages = [];
+
+  /// The stream controller for messages.
   final StreamController<List<ChatMessageModel>> _controller =
       StreamController<List<ChatMessageModel>>.broadcast();
+
+  /// The subscription for the stream.
   late StreamSubscription? _subscription;
 
   @override

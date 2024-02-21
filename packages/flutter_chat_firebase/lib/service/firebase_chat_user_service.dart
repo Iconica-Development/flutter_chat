@@ -9,7 +9,12 @@ import 'package:flutter_chat_firebase/config/firebase_chat_options.dart';
 import 'package:flutter_chat_firebase/dto/firebase_user_document.dart';
 import 'package:flutter_chat_interface/flutter_chat_interface.dart';
 
+/// Service class for managing chat users using Firebase.
 class FirebaseChatUserService implements ChatUserService {
+  /// Constructor for FirebaseChatUserService.
+  ///
+  /// [app]: The Firebase app instance.
+  /// [options]: The options for configuring Firebase Chat.
   FirebaseChatUserService({
     FirebaseApp? app,
     FirebaseChatOptions? options,
@@ -21,13 +26,22 @@ class FirebaseChatUserService implements ChatUserService {
     _options = options ?? const FirebaseChatOptions();
   }
 
+  /// The Firebase Firestore instance.
   late FirebaseFirestore _db;
+
+  /// The Firebase Authentication instance.
   late FirebaseAuth _auth;
+
+  /// The options for configuring Firebase Chat.
   late FirebaseChatOptions _options;
 
+  /// The current user.
   ChatUserModel? _currentUser;
+
+  /// Map to cache user models.
   final Map<String, ChatUserModel> _users = {};
 
+  /// Collection reference for users.
   CollectionReference<FirebaseUserDocument> get _userCollection => _db
       .collection(_options.usersCollectionName)
       .withConverter<FirebaseUserDocument>(

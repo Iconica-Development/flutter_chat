@@ -5,6 +5,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat/flutter_chat.dart';
 
+/// Navigates to the chat user story screen.
+///
+/// [context]: The build context.
+/// [configuration]: The configuration for the chat user story.
 Widget chatNavigatorUserStory(
   BuildContext context, {
   ChatUserStoryConfiguration? configuration,
@@ -18,6 +22,10 @@ Widget chatNavigatorUserStory(
       context,
     );
 
+/// Constructs the chat screen route widget.
+///
+/// [configuration]: The configuration for the chat user story.
+/// [context]: The build context.
 Widget _chatScreenRoute(
   ChatUserStoryConfiguration configuration,
   BuildContext context,
@@ -65,6 +73,11 @@ Widget _chatScreenRoute(
       translations: configuration.translations,
     );
 
+/// Constructs the chat detail screen route widget.
+///
+/// [configuration]: The configuration for the chat user story.
+/// [context]: The build context.
+/// [chatId]: The id of the chat.
 Widget _chatDetailScreenRoute(
   ChatUserStoryConfiguration configuration,
   BuildContext context,
@@ -118,6 +131,12 @@ Widget _chatDetailScreenRoute(
       iconColor: configuration.iconColor,
     );
 
+/// Constructs the chat profile screen route widget.
+///
+/// [configuration]: The configuration for the chat user story.
+/// [context]: The build context.
+/// [chatId]: The id of the chat.
+/// [userId]: The id of the user.
 Widget _chatProfileScreenRoute(
   ChatUserStoryConfiguration configuration,
   BuildContext context,
@@ -147,6 +166,10 @@ Widget _chatProfileScreenRoute(
       },
     );
 
+/// Constructs the new chat screen route widget.
+///
+/// [configuration]: The configuration for the chat user story.
+/// [context]: The build context.
 Widget _newChatScreenRoute(
   ChatUserStoryConfiguration configuration,
   BuildContext context,

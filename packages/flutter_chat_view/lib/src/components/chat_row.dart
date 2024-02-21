@@ -13,11 +13,21 @@ class ChatRow extends StatelessWidget {
     this.avatar,
     super.key,
   });
+
+  /// The title of the chat.
   final String title;
+
+  /// The number of unread messages in the chat.
   final int unreadMessages;
-  final Widget? avatar;
-  final String? subTitle;
+
+  /// The last time the chat was used.
   final String? lastUsed;
+
+  /// The subtitle of the chat.
+  final String? subTitle;
+
+  /// The avatar associated with the chat.
+  final Widget? avatar;
 
   @override
   Widget build(BuildContext context) => Row(

@@ -3,6 +3,7 @@ import 'package:flutter_chat_firebase/config/firebase_chat_options.dart';
 import 'package:flutter_chat_firebase/flutter_chat_firebase.dart';
 import 'package:flutter_chat_interface/flutter_chat_interface.dart';
 
+/// Service class for managing chat services using Firebase.
 class FirebaseChatService implements ChatService {
   FirebaseChatService({
     this.options,
@@ -29,10 +30,19 @@ class FirebaseChatService implements ChatService {
     );
   }
 
+  /// The options for configuring Firebase Chat.
   final FirebaseChatOptions? options;
+
+  /// The Firebase app instance.
   final FirebaseApp? app;
+
+  /// The service for managing chat details.
   ChatDetailService? firebaseChatDetailService;
+
+  /// The service for managing chat overviews.
   ChatOverviewService? firebaseChatOverviewService;
+
+  /// The service for managing chat users.
   ChatUserService? firebaseChatUserService;
 
   @override

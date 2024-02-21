@@ -33,6 +33,25 @@ abstract class GroupChatModelInterface extends ChatModel {
 }
 
 class GroupChatModel implements GroupChatModelInterface {
+  /// Constructs a [GroupChatModel] instance.
+  ///
+  /// [id]: The ID of the chat.
+  ///
+  /// [messages]: The list of messages in the chat.
+  ///
+  /// [unreadMessages]: The number of unread messages in the chat.
+  ///
+  /// [lastUsed]: The timestamp when the chat was last used.
+  ///
+  /// [lastMessage]: The last message sent in the chat.
+  ///
+  /// [title]: The title of the group chat.
+  ///
+  /// [imageUrl]: The URL of the image associated with the group chat.
+  ///
+  /// [users]: The list of users participating in the group chat.
+  ///
+  /// [canBeDeleted]: Indicates whether the chat can be deleted.
   GroupChatModel({
     required this.canBeDeleted,
     required this.title,

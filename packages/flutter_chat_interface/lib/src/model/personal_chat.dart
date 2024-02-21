@@ -29,6 +29,21 @@ abstract class PersonalChatModelInterface extends ChatModel {
 }
 
 class PersonalChatModel implements PersonalChatModelInterface {
+  /// Constructs a [PersonalChatModel] instance.
+  ///
+  /// [user]: The user involved in the personal chat.
+  ///
+  /// [id]: The ID of the chat.
+  ///
+  /// [messages]: The list of messages in the chat.
+  ///
+  /// [unreadMessages]: The number of unread messages in the chat.
+  ///
+  /// [lastUsed]: The timestamp when the chat was last used.
+  ///
+  /// [lastMessage]: The last message sent in the chat.
+  ///
+  /// [canBeDeleted]: Indicates whether the chat can be deleted.
   PersonalChatModel({
     required this.user,
     this.id,

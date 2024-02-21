@@ -14,16 +14,28 @@ abstract class ChatTextMessageModelInterface extends ChatMessageModel {
   String get text;
 }
 
+/// A concrete implementation of [ChatTextMessageModelInterface]
+/// representing a text message in a chat.
 class ChatTextMessageModel implements ChatTextMessageModelInterface {
+  /// Constructs a [ChatTextMessageModel] instance.
+  ///
+  /// [sender]: The sender of the message.
+  ///
+  /// [timestamp]: The timestamp when the message was sent.
+  ///
+  /// [text]: The text content of the message.
   ChatTextMessageModel({
     required this.sender,
     required this.timestamp,
     required this.text,
   });
+
   @override
   final ChatUserModel sender;
+
   @override
   final DateTime timestamp;
+
   @override
   final String text;
 }

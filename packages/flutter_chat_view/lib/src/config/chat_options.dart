@@ -19,13 +19,28 @@ class ChatOptions {
     this.noChatsPlaceholderBuilder = _createNoChatsPlaceholder,
   });
 
+  /// Builder function for the new chat button.
   final ButtonBuilder newChatButtonBuilder;
+
+  /// Builder function for the message input field.
   final TextInputBuilder messageInputBuilder;
+
+  /// Builder function for the container wrapping each chat row.
   final ContainerBuilder chatRowContainerBuilder;
+
+  /// Builder function for the container wrapping the image picker.
   final ImagePickerContainerBuilder imagePickerContainerBuilder;
+
+  /// Builder function for the scaffold containing the chat view.
   final ScaffoldBuilder scaffoldBuilder;
+
+  /// Builder function for the user avatar.
   final UserAvatarBuilder userAvatarBuilder;
+
+  /// Builder function for the group avatar.
   final GroupAvatarBuilder groupAvatarBuilder;
+
+  /// Builder function for the placeholder shown when no chats are available.
   final NoChatsPlaceholderBuilder noChatsPlaceholderBuilder;
 }
 

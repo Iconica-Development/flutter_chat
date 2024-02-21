@@ -13,9 +13,16 @@ import 'package:flutter_chat_firebase/dto/firebase_message_document.dart';
 import 'package:flutter_chat_interface/flutter_chat_interface.dart';
 import 'package:uuid/uuid.dart';
 
+/// Service class for managing chat details using Firebase.
 class FirebaseChatDetailService
     with ChangeNotifier
     implements ChatDetailService {
+  /// Constructor for FirebaseChatDetailService.
+  ///
+  /// [userService]: Instance of ChatUserService.
+  /// [app]: Optional FirebaseApp instance, defaults to Firebase.app().
+  /// [options]: Optional FirebaseChatOptions instance,
+  /// defaults to FirebaseChatOptions().
   FirebaseChatDetailService({
     required ChatUserService userService,
     FirebaseApp? app,
@@ -123,6 +130,10 @@ class FirebaseChatDetailService
     }
   }
 
+  /// Sends a text message to a chat.
+  ///
+  /// [text]: The text message to send.
+  /// [chatId]: The ID of the chat where the message will be sent.
   @override
   Future<void> sendTextMessage({
     required String text,
@@ -135,6 +146,10 @@ class FirebaseChatDetailService
         },
       );
 
+  /// Sends an image message to a chat.
+  ///
+  /// [chatId]: The ID of the chat where the message will be sent.
+  /// [image]: The image data to send.
   @override
   Future<void> sendImageMessage({
     required String chatId,
@@ -157,6 +172,9 @@ class FirebaseChatDetailService
         );
   }
 
+  /// Retrieves a stream of messages for a chat.
+  ///
+  /// [chatId]: The ID of the chat.
   @override
   Stream<List<ChatMessageModel>> getMessagesStream(String chatId) {
     timestampToFilter = DateTime.now();
@@ -227,6 +245,7 @@ class FirebaseChatDetailService
     return _controller!.stream;
   }
 
+  /// Stops listening for messages.
   @override
   Future<void> stopListeningForMessages() async {
     await _subscription?.cancel();
@@ -235,6 +254,10 @@ class FirebaseChatDetailService
     _controller = null;
   }
 
+  /// Fetches more messages for a chat.
+  ///
+  /// [pageSize]: The number of messages to fetch.
+  /// [chatId]: The ID of the chat.
   @override
   Future<void> fetchMoreMessage(int pageSize, String chatId) async {
     if (lastChat == null) {
@@ -313,6 +336,7 @@ class FirebaseChatDetailService
     notifyListeners();
   }
 
+  /// Retrieves the list of messages.
   @override
   List<ChatMessageModel> getMessages() => _cumulativeMessages;
 }

@@ -1,6 +1,8 @@
 import 'package:flutter_chat_interface/flutter_chat_interface.dart';
 
+/// Service class for managing local chat users.
 class LocalChatUserService implements ChatUserService {
+  /// List of predefined chat users.
   List<ChatUserModel> users = [
     ChatUserModel(
       id: '1',
@@ -15,6 +17,7 @@ class LocalChatUserService implements ChatUserService {
       imageUrl: 'https://picsum.photos/200/300',
     ),
   ];
+
   @override
   Future<List<ChatUserModel>> getAllUsers() => Future.value(users);
 
