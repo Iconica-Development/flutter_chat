@@ -31,6 +31,12 @@ class ChatUserStoryConfiguration {
     this.afterMessageSent,
     this.messagePageSize = 20,
     this.onPressUserProfile,
+    this.textfieldBottomPadding = 0,
+    this.iconDisabledColor = Colors.grey,
+    this.unreadMessageTextStyle,
+    this.loadingWidgetBuilder,
+    this.usernameBuilder,
+    this.chatTitleBuilder,
   });
 
   /// The service responsible for handling chat-related functionalities.
@@ -91,4 +97,10 @@ class ChatUserStoryConfiguration {
 
   /// Callback function triggered when user profile is pressed.
   final Function()? onPressUserProfile;
+  final double? textfieldBottomPadding;
+  final Color? iconDisabledColor;
+  final TextStyle? unreadMessageTextStyle;
+  final Widget? Function(BuildContext context)? loadingWidgetBuilder;
+  final Widget Function(String userFullName)? usernameBuilder;
+  final Widget Function(String chatTitle)? chatTitleBuilder;
 }

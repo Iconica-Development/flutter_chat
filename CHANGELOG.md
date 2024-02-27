@@ -1,3 +1,11 @@
+## 1.3.1
+
+- Added more options for styling the UI.
+- Changed the way profile images are shown.
+- Added an ontapUser in the chat.
+- Changed the way the time is shown in the chat after a message.
+- Added option to customize chat title and username chat message widget.
+
 ## 1.2.1
 
 - Fixed bug in the LocalChatService
