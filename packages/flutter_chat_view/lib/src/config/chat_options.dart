@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_view/flutter_chat_view.dart';
 import 'package:flutter_chat_view/src/components/chat_image.dart';
 import 'package:flutter_image_picker/flutter_image_picker.dart';
+import 'package:flutter_profile/flutter_profile.dart';
 
 class ChatOptions {
   const ChatOptions({
@@ -54,6 +55,7 @@ Widget _createMessageInput(
       controller: textEditingController,
       decoration: InputDecoration(
         hintText: translations.messagePlaceholder,
+       
         suffixIcon: suffixIcon,
       ),
     );
@@ -99,8 +101,12 @@ Widget _createUserAvatar(
   ChatUserModel user,
   double size,
 ) =>
-    ChatImage(
-      image: user.imageUrl ?? '',
+    Avatar(
+      user: User(
+        firstName: user.firstName,
+        lastName: user.lastName,
+        imageUrl: user.imageUrl,
+      ),
       size: size,
     );
 Widget _createGroupAvatar(

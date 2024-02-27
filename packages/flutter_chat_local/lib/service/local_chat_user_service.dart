@@ -14,9 +14,16 @@ class LocalChatUserService implements ChatUserService {
       lastName: 'Doe',
       imageUrl: 'https://picsum.photos/200/300',
     ),
+    ChatUserModel(
+      id: '3',
+      firstName: 'ico',
+      lastName: 'nica',
+      imageUrl: 'https://picsum.photos/100/200',
+    ),
   ];
   @override
-  Future<List<ChatUserModel>> getAllUsers() => Future.value(users);
+  Future<List<ChatUserModel>> getAllUsers() =>
+      Future.value(users.where((element) => element.id != '3').toList());
 
   @override
   Future<ChatUserModel?> getCurrentUser() => Future.value(ChatUserModel());

@@ -220,6 +220,9 @@ class FirebaseChatDetailService
       onCancel: () async {
         await _subscription?.cancel();
         _subscription = null;
+        _cumulativeMessages = [];
+        lastChat = chatId;
+        lastMessage = null;
         debugPrint('Canceling messages stream');
       },
     );
@@ -236,14 +239,16 @@ class FirebaseChatDetailService
   }
 
   @override
-  Future<void> fetchMoreMessage(int pageSize, String chatId) async {
-    if (lastChat == null) {
-      lastChat = chatId;
-    } else if (lastChat != chatId) {
+  Future<void> fetchMoreMessage(
+    int pageSize,
+    String chatId,
+  ) async {
+    if (lastChat != chatId) {
       _cumulativeMessages = [];
       lastChat = chatId;
       lastMessage = null;
     }
+
     // get the x amount of last messages from the oldest message that is in
     // cumulative messages and add that to the list
     var messages = <ChatMessageModel>[];

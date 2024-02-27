@@ -13,7 +13,10 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
   late StreamSubscription? _subscription;
 
   @override
-  Future<void> fetchMoreMessage(int pageSize, String chatId) async {
+  Future<void> fetchMoreMessage(
+    int pageSize,
+    String chatId,
+  ) async {
     await chatOverviewService.getChatById(chatId).then((value) {
       _cumulativeMessages.clear();
       _cumulativeMessages.addAll(value.messages!);
@@ -27,7 +30,9 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
   List<ChatMessageModel> getMessages() => _cumulativeMessages;
 
   @override
-  Stream<List<ChatMessageModel>> getMessagesStream(String chatId) {
+  Stream<List<ChatMessageModel>> getMessagesStream(
+    String chatId,
+  ) {
     _controller.onListen = () async {
       _subscription =
           chatOverviewService.getChatById(chatId).asStream().listen((event) {

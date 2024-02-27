@@ -75,6 +75,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
         onPressed: () {
           setState(() {
             _isSearching = !_isSearching;
+            query = '';
           });
 
           if (_isSearching) {
@@ -107,12 +108,15 @@ class _NewChatScreenState extends State<NewChatScreen> {
         var user = filteredUsers[index];
         return GestureDetector(
           child: widget.options.chatRowContainerBuilder(
-            ChatRow(
-              avatar: widget.options.userAvatarBuilder(
-                user,
-                40.0,
+            Container(
+              color: Colors.transparent,
+              child: ChatRow(
+                avatar: widget.options.userAvatarBuilder(
+                  user,
+                  40.0,
+                ),
+                title: user.fullName ?? widget.translations.anonymousUser,
               ),
-              title: user.fullName ?? widget.translations.anonymousUser,
             ),
           ),
           onTap: () async {

@@ -13,6 +13,7 @@ class ChatBottom extends StatefulWidget {
     required this.translations,
     this.onPressSelectImage,
     this.iconColor,
+    this.iconDisabledColor,
     super.key,
   });
 
@@ -22,6 +23,7 @@ class ChatBottom extends StatefulWidget {
   final ChatModel chat;
   final ChatTranslations translations;
   final Color? iconColor;
+  final Color? iconDisabledColor;
 
   @override
   State<ChatBottom> createState() => _ChatBottomState();
@@ -29,48 +31,61 @@ class ChatBottom extends StatefulWidget {
 
 class _ChatBottomState extends State<ChatBottom> {
   final TextEditingController _textEditingController = TextEditingController();
-
+  bool _isTyping = false;
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 17,
-        ),
-        child: SizedBox(
-          height: 45,
-          child: widget.messageInputBuilder(
-            _textEditingController,
-            Padding(
-              padding: const EdgeInsets.only(right: 15.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: widget.onPressSelectImage,
-                    icon: Icon(
-                      Icons.image,
-                      color: widget.iconColor,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () async {
-                      var value = _textEditingController.text;
-
-                      if (value.isNotEmpty) {
-                        await widget.onMessageSubmit(value);
-                        _textEditingController.clear();
-                      }
-                    },
-                    icon: Icon(
-                      Icons.send,
-                      color: widget.iconColor,
-                    ),
-                  ),
-                ],
+  Widget build(BuildContext context) {
+    _textEditingController.addListener(() {
+      if (_textEditingController.text.isEmpty) {
+        setState(() {
+          _isTyping = false;
+        });
+      } else {
+        setState(() {
+          _isTyping = true;
+        });
+      }
+    });
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 16,
+      ),
+      child: SizedBox(
+        height: 45,
+        child: widget.messageInputBuilder(
+          _textEditingController,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: widget.onPressSelectImage,
+                icon: Icon(
+                  Icons.image,
+                  color: widget.iconColor,
+                ),
               ),
-            ),
-            widget.translations,
+              IconButton(
+                disabledColor: widget.iconDisabledColor,
+                color: widget.iconColor,
+                onPressed: _isTyping
+                    ? () async {
+                        var value = _textEditingController.text;
+
+                        if (value.isNotEmpty) {
+                          await widget.onMessageSubmit(value);
+                          _textEditingController.clear();
+                        }
+                      }
+                    : null,
+                icon: const Icon(
+                  Icons.send,
+                ),
+              ),
+            ],
           ),
+          widget.translations,
         ),
-      );
+      ),
+    );
+  }
 }

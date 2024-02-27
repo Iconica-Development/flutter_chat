@@ -17,7 +17,10 @@ abstract class ChatDetailService with ChangeNotifier {
     String chatId,
   );
 
-  Future<void> fetchMoreMessage(int pageSize, String chatId);
+  Future<void> fetchMoreMessage(
+    int pageSize,
+    String chatId,
+  );
 
   List<ChatMessageModel> getMessages();
 

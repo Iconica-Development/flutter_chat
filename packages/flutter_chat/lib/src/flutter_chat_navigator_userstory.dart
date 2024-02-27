@@ -23,6 +23,7 @@ Widget _chatScreenRoute(
   BuildContext context,
 ) =>
     ChatScreen(
+      unreadMessageTextStyle: configuration.unreadMessageTextStyle,
       service: configuration.chatService,
       options: configuration.chatOptionsBuilder(context),
       onNoChats: () async => Navigator.of(context).push(
@@ -71,11 +72,31 @@ Widget _chatDetailScreenRoute(
   String chatId,
 ) =>
     ChatDetailScreen(
+      chatTitleBuilder: configuration.chatTitleBuilder,
+      usernameBuilder: configuration.usernameBuilder,
+      loadingWidgetBuilder: configuration.loadingWidgetBuilder,
+      iconDisabledColor: configuration.iconDisabledColor,
       pageSize: configuration.messagePageSize,
       options: configuration.chatOptionsBuilder(context),
       translations: configuration.translations,
       service: configuration.chatService,
       chatId: chatId,
+      textfieldBottomPadding: configuration.textfieldBottomPadding ?? 0,
+      onPressUserProfile: (userId) async {
+        if (configuration.onPressUserProfile != null) {
+          return configuration.onPressUserProfile?.call();
+        }
+        return Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => _chatProfileScreenRoute(
+              configuration,
+              context,
+              chatId,
+              userId,
+            ),
+          ),
+        );
+      },
       onMessageSubmit: (message) async {
         if (configuration.onMessageSubmit != null) {
           await configuration.onMessageSubmit?.call(message);

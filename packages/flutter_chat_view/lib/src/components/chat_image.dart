@@ -26,6 +26,7 @@ class ChatImage extends StatelessWidget {
         height: size,
         child: image != ''
             ? CachedNetworkImage(
+                fadeInDuration: Duration.zero,
                 imageUrl: image,
                 fit: BoxFit.cover,
               )

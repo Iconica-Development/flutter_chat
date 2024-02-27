@@ -29,6 +29,12 @@ class ChatUserStoryConfiguration {
     this.afterMessageSent,
     this.messagePageSize = 20,
     this.onPressUserProfile,
+    this.textfieldBottomPadding = 0,
+    this.iconDisabledColor = Colors.grey,
+    this.unreadMessageTextStyle,
+    this.loadingWidgetBuilder,
+    this.usernameBuilder,
+    this.chatTitleBuilder,
   });
   final ChatService chatService;
   final Function(BuildContext, ChatModel)? onPressChat;
@@ -56,4 +62,10 @@ class ChatUserStoryConfiguration {
   final Widget Function(BuildContext context, Widget child)? chatPageBuilder;
   final Function()? onPressStartChat;
   final Function()? onPressUserProfile;
+  final double? textfieldBottomPadding;
+  final Color? iconDisabledColor;
+  final TextStyle? unreadMessageTextStyle;
+  final Widget? Function(BuildContext context)? loadingWidgetBuilder;
+  final Widget Function(String userFullName)? usernameBuilder;
+  final Widget Function(String chatTitle)? chatTitleBuilder;
 }
