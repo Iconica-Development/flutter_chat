@@ -36,63 +36,100 @@ class _NewChatScreenState extends State<NewChatScreen> {
   String query = '';
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: _buildSearchField(),
-          actions: [
-            _buildSearchIcon(),
-          ],
-        ),
-        body: FutureBuilder<List<ChatUserModel>>(
-          // ignore: discarded_futures
-          future: widget.service.chatUserService.getAllUsers(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else if (snapshot.hasData) {
-              return _buildUserList(snapshot.data!);
-            } else {
-              return widget.options
-                  .noChatsPlaceholderBuilder(widget.translations);
-            }
-          },
-        ),
-      );
-
-  Widget _buildSearchField() => _isSearching
-      ? Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: TextField(
-            focusNode: _textFieldFocusNode,
-            onChanged: (value) {
-              setState(() {
-                query = value;
-              });
-            },
-            decoration: InputDecoration(
-              hintText: widget.translations.searchPlaceholder,
-            ),
-          ),
-        )
-      : Text(widget.translations.newChatButton);
-
-  Widget _buildSearchIcon() => IconButton(
-        onPressed: () {
-          setState(() {
-            _isSearching = !_isSearching;
-            query = '';
-          });
-
-          if (_isSearching) {
-            _textFieldFocusNode.requestFocus();
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: theme.appBarTheme.iconTheme ??
+            const IconThemeData(color: Colors.white),
+        backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
+        title: _buildSearchField(),
+        actions: [
+          _buildSearchIcon(),
+        ],
+      ),
+      body: FutureBuilder<List<ChatUserModel>>(
+        // ignore: discarded_futures
+        future: widget.service.chatUserService.getAllUsers(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            return _buildUserList(snapshot.data!);
+          } else {
+            return widget.options
+                .noChatsPlaceholderBuilder(widget.translations);
           }
         },
-        icon: Icon(
-          _isSearching ? Icons.close : Icons.search,
-        ),
-      );
+      ),
+    );
+  }
+
+  Widget _buildSearchField() {
+    var theme = Theme.of(context);
+
+    return _isSearching
+        ? Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: TextField(
+              focusNode: _textFieldFocusNode,
+              onChanged: (value) {
+                setState(() {
+                  query = value;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: widget.translations.searchPlaceholder,
+                hintStyle: theme.inputDecorationTheme.hintStyle ??
+                    const TextStyle(
+                      color: Colors.white,
+                    ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: theme.inputDecorationTheme.focusedBorder?.borderSide
+                            .color ??
+                        Colors.white,
+                  ),
+                ),
+              ),
+              style: theme.inputDecorationTheme.hintStyle ??
+                  const TextStyle(
+                    color: Colors.white,
+                  ),
+              cursorColor: theme.textSelectionTheme.cursorColor ?? Colors.white,
+            ),
+          )
+        : Text(
+            widget.translations.newChatButton,
+            style: theme.appBarTheme.titleTextStyle ??
+                const TextStyle(
+                  color: Colors.white,
+                ),
+          );
+  }
+
+  Widget _buildSearchIcon() {
+    var theme = Theme.of(context);
+
+    return IconButton(
+      onPressed: () {
+        setState(() {
+          _isSearching = !_isSearching;
+          query = '';
+        });
+
+        if (_isSearching) {
+          _textFieldFocusNode.requestFocus();
+        }
+      },
+      icon: Icon(
+        _isSearching ? Icons.close : Icons.search,
+        color: theme.appBarTheme.iconTheme?.color ?? Colors.white,
+      ),
+    );
+  }
 
   Widget _buildUserList(List<ChatUserModel> users) {
     var filteredUsers = users

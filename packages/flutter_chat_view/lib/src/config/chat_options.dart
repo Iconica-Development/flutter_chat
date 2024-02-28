@@ -51,13 +51,17 @@ Widget _createNewChatButton(
   ChatTranslations translations,
 ) =>
     Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(24.0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black,
           minimumSize: const Size.fromHeight(50),
         ),
         onPressed: onPressed,
-        child: Text(translations.newChatButton),
+        child: Text(
+          translations.newChatButton,
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
     );
 
@@ -67,10 +71,38 @@ Widget _createMessageInput(
   ChatTranslations translations,
 ) =>
     TextField(
+      textCapitalization: TextCapitalization.sentences,
       controller: textEditingController,
       decoration: InputDecoration(
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(26.5),
+          borderSide: const BorderSide(
+            color: Colors.black,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(26.5),
+          borderSide: const BorderSide(
+            color: Colors.black,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 0,
+          horizontal: 30,
+        ),
         hintText: translations.messagePlaceholder,
-       
+        hintStyle: const TextStyle(
+          fontWeight: FontWeight.normal,
+          color: Colors.black,
+        ),
+        fillColor: Colors.white,
+        filled: true,
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(26.5),
+          ),
+          borderSide: BorderSide.none,
+        ),
         suffixIcon: suffixIcon,
       ),
     );
@@ -95,9 +127,13 @@ Widget _createImagePickerContainer(
       color: Colors.white,
       child: ImagePicker(
         customButton: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.black,
+          ),
           onPressed: onClose,
           child: Text(
             translations.cancelImagePickerBtn,
+            style: const TextStyle(color: Colors.white),
           ),
         ),
       ),
