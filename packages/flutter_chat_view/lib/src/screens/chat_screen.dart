@@ -60,9 +60,17 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     var translations = widget.translations;
+    var theme = Theme.of(context);
     return widget.options.scaffoldBuilder(
       AppBar(
-        title: Text(translations.chatsTitle),
+        backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
+        title: Text(
+          translations.chatsTitle,
+          style: theme.appBarTheme.titleTextStyle ??
+              const TextStyle(
+                color: Colors.white,
+              ),
+        ),
         centerTitle: true,
         actions: [
           StreamBuilder<int>(
@@ -76,7 +84,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   '${snapshot.data ?? 0} ${translations.chatsUnread}',
                   style: widget.unreadMessageTextStyle ??
                       const TextStyle(
-                        color: Color(0xFFBBBBBB),
+                        color: Colors.white,
                         fontSize: 14,
                       ),
                 ),

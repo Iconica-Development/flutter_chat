@@ -28,6 +28,7 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     var hasUser = widget.userId == null;
+    var theme = Theme.of(context);
     return FutureBuilder<dynamic>(
       future: hasUser
           // ignore: discarded_futures
@@ -60,6 +61,9 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
 
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
+            iconTheme: theme.appBarTheme.iconTheme ??
+                const IconThemeData(color: Colors.white),
             title: Text(
               (data is ChatUserModel)
                   ? '${data.firstName ?? ''} ${data.lastName ?? ''}'
@@ -68,6 +72,10 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
                       : (data is GroupChatModel)
                           ? data.title
                           : '',
+              style: theme.appBarTheme.titleTextStyle ??
+                  const TextStyle(
+                    color: Colors.white,
+                  ),
             ),
           ),
           body: snapshot.hasData

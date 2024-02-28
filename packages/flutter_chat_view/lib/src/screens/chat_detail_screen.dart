@@ -137,6 +137,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     Future<void> onPressSelectImage() async => showModalBottomSheet<Uint8List?>(
           context: context,
           builder: (BuildContext context) =>
@@ -166,6 +168,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         var chatModel = snapshot.data;
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
+            iconTheme: theme.appBarTheme.iconTheme ??
+                const IconThemeData(color: Colors.white),
             centerTitle: true,
             title: GestureDetector(
               onTap: () => widget.onPressChatTitle.call(context, chatModel!),
@@ -208,7 +213,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                                 widget
                                                     .translations.anonymousUser
                                             : '',
-                                    style: const TextStyle(fontSize: 18),
+                                    style: theme.appBarTheme.titleTextStyle ??
+                                        const TextStyle(
+                                          color: Colors.white,
+                                        ),
                                   ),
                           ),
                         ),
