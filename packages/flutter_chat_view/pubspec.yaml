@@ -28,7 +28,7 @@ dependencies:
       ref: 1.0.4
   flutter_profile:
     git:
-      ref: 1.1.5
+      ref: 1.3.0
       url: https://github.com/Iconica-Development/flutter_profile
 
 dev_dependencies:
