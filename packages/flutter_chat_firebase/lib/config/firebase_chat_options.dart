@@ -4,8 +4,10 @@
 
 import 'package:flutter/material.dart';
 
+/// Options for Firebase chat configuration.
 @immutable
 class FirebaseChatOptions {
+  /// Creates a new instance of `FirebaseChatOptions`.
   const FirebaseChatOptions({
     this.groupChatsCollectionName = 'group_chats',
     this.chatsCollectionName = 'chats',
@@ -15,15 +17,26 @@ class FirebaseChatOptions {
     this.userChatsCollectionName = 'chats',
   });
 
+  /// The collection name for group chats.
   final String groupChatsCollectionName;
+
+  /// The collection name for chats.
   final String chatsCollectionName;
+
+  /// The collection name for messages.
   final String messagesCollectionName;
+
+  /// The collection name for users.
   final String usersCollectionName;
+
+  /// The collection name for chat metadata.
   final String chatsMetaDataCollectionName;
 
-  ///This is the collection inside the user document.
+  /// The collection name for user chats.
   final String userChatsCollectionName;
 
+  /// Creates a copy of this FirebaseChatOptions but with the given fields
+  /// replaced with the new values.
   FirebaseChatOptions copyWith({
     String? groupChatsCollectionName,
     String? chatsCollectionName,

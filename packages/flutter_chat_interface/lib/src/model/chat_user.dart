@@ -12,7 +12,18 @@ abstract class ChatUserModelInterface {
   String? get fullName;
 }
 
+/// A concrete implementation of [ChatUserModelInterface]
+/// representing a chat user.
 class ChatUserModel implements ChatUserModelInterface {
+  /// Constructs a [ChatUserModel] instance.
+  ///
+  /// [id]: The ID of the user.
+  ///
+  /// [firstName]: The first name of the user.
+  ///
+  /// [lastName]: The last name of the user.
+  ///
+  /// [imageUrl]: The URL of the user's image.
   ChatUserModel({
     this.id,
     this.firstName,
@@ -22,12 +33,16 @@ class ChatUserModel implements ChatUserModelInterface {
 
   @override
   final String? id;
+
   @override
   final String? firstName;
+
   @override
   final String? lastName;
+
   @override
   final String? imageUrl;
+
   @override
   String? get fullName {
     var fullName = '';

@@ -16,11 +16,22 @@ class ChatBottom extends StatefulWidget {
     super.key,
   });
 
+  /// Callback function invoked when a message is submitted.
   final Future<void> Function(String text) onMessageSubmit;
+
+  /// The builder function for the message input.
   final TextInputBuilder messageInputBuilder;
+
+  /// Callback function invoked when the select image button is pressed.
   final VoidCallback? onPressSelectImage;
+
+  /// The chat model.
   final ChatModel chat;
+
+  /// The translations for the chat.
   final ChatTranslations translations;
+
+  /// The color of the icons.
   final Color? iconColor;
 
   @override

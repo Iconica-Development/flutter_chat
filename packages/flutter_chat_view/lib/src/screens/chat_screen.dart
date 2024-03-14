@@ -24,19 +24,33 @@ class ChatScreen extends StatefulWidget {
     super.key,
   });
 
+  /// Chat options.
   final ChatOptions options;
-  final ChatTranslations translations;
+
+  /// Chat service instance.
   final ChatService service;
+
+  /// Callback function for starting a chat.
   final Function()? onPressStartChat;
-  final Function()? onNoChats;
-  final void Function(ChatModel chat) onDeleteChat;
+
+  /// Callback function for pressing on a chat.
   final void Function(ChatModel chat) onPressChat;
 
-  /// Disable the swipe to dismiss feature for chats that are not deletable
+  /// Callback function for deleting a chat.
+  final void Function(ChatModel chat) onDeleteChat;
+
+  /// Callback function for handling when there are no chats.
+  final Function()? onNoChats;
+
+  /// Method to optionally change the bottom sheet dialog.
+  final Future<bool?> Function(BuildContext, ChatModel)? deleteChatDialog;
+
+  /// Translations for the chat.
+  final ChatTranslations translations;
+
+  /// Disables the swipe to dismiss feature for chats that are not deletable.
   final bool disableDismissForPermanentChats;
 
-  /// Method to optionally change the bottomsheetdialog
-  final Future<bool?> Function(BuildContext, ChatModel)? deleteChatDialog;
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }

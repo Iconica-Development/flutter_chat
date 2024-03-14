@@ -3,12 +3,17 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_chat_interface/flutter_chat_interface.dart';
 
+/// A class providing local chat overview service implementation.
 class LocalChatOverviewService
     with ChangeNotifier
     implements ChatOverviewService {
+  /// The list of personal chat models.
   final List<PersonalChatModel> _chats = [];
+
+  /// Retrieves the list of personal chat models.
   List<PersonalChatModel> get chats => _chats;
 
+  /// The stream controller for chats.
   final StreamController<List<ChatModel>> _chatsController =
       StreamController<List<ChatModel>>.broadcast();
 

@@ -18,11 +18,20 @@ class ChatDetailRow extends StatefulWidget {
     super.key,
   });
 
+  /// The translations for the chat.
   final ChatTranslations translations;
+
+  /// The chat message model.
   final ChatMessageModel message;
+
+  /// The builder function for user avatar.
   final UserAvatarBuilder userAvatarBuilder;
-  final bool showTime;
+
+  /// The previous chat message model.
   final ChatMessageModel? previousMessage;
+
+  /// Flag indicating whether to show the time.
+  final bool showTime;
 
   @override
   State<ChatDetailRow> createState() => _ChatDetailRowState();

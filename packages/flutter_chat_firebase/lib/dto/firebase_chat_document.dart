@@ -6,8 +6,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_firebase/dto/firebase_message_document.dart';
 
+/// Represents a chat document in Firebase.
 @immutable
 class FirebaseChatDocument {
+  /// Creates a new instance of `FirebaseChatDocument`.
   const FirebaseChatDocument({
     required this.personal,
     required this.canBeDeleted,
@@ -19,6 +21,7 @@ class FirebaseChatDocument {
     this.lastMessage,
   });
 
+  /// Constructs a FirebaseChatDocument from JSON.
   FirebaseChatDocument.fromJson(Map<String, dynamic> json, this.id)
       : title = json['title'],
         imageUrl = json['image_url'],
@@ -33,15 +36,31 @@ class FirebaseChatDocument {
                 null,
               );
 
+  /// The unique identifier of the chat document.
   final String? id;
+
+  /// The title of the chat.
   final String? title;
+
+  /// The image URL of the chat.
   final String? imageUrl;
+
+  /// Indicates if the chat is personal.
   final bool personal;
+
+  /// Indicates if the chat can be deleted.
   final bool canBeDeleted;
+
+  /// The timestamp of when the chat was last used.
   final Timestamp? lastUsed;
+
+  /// The list of users participating in the chat.
   final List<String> users;
+
+  /// The last message in the chat.
   final FirebaseMessageDocument? lastMessage;
 
+  /// Converts the FirebaseChatDocument to JSON format.
   Map<String, dynamic> toJson() => {
         'title': title,
         'image_url': imageUrl,

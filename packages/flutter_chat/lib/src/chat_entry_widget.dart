@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat/flutter_chat.dart';
 
+/// A widget representing an entry point for a chat UI.
 class ChatEntryWidget extends StatefulWidget {
+  /// Constructs a [ChatEntryWidget].
   const ChatEntryWidget({
     this.chatService,
     this.onTap,
@@ -16,19 +18,35 @@ class ChatEntryWidget extends StatefulWidget {
     super.key,
   });
 
+  /// The chat service associated with the widget.
   final ChatService? chatService;
+
+  /// Background color of the widget.
   final Color backgroundColor;
+
+  /// Size of the widget.
   final double widgetSize;
+
+  /// Background color of the counter.
   final Color counterBackgroundColor;
+
+  /// Callback function triggered when the widget is tapped.
   final Function()? onTap;
+
+  /// Icon to be displayed.
   final IconData icon;
+
+  /// Color of the icon.
   final Color iconColor;
+
+  /// Text style for the counter.
   final TextStyle? textStyle;
 
   @override
   State<ChatEntryWidget> createState() => _ChatEntryWidgetState();
 }
 
+/// State class for [ChatEntryWidget].
 class _ChatEntryWidgetState extends State<ChatEntryWidget> {
   ChatService? chatService;
 
@@ -98,13 +116,17 @@ class _ChatEntryWidgetState extends State<ChatEntryWidget> {
       );
 }
 
+/// Stateful widget representing an animated notification icon.
 class _AnimatedNotificationIcon extends StatefulWidget {
   const _AnimatedNotificationIcon({
     required this.notifications,
     required this.icon,
   });
 
+  /// The number of notifications.
   final int notifications;
+
+  /// The icon to be displayed.
   final Icon icon;
 
   @override
@@ -112,6 +134,7 @@ class _AnimatedNotificationIcon extends StatefulWidget {
       _AnimatedNotificationIconState();
 }
 
+/// State class for [_AnimatedNotificationIcon].
 class _AnimatedNotificationIconState extends State<_AnimatedNotificationIcon>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;

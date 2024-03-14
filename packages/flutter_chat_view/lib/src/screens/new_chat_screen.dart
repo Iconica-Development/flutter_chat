@@ -14,10 +14,17 @@ class NewChatScreen extends StatefulWidget {
     super.key,
   });
 
+  /// Chat options.
   final ChatOptions options;
-  final ChatTranslations translations;
+
+  /// Chat service instance.
   final ChatService service;
+
+  /// Callback function for creating a new chat with a user.
   final Function(ChatUserModel) onPressCreateChat;
+
+  /// Translations for the chat.
+  final ChatTranslations translations;
 
   @override
   State<NewChatScreen> createState() => _NewChatScreenState();

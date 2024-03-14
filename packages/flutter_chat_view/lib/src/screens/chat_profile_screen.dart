@@ -13,10 +13,19 @@ class ChatProfileScreen extends StatefulWidget {
     super.key,
   });
 
+  /// Translations for the chat.
   final ChatTranslations translations;
+
+  /// Chat service instance.
   final ChatService chatService;
+
+  /// ID of the chat.
   final String chatId;
+
+  /// ID of the user (optional).
   final String? userId;
+
+  /// Callback function for tapping on a user.
   final Function(String userId) onTapUser;
 
   @override

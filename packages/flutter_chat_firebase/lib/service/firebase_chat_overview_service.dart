@@ -12,12 +12,19 @@ import 'package:flutter_chat_firebase/config/firebase_chat_options.dart';
 import 'package:flutter_chat_firebase/dto/firebase_chat_document.dart';
 import 'package:flutter_chat_interface/flutter_chat_interface.dart';
 
+/// Service class for managing chat overviews using Firebase.
 class FirebaseChatOverviewService implements ChatOverviewService {
   late FirebaseFirestore _db;
   late FirebaseStorage _storage;
   late ChatUserService _userService;
   late FirebaseChatOptions _options;
 
+  /// Constructor for FirebaseChatOverviewService.
+  ///
+  /// [userService]: Instance of ChatUserService.
+  /// [app]: Optional FirebaseApp instance, defaults to Firebase.app().
+  /// [options]: Optional FirebaseChatOptions instance, defaults
+  /// to FirebaseChatOptions().
   FirebaseChatOverviewService({
     required ChatUserService userService,
     FirebaseApp? app,
@@ -45,6 +52,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
     return snapshots.data()?['amount_unread_messages'];
   }
 
+  /// Retrieves a stream of chat overviews.
   @override
   Stream<List<ChatModel>> getChatsStream() {
     StreamSubscription? chatSubscription;
@@ -199,6 +207,9 @@ class FirebaseChatOverviewService implements ChatOverviewService {
     return controller.stream;
   }
 
+  /// Retrieves a chat by the given user.
+  ///
+  /// [user]: The user associated with the chat.
   @override
   Future<ChatModel> getChatByUser(ChatUserModel user) async {
     var currentUser = await _userService.getCurrentUser();
@@ -217,6 +228,9 @@ class FirebaseChatOverviewService implements ChatOverviewService {
     );
   }
 
+  /// Retrieves a chat by the given ID.
+  ///
+  /// [chatId]: The ID of the chat.
   @override
   Future<ChatModel> getChatById(String chatId) async {
     var currentUser = await _userService.getCurrentUser();
@@ -266,6 +280,9 @@ class FirebaseChatOverviewService implements ChatOverviewService {
     }
   }
 
+  /// Deletes the given chat.
+  ///
+  /// [chat]: The chat to be deleted.
   @override
   Future<void> deleteChat(ChatModel chat) async {
     var chatCollection = await _db
@@ -308,6 +325,9 @@ class FirebaseChatOverviewService implements ChatOverviewService {
     }
   }
 
+  /// Stores the given chat if it does not exist already.
+  ///
+  /// [chat]: The chat to be stored.
   @override
   Future<ChatModel> storeChatIfNot(ChatModel chat) async {
     if (chat.id == null) {
@@ -392,6 +412,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
     return chat;
   }
 
+  /// Retrieves a stream of the count of unread chats.
   @override
   Stream<int> getUnreadChatsCountStream() {
     // open a stream to the user's chats collection and listen to changes in
@@ -428,6 +449,9 @@ class FirebaseChatOverviewService implements ChatOverviewService {
     return controller.stream;
   }
 
+  /// Marks a chat as read.
+  ///
+  /// [chat]: The chat to be marked as read.
   @override
   Future<void> readChat(ChatModel chat) async {
     // set the amount of read chats to the amount of messages in the chat
@@ -436,6 +460,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
       return;
     }
     // set the amount of unread messages to 0
+
     await _db
         .collection(_options.usersCollectionName)
         .doc(currentUser!.id)

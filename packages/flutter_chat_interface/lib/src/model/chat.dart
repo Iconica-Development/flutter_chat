@@ -14,7 +14,21 @@ abstract class ChatModelInterface {
   bool get canBeDeleted;
 }
 
+/// A concrete implementation of [ChatModelInterface] representing a chat.
 class ChatModel implements ChatModelInterface {
+  /// Constructs a [ChatModel] instance.
+  ///
+  /// [id]: The ID of the chat.
+  ///
+  /// [messages]: The list of messages in the chat.
+  ///
+  /// [unreadMessages]: The number of unread messages in the chat.
+  ///
+  /// [lastUsed]: The timestamp when the chat was last used.
+  ///
+  /// [lastMessage]: The last message sent in the chat.
+  ///
+  /// [canBeDeleted]: Indicates whether the chat can be deleted.
   ChatModel({
     this.id,
     this.messages = const [],
@@ -26,14 +40,19 @@ class ChatModel implements ChatModelInterface {
 
   @override
   String? id;
+
   @override
   final List<ChatMessageModel>? messages;
+
   @override
   final int? unreadMessages;
+
   @override
   final DateTime? lastUsed;
+
   @override
   final ChatMessageModel? lastMessage;
+
   @override
   final bool canBeDeleted;
 }
