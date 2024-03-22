@@ -66,7 +66,7 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
 
     await (chatOverviewService as LocalChatOverviewService).updateChat(
       chat.copyWith(
-        messages: [...chat.messages!, message],
+        messages: [...?chat.messages, message],
         lastMessage: message,
         lastUsed: DateTime.now(),
       ),
@@ -98,7 +98,7 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
     );
     await (chatOverviewService as LocalChatOverviewService).updateChat(
       chat.copyWith(
-        messages: [...chat.messages!, message],
+        messages: [...?chat.messages, message],
         lastMessage: message,
         lastUsed: DateTime.now(),
       ),

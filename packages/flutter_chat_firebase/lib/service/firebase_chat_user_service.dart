@@ -69,7 +69,7 @@ class FirebaseChatUserService implements ChatUserService {
           : _currentUser;
 
   @override
-  Future<List<ChatUserModel>> getAllUsers() async {
+  Future<List<ChatUserModel>> get getAllUsers async {
     var currentUser = await getCurrentUser();
 
     var query = _userCollection.where(

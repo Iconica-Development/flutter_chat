@@ -7,6 +7,8 @@ mixin ChatUserStoryRoutes {
   static String chatDetailViewPath(String chatId) => '/chat-detail/$chatId';
   static const String chatDetailScreen = '/chat-detail/:id';
   static const String newChatScreen = '/new-chat';
+  static const String newGroupChatScreen = '/new-group-chat';
+  static const String newGroupChatOverviewScreen = '/new-group-chat-overview';
   static String chatProfileScreenPath(String chatId, String? userId) =>
       '/chat-profile/$chatId/$userId';
   static const String chatProfileScreen = '/chat-profile/:id/:userId';

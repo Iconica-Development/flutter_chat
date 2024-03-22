@@ -6,6 +6,7 @@
 import 'package:flutter_chat_interface/flutter_chat_interface.dart';
 
 abstract class ChatModelInterface {
+  ChatModelInterface copyWith();
   String? get id;
   List<ChatMessageModel>? get messages;
   int? get unreadMessages;
@@ -36,4 +37,22 @@ class ChatModel implements ChatModelInterface {
   final ChatMessageModel? lastMessage;
   @override
   final bool canBeDeleted;
+
+  @override
+  ChatModel copyWith({
+    String? id,
+    List<ChatMessageModel>? messages,
+    int? unreadMessages,
+    DateTime? lastUsed,
+    ChatMessageModel? lastMessage,
+    bool? canBeDeleted,
+  }) =>
+      ChatModel(
+        id: id ?? this.id,
+        messages: messages ?? this.messages,
+        unreadMessages: unreadMessages ?? this.unreadMessages,
+        lastUsed: lastUsed ?? this.lastUsed,
+        lastMessage: lastMessage ?? this.lastMessage,
+        canBeDeleted: canBeDeleted ?? this.canBeDeleted,
+      );
 }

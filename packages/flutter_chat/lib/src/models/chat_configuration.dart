@@ -19,6 +19,8 @@ class ChatUserStoryConfiguration {
     this.onReadChat,
     this.onUploadImage,
     this.onPressCreateChat,
+    this.onPressCreateGroupChat,
+    this.onPressCompleteGroupChatCreation,
     this.iconColor = Colors.black,
     this.deleteChatDialog,
     this.disableDismissForPermanentChats = false,
@@ -49,6 +51,8 @@ class ChatUserStoryConfiguration {
   final Function(String chatId)? afterMessageSent;
   final Future<void> Function(ChatModel chat)? onReadChat;
   final Function(ChatUserModel)? onPressCreateChat;
+  final Function(List<ChatUserModel>, String)? onPressCompleteGroupChatCreation;
+  final Function()? onPressCreateGroupChat;
   final ChatOptions Function(BuildContext context) chatOptionsBuilder;
 
   /// If true, the user will be routed to the new chat screen if there are
