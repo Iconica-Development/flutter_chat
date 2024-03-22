@@ -7,6 +7,7 @@ class ChatTranslations {
     this.chatsTitle = 'Chats',
     this.chatsUnread = 'unread',
     this.newChatButton = 'Start chat',
+    this.newGroupChatButton = 'Start group chat',
     this.newChatTitle = 'Start chat',
     this.image = 'Image',
     this.searchPlaceholder = 'Search...',
@@ -28,6 +29,7 @@ class ChatTranslations {
   final String chatsTitle;
   final String chatsUnread;
   final String newChatButton;
+  final String newGroupChatButton;
   final String newChatTitle;
   final String deleteChatButton;
   final String image;

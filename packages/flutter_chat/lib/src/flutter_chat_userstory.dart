@@ -143,6 +143,33 @@ List<GoRoute> getChatStoryRoutes(
                 );
               }
             },
+            onPressCreateGroupChat: () async => context.push(
+              ChatUserStoryRoutes.newGroupChatScreen,
+            ),
+          );
+          return buildScreenWithoutTransition(
+            context: context,
+            state: state,
+            child: configuration.chatPageBuilder?.call(
+                  context,
+                  newChatScreen,
+                ) ??
+                Scaffold(
+                  body: newChatScreen,
+                ),
+          );
+        },
+      ),
+      GoRoute(
+        path: ChatUserStoryRoutes.newGroupChatScreen,
+        pageBuilder: (context, state) {
+          var newChatScreen = NewGroupChatScreen(
+            options: configuration.chatOptionsBuilder(context),
+            translations: configuration.translations,
+            service: configuration.chatService,
+            onPressGroupChatOverview: (user) async => context.push(
+              ChatUserStoryRoutes.newGroupChatOverviewScreen,
+            ),
           );
           return buildScreenWithoutTransition(
             context: context,

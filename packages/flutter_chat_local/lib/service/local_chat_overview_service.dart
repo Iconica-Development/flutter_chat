@@ -8,10 +8,10 @@ class LocalChatOverviewService
     with ChangeNotifier
     implements ChatOverviewService {
   /// The list of personal chat models.
-  final List<PersonalChatModel> _chats = [];
+  final List<ChatModel> _chats = [];
 
   /// Retrieves the list of personal chat models.
-  List<PersonalChatModel> get chats => _chats;
+  List<ChatModel> get chats => _chats;
 
   /// The stream controller for chats.
   final StreamController<List<ChatModel>> _chatsController =
@@ -19,9 +19,10 @@ class LocalChatOverviewService
 
   Future<void> updateChat(ChatModel chat) {
     var index = _chats.indexWhere((element) => element.id == chat.id);
-    _chats[index] = chat as PersonalChatModel;
+    _chats[index] = chat;
     _chatsController.addStream(Stream.value(_chats));
     notifyListeners();
+    debugPrint('Chat updated: $chat');
     return Future.value();
   }
 
@@ -30,24 +31,27 @@ class LocalChatOverviewService
     _chats.removeWhere((element) => element.id == chat.id);
     _chatsController.add(_chats);
     notifyListeners();
+    debugPrint('Chat deleted: $chat');
     return Future.value();
   }
 
   @override
-  Future<ChatModel> getChatById(String id) =>
-      Future.value(_chats.firstWhere((element) => element.id == id));
+  Future<ChatModel> getChatById(String id) {
+    var chat = _chats.firstWhere((element) => element.id == id);
+    debugPrint('Retrieved chat by ID: $chat');
+    debugPrint('Messages are: ${chat.messages?.length}');
+    return Future.value(chat);
+  }
 
   @override
-  Future<ChatModel> getChatByUser(ChatUserModel user) {
+  Future<PersonalChatModel> getChatByUser(ChatUserModel user) async {
     PersonalChatModel? chat;
     try {
-      chat = _chats.firstWhere(
-        (element) => element.user.id == user.id,
-        orElse: () {
-          throw Exception();
-        },
-      );
-    } on Exception catch (_) {
+      chat = _chats
+          .whereType<PersonalChatModel>()
+          .firstWhere((element) => element.user.id == user.id);
+      // ignore: avoid_catching_errors
+    } on StateError {
       chat = PersonalChatModel(
         user: user,
         messages: [],
@@ -55,11 +59,12 @@ class LocalChatOverviewService
       );
       chat.id = chat.hashCode.toString();
       _chats.add(chat);
+      debugPrint('New chat created: $chat');
     }
 
     _chatsController.add([..._chats]);
     notifyListeners();
-    return Future.value(chat);
+    return chat;
   }
 
   @override
@@ -72,5 +77,18 @@ class LocalChatOverviewService
   Future<void> readChat(ChatModel chat) async => Future.value();
 
   @override
-  Future<ChatModel> storeChatIfNot(ChatModel chat) => Future.value(chat);
+  Future<ChatModel> storeChatIfNot(ChatModel chat) {
+    var chatExists = _chats.any((element) => element.id == chat.id);
+
+    if (!chatExists) {
+      _chats.add(chat);
+      _chatsController.add([..._chats]);
+      notifyListeners();
+      debugPrint('Chat stored: $chat');
+    } else {
+      debugPrint('Chat already exists: $chat');
+    }
+
+    return Future.value(chat);
+  }
 }

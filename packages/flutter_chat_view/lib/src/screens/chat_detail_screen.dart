@@ -172,6 +172,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             iconTheme: theme.appBarTheme.iconTheme ??
                 const IconThemeData(color: Colors.white),
             centerTitle: true,
+            leading: (chatModel is GroupChatModel)
+                ? GestureDetector(
+                    onTap: () {
+                      Navigator.popUntil(context, (route) => route.isFirst);
+                    },
+                    child: const Icon(
+                      Icons.arrow_back,
+                    ),
+                  )
+                : null,
             title: GestureDetector(
               onTap: () => widget.onPressChatTitle.call(context, chatModel!),
               child: Row(

@@ -10,6 +10,7 @@ class NewChatScreen extends StatefulWidget {
     required this.options,
     required this.onPressCreateChat,
     required this.service,
+    required this.onPressCreateGroupChat,
     this.translations = const ChatTranslations(),
     super.key,
   });
@@ -22,6 +23,7 @@ class NewChatScreen extends StatefulWidget {
 
   /// Callback function for creating a new chat with a user.
   final Function(ChatUserModel) onPressCreateChat;
+  final Function() onPressCreateGroupChat;
 
   /// Translations for the chat.
   final ChatTranslations translations;
@@ -48,21 +50,69 @@ class _NewChatScreenState extends State<NewChatScreen> {
           _buildSearchIcon(),
         ],
       ),
-      body: FutureBuilder<List<ChatUserModel>>(
-        // ignore: discarded_futures
-        future: widget.service.chatUserService.getAllUsers(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (snapshot.hasData) {
-            return _buildUserList(snapshot.data!);
-          } else {
-            return widget.options
-                .noChatsPlaceholderBuilder(widget.translations);
-          }
-        },
+      body: Column(
+        children: [
+          GestureDetector(
+            onTap: () async {
+              await widget.onPressCreateGroupChat();
+            },
+            child: Container(
+              color: Colors.grey[900],
+              child: SizedBox(
+                height: 60.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 16.0,
+                          ),
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.group,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              // Handle group chat creation
+                            },
+                          ),
+                        ),
+                        const Text(
+                          'Create group chat',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder<List<ChatUserModel>>(
+              // ignore: discarded_futures
+              future: widget.service.chatUserService.getAllUsers,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (snapshot.hasData) {
+                  return _buildUserList(snapshot.data!);
+                } else {
+                  return widget.options
+                      .noChatsPlaceholderBuilder(widget.translations);
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

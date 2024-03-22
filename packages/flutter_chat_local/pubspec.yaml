@@ -12,10 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_chat_interface:
-    git:
-      url: https://github.com/Iconica-Development/flutter_chat
-      path: packages/flutter_chat_interface
-      ref: 1.3.1
+    path: ../flutter_chat_interface
 
 dev_dependencies:
   flutter_test:
