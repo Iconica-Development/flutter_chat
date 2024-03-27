@@ -32,6 +32,14 @@ ios
 .pub/
 /build/
 
+# Platform-specific folders
+**/android/
+**/ios/
+**/web/
+**/windows/
+**/macos/
+**/linux/
+
 # Symbolication related
 app.*.symbols
 

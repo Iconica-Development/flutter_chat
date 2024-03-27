@@ -90,11 +90,13 @@ class FirebaseChatOverviewService implements ChatOverviewService {
             for (var element in event.docChanges) {
               var chat = element.doc.data();
               if (chat == null) return;
+
               var otherUser = await _userService.getUser(
                 chat.users.firstWhere(
                   (element) => element != currentUser?.id,
                 ),
               );
+
               var unread =
                   await _addUnreadChatSubscription(chat.id!, currentUser!.id!);
 

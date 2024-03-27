@@ -19,6 +19,7 @@ abstract class GroupChatModelInterface extends ChatModel {
   String get imageUrl;
   List<ChatUserModel> get users;
 
+  @override
   GroupChatModelInterface copyWith({
     String? id,
     List<ChatMessageModel>? messages,

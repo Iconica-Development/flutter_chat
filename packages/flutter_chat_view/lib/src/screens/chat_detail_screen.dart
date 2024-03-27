@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_chat_view/flutter_chat_view.dart';
 import 'package:flutter_chat_view/src/components/chat_bottom.dart';
 import 'package:flutter_chat_view/src/components/chat_detail_row.dart';
@@ -21,9 +20,15 @@ class ChatDetailScreen extends StatefulWidget {
     required this.service,
     required this.pageSize,
     required this.chatId,
+    required this.textfieldBottomPadding,
+    required this.onPressChatTitle,
+    required this.onPressUserProfile,
+    this.chatTitleBuilder,
+    this.usernameBuilder,
+    this.loadingWidgetBuilder,
     this.translations = const ChatTranslations(),
-    this.onPressChatTitle,
     this.iconColor,
+    this.iconDisabledColor,
     this.showTime = false,
     super.key,
   });
@@ -39,13 +44,20 @@ class ChatDetailScreen extends StatefulWidget {
   // called at the start of the screen to set the chat to read
   // or when a new message is received
   final Future<void> Function(ChatModel chat) onReadChat;
-  final Function(BuildContext context, ChatModel chat)? onPressChatTitle;
+  final Function(BuildContext context, ChatModel chat) onPressChatTitle;
 
   /// The color of the icon buttons in the chat bottom.
   final Color? iconColor;
   final bool showTime;
   final ChatService service;
   final int pageSize;
+  final double textfieldBottomPadding;
+  final Color? iconDisabledColor;
+  final Function(String? userId) onPressUserProfile;
+  // ignore: avoid_positional_boolean_parameters
+  final Widget? Function(BuildContext context)? loadingWidgetBuilder;
+  final Widget Function(String userFullName)? usernameBuilder;
+  final Widget Function(String chatTitle)? chatTitleBuilder;
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -71,7 +83,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       chat =
           await widget.service.chatOverviewService.getChatById(widget.chatId);
 
-      if (detailRows.isEmpty) {
+      if (detailRows.isEmpty && context.mounted) {
         await widget.service.chatDetailService.fetchMoreMessage(
           widget.pageSize,
           chat!.id!,
@@ -99,6 +111,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           translations: widget.translations,
           userAvatarBuilder: widget.options.userAvatarBuilder,
           previousMessage: previousMessage,
+          onPressUserProfile: widget.onPressUserProfile,
+          usernameBuilder: widget.usernameBuilder,
         ),
       );
       previousMessage = message;
@@ -123,6 +137,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     Future<void> onPressSelectImage() async => showModalBottomSheet<Uint8List?>(
           context: context,
           builder: (BuildContext context) =>
@@ -132,14 +148,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           ),
         ).then(
           (image) async {
+            if (image == null) return;
             var messenger = ScaffoldMessenger.of(context)
               ..showSnackBar(
                 getImageLoadingSnackbar(widget.translations),
               )
               ..activate();
-            if (image != null) {
-              await widget.onUploadImage(image);
-            }
+            await widget.onUploadImage(image);
             Future.delayed(const Duration(seconds: 1), () {
               messenger.hideCurrentSnackBar();
             });
@@ -153,9 +168,22 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         var chatModel = snapshot.data;
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
+            iconTheme: theme.appBarTheme.iconTheme ??
+                const IconThemeData(color: Colors.white),
             centerTitle: true,
+            leading: (chatModel is GroupChatModel)
+                ? GestureDetector(
+                    onTap: () {
+                      Navigator.popUntil(context, (route) => route.isFirst);
+                    },
+                    child: const Icon(
+                      Icons.arrow_back,
+                    ),
+                  )
+                : null,
             title: GestureDetector(
-              onTap: () => widget.onPressChatTitle?.call(context, chatModel!),
+              onTap: () => widget.onPressChatTitle.call(context, chatModel!),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: chat == null
@@ -177,77 +205,103 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.only(left: 15.5),
-                            child: Text(
-                              (chatModel is GroupChatModel)
-                                  ? chatModel.title
-                                  : (chatModel is PersonalChatModel)
-                                      ? chatModel.user.fullName ??
-                                          widget.translations.anonymousUser
-                                      : '',
-                              style: const TextStyle(fontSize: 18),
-                            ),
+                            child: widget.chatTitleBuilder != null
+                                ? widget.chatTitleBuilder!.call(
+                                    (chatModel is GroupChatModel)
+                                        ? chatModel.title
+                                        : (chatModel is PersonalChatModel)
+                                            ? chatModel.user.fullName ??
+                                                widget
+                                                    .translations.anonymousUser
+                                            : '',
+                                  )
+                                : Text(
+                                    (chatModel is GroupChatModel)
+                                        ? chatModel.title
+                                        : (chatModel is PersonalChatModel)
+                                            ? chatModel.user.fullName ??
+                                                widget
+                                                    .translations.anonymousUser
+                                            : '',
+                                    style: theme.appBarTheme.titleTextStyle ??
+                                        const TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                  ),
                           ),
                         ),
                       ],
               ),
             ),
           ),
-          body: Column(
+          body: Stack(
             children: [
-              Expanded(
-                child: Listener(
-                  onPointerMove: (event) async {
-                    var isTop = controller.position.pixels ==
-                        controller.position.maxScrollExtent;
-
-                    if (!showIndicator &&
-                        !isTop &&
-                        controller.position.userScrollDirection ==
-                            ScrollDirection.reverse) {
-                      setState(() {
-                        showIndicator = true;
-                      });
-                      await widget.service.chatDetailService
-                          .fetchMoreMessage(widget.pageSize, widget.chatId);
-                      Future.delayed(const Duration(seconds: 2), () {
-                        if (mounted) {
+              Column(
+                children: [
+                  Expanded(
+                    child: Listener(
+                      onPointerMove: (event) async {
+                        if (!showIndicator &&
+                            controller.offset >=
+                                controller.position.maxScrollExtent &&
+                            !controller.position.outOfRange) {
                           setState(() {
-                            showIndicator = false;
+                            showIndicator = true;
+                          });
+                          await widget.service.chatDetailService
+                              .fetchMoreMessage(
+                            widget.pageSize,
+                            widget.chatId,
+                          );
+                          Future.delayed(const Duration(seconds: 2), () {
+                            if (mounted) {
+                              setState(() {
+                                showIndicator = false;
+                              });
+                            }
                           });
                         }
-                      });
-                    }
-                  },
-                  child: ListView(
-                    shrinkWrap: true,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    controller: controller,
-                    reverse: true,
-                    padding: const EdgeInsets.only(top: 24.0),
-                    children: [
-                      ...detailRows,
-                      if (showIndicator) ...[
-                        const SizedBox(
+                      },
+                      child: ListView(
+                        shrinkWrap: true,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        controller: controller,
+                        reverse: true,
+                        padding: const EdgeInsets.only(top: 24.0),
+                        children: [
+                          ...detailRows,
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (chatModel != null)
+                    ChatBottom(
+                      chat: chatModel,
+                      messageInputBuilder: widget.options.messageInputBuilder,
+                      onPressSelectImage: onPressSelectImage,
+                      onMessageSubmit: widget.onMessageSubmit,
+                      translations: widget.translations,
+                      iconColor: widget.iconColor,
+                      iconDisabledColor: widget.iconDisabledColor,
+                    ),
+                  SizedBox(
+                    height: widget.textfieldBottomPadding,
+                  ),
+                ],
+              ),
+              if (showIndicator)
+                widget.loadingWidgetBuilder?.call(context) ??
+                    const Column(
+                      children: [
+                        SizedBox(
                           height: 10,
                         ),
-                        const Center(child: CircularProgressIndicator()),
-                        const SizedBox(
+                        Center(child: CircularProgressIndicator()),
+                        SizedBox(
                           height: 10,
                         ),
                       ],
-                    ],
-                  ),
-                ),
-              ),
-              if (chatModel != null)
-                ChatBottom(
-                  chat: chatModel,
-                  messageInputBuilder: widget.options.messageInputBuilder,
-                  onPressSelectImage: onPressSelectImage,
-                  onMessageSubmit: widget.onMessageSubmit,
-                  translations: widget.translations,
-                  iconColor: widget.iconColor,
-                ),
+                    ),
             ],
           ),
         );

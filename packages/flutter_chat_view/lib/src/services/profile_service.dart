@@ -22,4 +22,13 @@ class ChatProfileService extends ProfileService {
   }) {
     throw UnimplementedError();
   }
+
+  @override
+  FutureOr<bool> changePassword(
+    BuildContext context,
+    String currentPassword,
+    String newPassword,
+  ) {
+    throw UnimplementedError();
+  }
 }

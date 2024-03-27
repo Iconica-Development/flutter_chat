@@ -21,7 +21,9 @@ class ChatUserStoryConfiguration {
     this.onReadChat,
     this.onUploadImage,
     this.onPressCreateChat,
-    this.iconColor,
+    this.onPressCreateGroupChat,
+    this.onPressCompleteGroupChatCreation,
+    this.iconColor = Colors.black,
     this.deleteChatDialog,
     this.disableDismissForPermanentChats = false,
     this.routeToNewChatIfEmpty = true,
@@ -31,6 +33,12 @@ class ChatUserStoryConfiguration {
     this.afterMessageSent,
     this.messagePageSize = 20,
     this.onPressUserProfile,
+    this.textfieldBottomPadding = 20,
+    this.iconDisabledColor = Colors.grey,
+    this.unreadMessageTextStyle,
+    this.loadingWidgetBuilder,
+    this.usernameBuilder,
+    this.chatTitleBuilder,
   });
 
   /// The service responsible for handling chat-related functionalities.
@@ -65,6 +73,8 @@ class ChatUserStoryConfiguration {
   final Function(ChatUserModel)? onPressCreateChat;
 
   /// Builder for chat options based on context.
+  final Function(List<ChatUserModel>, String)? onPressCompleteGroupChatCreation;
+  final Function()? onPressCreateGroupChat;
   final ChatOptions Function(BuildContext context) chatOptionsBuilder;
 
   /// If true, the user will be routed to the new chat screen if there are
@@ -91,4 +101,10 @@ class ChatUserStoryConfiguration {
 
   /// Callback function triggered when user profile is pressed.
   final Function()? onPressUserProfile;
+  final double? textfieldBottomPadding;
+  final Color? iconDisabledColor;
+  final TextStyle? unreadMessageTextStyle;
+  final Widget? Function(BuildContext context)? loadingWidgetBuilder;
+  final Widget Function(String userFullName)? usernameBuilder;
+  final Widget Function(String chatTitle)? chatTitleBuilder;
 }

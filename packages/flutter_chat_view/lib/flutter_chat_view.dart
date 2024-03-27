@@ -13,3 +13,5 @@ export 'src/screens/chat_detail_screen.dart';
 export 'src/screens/chat_profile_screen.dart';
 export 'src/screens/chat_screen.dart';
 export 'src/screens/new_chat_screen.dart';
+export 'src/screens/new_group_chat_overview_screen.dart';
+export 'src/screens/new_group_chat_screen.dart';

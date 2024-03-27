@@ -17,6 +17,7 @@ abstract class PersonalChatModelInterface extends ChatModel {
 
   ChatUserModel get user;
 
+  @override
   PersonalChatModel copyWith({
     String? id,
     List<ChatMessageModel>? messages,

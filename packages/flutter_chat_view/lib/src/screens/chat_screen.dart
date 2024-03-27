@@ -17,6 +17,7 @@ class ChatScreen extends StatefulWidget {
     required this.onPressChat,
     required this.onDeleteChat,
     required this.service,
+    this.unreadMessageTextStyle,
     this.onNoChats,
     this.deleteChatDialog,
     this.translations = const ChatTranslations(),
@@ -50,6 +51,7 @@ class ChatScreen extends StatefulWidget {
 
   /// Disables the swipe to dismiss feature for chats that are not deletable.
   final bool disableDismissForPermanentChats;
+  final TextStyle? unreadMessageTextStyle;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -72,9 +74,17 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     var translations = widget.translations;
+    var theme = Theme.of(context);
     return widget.options.scaffoldBuilder(
       AppBar(
-        title: Text(translations.chatsTitle),
+        backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
+        title: Text(
+          translations.chatsTitle,
+          style: theme.appBarTheme.titleTextStyle ??
+              const TextStyle(
+                color: Colors.white,
+              ),
+        ),
         centerTitle: true,
         actions: [
           StreamBuilder<int>(
@@ -86,10 +96,11 @@ class _ChatScreenState extends State<ChatScreen> {
                 padding: const EdgeInsets.only(right: 22.0),
                 child: Text(
                   '${snapshot.data ?? 0} ${translations.chatsUnread}',
-                  style: const TextStyle(
-                    color: Color(0xFFBBBBBB),
-                    fontSize: 14,
-                  ),
+                  style: widget.unreadMessageTextStyle ??
+                      const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
                 ),
               ),
             ),

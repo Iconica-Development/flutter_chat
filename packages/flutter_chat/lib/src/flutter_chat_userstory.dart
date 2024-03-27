@@ -15,6 +15,7 @@ List<GoRoute> getChatStoryRoutes(
         path: ChatUserStoryRoutes.chatScreen,
         pageBuilder: (context, state) {
           var chatScreen = ChatScreen(
+            unreadMessageTextStyle: configuration.unreadMessageTextStyle,
             service: configuration.chatService,
             options: configuration.chatOptionsBuilder(context),
             onNoChats: () async =>
@@ -53,11 +54,24 @@ List<GoRoute> getChatStoryRoutes(
         pageBuilder: (context, state) {
           var chatId = state.pathParameters['id'];
           var chatDetailScreen = ChatDetailScreen(
+            chatTitleBuilder: configuration.chatTitleBuilder,
+            usernameBuilder: configuration.usernameBuilder,
+            loadingWidgetBuilder: configuration.loadingWidgetBuilder,
+            iconDisabledColor: configuration.iconDisabledColor,
             pageSize: configuration.messagePageSize,
             options: configuration.chatOptionsBuilder(context),
             translations: configuration.translations,
             service: configuration.chatService,
             chatId: chatId!,
+            textfieldBottomPadding: configuration.textfieldBottomPadding ?? 0,
+            onPressUserProfile: (userId) async {
+              if (configuration.onPressUserProfile != null) {
+                return configuration.onPressUserProfile?.call();
+              }
+              return context.push(
+                ChatUserStoryRoutes.chatProfileScreenPath(chatId, userId),
+              );
+            },
             onMessageSubmit: (message) async {
               if (configuration.onMessageSubmit != null) {
                 await configuration.onMessageSubmit?.call(message);
@@ -129,6 +143,33 @@ List<GoRoute> getChatStoryRoutes(
                 );
               }
             },
+            onPressCreateGroupChat: () async => context.push(
+              ChatUserStoryRoutes.newGroupChatScreen,
+            ),
+          );
+          return buildScreenWithoutTransition(
+            context: context,
+            state: state,
+            child: configuration.chatPageBuilder?.call(
+                  context,
+                  newChatScreen,
+                ) ??
+                Scaffold(
+                  body: newChatScreen,
+                ),
+          );
+        },
+      ),
+      GoRoute(
+        path: ChatUserStoryRoutes.newGroupChatScreen,
+        pageBuilder: (context, state) {
+          var newChatScreen = NewGroupChatScreen(
+            options: configuration.chatOptionsBuilder(context),
+            translations: configuration.translations,
+            service: configuration.chatService,
+            onPressGroupChatOverview: (user) async => context.push(
+              ChatUserStoryRoutes.newGroupChatOverviewScreen,
+            ),
           );
           return buildScreenWithoutTransition(
             context: context,

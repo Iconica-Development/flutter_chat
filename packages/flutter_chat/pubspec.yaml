@@ -4,7 +4,7 @@
 
 name: flutter_chat
 description: A new Flutter package project.
-version: 1.2.1
+version: 1.4.0
 
 publish_to: none
 
@@ -20,17 +20,18 @@ dependencies:
     git:
       url: https://github.com/Iconica-Development/flutter_chat
       path: packages/flutter_chat_view
-      ref: 1.2.1
+      ref: 1.4.0
   flutter_chat_interface:
     git:
       url: https://github.com/Iconica-Development/flutter_chat
       path: packages/flutter_chat_interface
-      ref: 1.2.1
+      ref: 1.4.0
   flutter_chat_local:
     git:
       url: https://github.com/Iconica-Development/flutter_chat
       path: packages/flutter_chat_local
-      ref: 1.2.1
+      ref: 1.4.0
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_iconica_analysis:

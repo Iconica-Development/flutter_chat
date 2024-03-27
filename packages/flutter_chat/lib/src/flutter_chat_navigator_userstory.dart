@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat/flutter_chat.dart';
+import 'package:uuid/uuid.dart';
 
 /// Navigates to the chat user story screen.
 ///
@@ -31,6 +32,7 @@ Widget _chatScreenRoute(
   BuildContext context,
 ) =>
     ChatScreen(
+      unreadMessageTextStyle: configuration.unreadMessageTextStyle,
       service: configuration.chatService,
       options: configuration.chatOptionsBuilder(context),
       onNoChats: () async => Navigator.of(context).push(
@@ -84,11 +86,31 @@ Widget _chatDetailScreenRoute(
   String chatId,
 ) =>
     ChatDetailScreen(
+      chatTitleBuilder: configuration.chatTitleBuilder,
+      usernameBuilder: configuration.usernameBuilder,
+      loadingWidgetBuilder: configuration.loadingWidgetBuilder,
+      iconDisabledColor: configuration.iconDisabledColor,
       pageSize: configuration.messagePageSize,
       options: configuration.chatOptionsBuilder(context),
       translations: configuration.translations,
       service: configuration.chatService,
       chatId: chatId,
+      textfieldBottomPadding: configuration.textfieldBottomPadding ?? 0,
+      onPressUserProfile: (userId) async {
+        if (configuration.onPressUserProfile != null) {
+          return configuration.onPressUserProfile?.call();
+        }
+        return Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => _chatProfileScreenRoute(
+              configuration,
+              context,
+              chatId,
+              userId,
+            ),
+          ),
+        );
+      },
       onMessageSubmit: (message) async {
         if (configuration.onMessageSubmit != null) {
           await configuration.onMessageSubmit?.call(message);
@@ -178,11 +200,25 @@ Widget _newChatScreenRoute(
       options: configuration.chatOptionsBuilder(context),
       translations: configuration.translations,
       service: configuration.chatService,
+      onPressCreateGroupChat: () async {
+        configuration.onPressCreateGroupChat?.call();
+        if (context.mounted) {
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => _newGroupChatScreenRoute(
+                configuration,
+                context,
+              ),
+            ),
+          );
+        }
+      },
       onPressCreateChat: (user) async {
         configuration.onPressCreateChat?.call(user);
         if (configuration.onPressCreateChat != null) return;
         var chat = await configuration.chatService.chatOverviewService
             .getChatByUser(user);
+        debugPrint('Chat is ${chat.id}');
         if (chat.id == null) {
           chat = await configuration.chatService.chatOverviewService
               .storeChatIfNot(
@@ -191,6 +227,67 @@ Widget _newChatScreenRoute(
             ),
           );
         }
+        if (context.mounted) {
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => _chatDetailScreenRoute(
+                configuration,
+                context,
+                chat.id!,
+              ),
+            ),
+          );
+        }
+      },
+    );
+
+Widget _newGroupChatScreenRoute(
+  ChatUserStoryConfiguration configuration,
+  BuildContext context,
+) =>
+    NewGroupChatScreen(
+      options: configuration.chatOptionsBuilder(context),
+      translations: configuration.translations,
+      service: configuration.chatService,
+      onPressGroupChatOverview: (users) async => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => _newGroupChatOverviewScreenRoute(
+            configuration,
+            context,
+            users,
+          ),
+        ),
+      ),
+    );
+
+Widget _newGroupChatOverviewScreenRoute(
+  ChatUserStoryConfiguration configuration,
+  BuildContext context,
+  List<ChatUserModel> users,
+) =>
+    NewGroupChatOverviewScreen(
+      options: configuration.chatOptionsBuilder(context),
+      translations: configuration.translations,
+      service: configuration.chatService,
+      users: users,
+      onPressCompleteGroupChatCreation: (users, groupChatName) async {
+        configuration.onPressCompleteGroupChatCreation
+            ?.call(users, groupChatName);
+        if (configuration.onPressCreateGroupChat != null) return;
+        debugPrint('----------- The list of users = $users -----------');
+        debugPrint('----------- Group chat name = $groupChatName -----------');
+
+        var chat =
+            await configuration.chatService.chatOverviewService.storeChatIfNot(
+          GroupChatModel(
+            id: const Uuid().v4(),
+            canBeDeleted: true,
+            title: groupChatName,
+            imageUrl: 'https://picsum.photos/200/300',
+            users: users,
+          ),
+        );
+        debugPrint('----------- Chat id = ${chat.id} -----------');
         if (context.mounted) {
           await Navigator.of(context).push(
             MaterialPageRoute(

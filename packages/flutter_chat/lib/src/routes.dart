@@ -13,6 +13,8 @@ mixin ChatUserStoryRoutes {
   static const String newChatScreen = '/new-chat';
 
   /// Constructs the path for the chat profile screen.
+  static const String newGroupChatScreen = '/new-group-chat';
+  static const String newGroupChatOverviewScreen = '/new-group-chat-overview';
   static String chatProfileScreenPath(String chatId, String? userId) =>
       '/chat-profile/$chatId/$userId';
 

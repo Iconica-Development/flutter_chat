@@ -13,6 +13,8 @@ class ChatDetailRow extends StatefulWidget {
     required this.translations,
     required this.message,
     required this.userAvatarBuilder,
+    required this.onPressUserProfile,
+    this.usernameBuilder,
     this.previousMessage,
     this.showTime = false,
     super.key,
@@ -29,6 +31,8 @@ class ChatDetailRow extends StatefulWidget {
 
   /// The previous chat message model.
   final ChatMessageModel? previousMessage;
+  final Function(String? userId) onPressUserProfile;
+  final Widget Function(String userFullName)? usernameBuilder;
 
   /// Flag indicating whether to show the time.
   final bool showTime;
@@ -46,6 +50,10 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
         widget.message.timestamp.day != widget.previousMessage?.timestamp.day;
     var isSameSender = widget.previousMessage == null ||
         widget.previousMessage?.sender.id != widget.message.sender.id;
+    var isSameMinute = widget.previousMessage != null &&
+        widget.message.timestamp.minute ==
+            widget.previousMessage?.timestamp.minute;
+    var hasHeader = isNewDate || isSameSender;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -55,17 +63,22 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (isNewDate || isSameSender) ...[
-            Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: widget.message.sender.imageUrl != null &&
-                      widget.message.sender.imageUrl!.isNotEmpty
-                  ? ChatImage(
-                      image: widget.message.sender.imageUrl!,
-                    )
-                  : widget.userAvatarBuilder(
-                      widget.message.sender,
-                      30,
-                    ),
+            GestureDetector(
+              onTap: () => widget.onPressUserProfile(
+                widget.message.sender.id,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: widget.message.sender.imageUrl != null &&
+                        widget.message.sender.imageUrl!.isNotEmpty
+                    ? ChatImage(
+                        image: widget.message.sender.imageUrl!,
+                      )
+                    : widget.userAvatarBuilder(
+                        widget.message.sender,
+                        40,
+                      ),
+              ),
             ),
           ] else ...[
             const SizedBox(
@@ -83,16 +96,23 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          widget.message.sender.fullName?.toUpperCase() ??
-                              widget.translations.anonymousUser,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color:
-                                Theme.of(context).textTheme.labelMedium?.color,
+                        if (widget.usernameBuilder != null)
+                          widget.usernameBuilder!(
+                            widget.message.sender.fullName ?? '',
+                          )
+                        else
+                          Text(
+                            widget.message.sender.fullName?.toUpperCase() ??
+                                widget.translations.anonymousUser,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium
+                                  ?.color,
+                            ),
                           ),
-                        ),
                         Padding(
                           padding: const EdgeInsets.only(top: 5.0),
                           child: Text(
@@ -111,35 +131,41 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                   Padding(
                     padding: const EdgeInsets.only(top: 3.0),
                     child: widget.message is ChatTextMessageModel
-                        ? RichText(
-                            text: TextSpan(
-                              text:
+                        ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Text(
                                   (widget.message as ChatTextMessageModel).text,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .labelMedium
-                                    ?.color,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.color,
+                                  ),
+                                ),
                               ),
-                              children: <TextSpan>[
-                                if (widget.showTime)
-                                  TextSpan(
-                                    text: " ${_dateFormatter.format(
-                                          date: widget.message.timestamp,
-                                          showFullDate: true,
-                                        ).split(' ').last}",
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFFBBBBBB),
-                                    ),
-                                  )
-                                else
-                                  const TextSpan(),
-                              ],
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 999,
+                              if (widget.showTime &&
+                                  !isSameMinute &&
+                                  !isNewDate &&
+                                  !hasHeader)
+                                Text(
+                                  _dateFormatter
+                                      .format(
+                                        date: widget.message.timestamp,
+                                        showFullDate: true,
+                                      )
+                                      .split(' ')
+                                      .last,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFFBBBBBB),
+                                  ),
+                                  textAlign: TextAlign.end,
+                                ),
+                            ],
                           )
                         : CachedNetworkImage(
                             imageUrl: (widget.message as ChatImageMessageModel)

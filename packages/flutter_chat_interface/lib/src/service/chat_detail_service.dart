@@ -21,8 +21,10 @@ abstract class ChatDetailService with ChangeNotifier {
     String chatId,
   );
 
-  /// Fetches more messages for the specified chat with a given page size.
-  Future<void> fetchMoreMessage(int pageSize, String chatId);
+  Future<void> fetchMoreMessage(
+    int pageSize,
+    String chatId,
+  );
 
   /// Retrieves the list of messages for the chat.
   List<ChatMessageModel> getMessages();
