@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat/flutter_chat.dart';
-// ignore: depend_on_referenced_packages
 import 'package:uuid/uuid.dart';
 
 Widget chatNavigatorUserStory(
@@ -179,7 +178,6 @@ Widget _newChatScreenRoute(
       translations: configuration.translations,
       service: configuration.chatService,
       onPressCreateGroupChat: () async {
-        configuration.onPressCreateGroupChat?.call();
         if (configuration.onPressCreateGroupChat != null) return;
         if (context.mounted) {
           await Navigator.of(context).push(
