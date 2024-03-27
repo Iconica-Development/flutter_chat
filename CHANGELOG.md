@@ -1,3 +1,8 @@
+## 1.4.0
+- Add way to create group chats
+- Update flutter_profile to 1.3.0
+- Update flutter_image_picker to 1.0.5
+
 ## 1.3.1
 
 - Added more options for styling the UI.

@@ -201,7 +201,7 @@ Widget _newChatScreenRoute(
       translations: configuration.translations,
       service: configuration.chatService,
       onPressCreateGroupChat: () async {
-        if (configuration.onPressCreateGroupChat != null) return;
+        configuration.onPressCreateGroupChat?.call();
         if (context.mounted) {
           await Navigator.of(context).push(
             MaterialPageRoute(
