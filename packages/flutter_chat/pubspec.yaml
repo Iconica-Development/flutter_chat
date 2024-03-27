@@ -22,6 +22,7 @@ dependencies:
     path: ../flutter_chat_interface
   flutter_chat_local:
     path: ../flutter_chat_local
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_iconica_analysis:

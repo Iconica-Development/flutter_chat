@@ -97,7 +97,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
           Expanded(
             child: FutureBuilder<List<ChatUserModel>>(
               // ignore: discarded_futures
-              future: widget.service.chatUserService.getAllUsers,
+              future: widget.service.chatUserService.getAllUsers(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());

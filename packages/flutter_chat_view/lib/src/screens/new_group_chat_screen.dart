@@ -42,7 +42,8 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
         ],
       ),
       body: FutureBuilder<List<ChatUserModel>>(
-        future: widget.service.chatUserService.getAllUsers,
+        // ignore: discarded_futures
+        future: widget.service.chatUserService.getAllUsers(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

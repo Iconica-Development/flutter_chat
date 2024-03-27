@@ -25,7 +25,7 @@ class LocalChatUserService implements ChatUserService {
   ];
 
   @override
-  Future<List<ChatUserModel>> get getAllUsers =>
+  Future<List<ChatUserModel>> getAllUsers() =>
       Future.value(users.where((element) => element.id != '3').toList());
 
   @override
