@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat/flutter_chat.dart';
 import 'package:flutter_chat/src/go_router.dart';
 import 'package:go_router/go_router.dart';
+import 'package:uuid/uuid.dart';
 
 List<GoRoute> getChatStoryRoutes(
   ChatUserStoryConfiguration configuration,
@@ -163,12 +164,13 @@ List<GoRoute> getChatStoryRoutes(
       GoRoute(
         path: ChatUserStoryRoutes.newGroupChatScreen,
         pageBuilder: (context, state) {
-          var newChatScreen = NewGroupChatScreen(
+          var newGroupChatScreen = NewGroupChatScreen(
             options: configuration.chatOptionsBuilder(context),
             translations: configuration.translations,
             service: configuration.chatService,
-            onPressGroupChatOverview: (user) async => context.push(
+            onPressGroupChatOverview: (users) async => context.go(
               ChatUserStoryRoutes.newGroupChatOverviewScreen,
+              extra: {users},
             ),
           );
           return buildScreenWithoutTransition(
@@ -176,10 +178,57 @@ List<GoRoute> getChatStoryRoutes(
             state: state,
             child: configuration.chatPageBuilder?.call(
                   context,
-                  newChatScreen,
+                  newGroupChatScreen,
                 ) ??
                 Scaffold(
-                  body: newChatScreen,
+                  body: newGroupChatScreen,
+                ),
+          );
+        },
+      ),
+      GoRoute(
+        path: ChatUserStoryRoutes.newGroupChatOverviewScreen,
+        pageBuilder: (context, state) {
+          // Retrieve users from the extra parameters
+          Map<String, dynamic>? routeExtra =
+              state.extra! as Map<String, dynamic>;
+          List<ChatUserModel> users = routeExtra['users'];
+          var newGroupChatOverviewScreen = NewGroupChatOverviewScreen(
+            options: configuration.chatOptionsBuilder(context),
+            translations: configuration.translations,
+            service: configuration.chatService,
+            users: users,
+            onPressCompleteGroupChatCreation: (users, groupChatName) async {
+              configuration.onPressCompleteGroupChatCreation
+                  ?.call(users, groupChatName);
+              if (configuration.onPressCompleteGroupChatCreation != null)
+                return;
+              var chat = await configuration.chatService.chatOverviewService
+                  .storeChatIfNot(
+                GroupChatModel(
+                  id: const Uuid().v4(),
+                  canBeDeleted: true,
+                  title: groupChatName,
+                  imageUrl: 'https://picsum.photos/200/300',
+                  users: users,
+                ),
+              );
+              if (context.mounted) {
+                await context.push(
+                  ChatUserStoryRoutes.chatDetailViewPath(chat.id ?? ''),
+                );
+              }
+            },
+          );
+          return buildScreenWithoutTransition(
+            context: context,
+            state: state,
+            child: configuration.chatPageBuilder?.call(
+                  context,
+                  newGroupChatOverviewScreen,
+                ) ??
+                Scaffold(
+                  body: newGroupChatOverviewScreen,
                 ),
           );
         },
