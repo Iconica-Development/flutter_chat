@@ -150,12 +150,13 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
       itemCount: filteredUsers.length,
       itemBuilder: (context, index) {
         var user = filteredUsers[index];
-        var isSelected = selectedUserList.contains(user);
+        var isSelected =
+            selectedUserList.any((selectedUser) => selectedUser == user);
 
         return InkWell(
           onTap: () {
             setState(() {
-              if (isSelected) {
+              if (selectedUserList.contains(user)) {
                 selectedUserList.remove(user);
               } else {
                 selectedUserList.add(user);

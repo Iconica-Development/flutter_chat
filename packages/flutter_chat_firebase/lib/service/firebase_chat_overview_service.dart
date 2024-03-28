@@ -144,22 +144,25 @@ class FirebaseChatOverviewService implements ChatOverviewService {
                   imageUrl: chat.imageUrl ?? '',
                   unreadMessages: unread,
                   users: users,
-                  lastMessage: chat.lastMessage != null &&
-                          chat.lastMessage!.imageUrl == null
-                      ? ChatTextMessageModel(
-                          sender: otherUser!,
-                          text: chat.lastMessage!.text!,
-                          timestamp: DateTime.fromMillisecondsSinceEpoch(
-                            chat.lastMessage!.timestamp.millisecondsSinceEpoch,
-                          ),
-                        )
-                      : ChatImageMessageModel(
-                          sender: otherUser!,
-                          imageUrl: chat.lastMessage!.imageUrl!,
-                          timestamp: DateTime.fromMillisecondsSinceEpoch(
-                            chat.lastMessage!.timestamp.millisecondsSinceEpoch,
-                          ),
-                        ),
+                  lastMessage: chat.lastMessage != null
+                      ? chat.lastMessage!.imageUrl == null
+                          ? ChatTextMessageModel(
+                              sender: otherUser!,
+                              text: chat.lastMessage!.text!,
+                              timestamp: DateTime.fromMillisecondsSinceEpoch(
+                                chat.lastMessage!.timestamp
+                                    .millisecondsSinceEpoch,
+                              ),
+                            )
+                          : ChatImageMessageModel(
+                              sender: otherUser!,
+                              imageUrl: chat.lastMessage!.imageUrl!,
+                              timestamp: DateTime.fromMillisecondsSinceEpoch(
+                                chat.lastMessage!.timestamp
+                                    .millisecondsSinceEpoch,
+                              ),
+                            )
+                      : null,
                   canBeDeleted: chat.canBeDeleted,
                   lastUsed: chat.lastUsed == null
                       ? null
@@ -381,7 +384,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
         ];
 
         var reference = await _db
-            .collection(_options.chatsCollectionName)
+            .collection(_options.chatsMetaDataCollectionName)
             .withConverter(
               fromFirestore: (snapshot, _) =>
                   FirebaseChatDocument.fromJson(snapshot.data()!, snapshot.id),
@@ -390,6 +393,8 @@ class FirebaseChatOverviewService implements ChatOverviewService {
             .add(
               FirebaseChatDocument(
                 personal: false,
+                title: chat.title,
+                imageUrl: chat.imageUrl,
                 canBeDeleted: chat.canBeDeleted,
                 users: userIds,
                 lastUsed: Timestamp.now(),
@@ -404,7 +409,6 @@ class FirebaseChatOverviewService implements ChatOverviewService {
               .doc(reference.id)
               .set({'users': userIds}, SetOptions(merge: true));
         }
-
         chat.id = reference.id;
       } else {
         throw Exception('Chat type not supported for firebase');
