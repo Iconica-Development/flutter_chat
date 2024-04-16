@@ -51,16 +51,23 @@ Widget _createNewChatButton(
   ChatTranslations translations,
 ) =>
     Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.fromLTRB(5, 24, 5, 24),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          minimumSize: const Size.fromHeight(50),
+          backgroundColor: const Color.fromRGBO(113, 198, 209, 1),
+          fixedSize: const Size(254, 44),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(56),
+          ),
         ),
         onPressed: onPressed,
         child: Text(
           translations.newChatButton,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+          ),
         ),
       ),
     );
@@ -112,7 +119,7 @@ Widget _createChatRowContainer(
 ) =>
     Padding(
       padding: const EdgeInsets.symmetric(
-        vertical: 15.0,
+        vertical: 12.0,
         horizontal: 10.0,
       ),
       child: chatRow,
