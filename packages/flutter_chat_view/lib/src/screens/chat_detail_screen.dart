@@ -196,40 +196,28 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                             36.0,
                           ),
                         ] else if (chatModel is PersonalChatModel) ...[
-                          widget.options.userAvatarBuilder(
-                            chatModel.user,
-                            36.0,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              widget.options.userAvatarBuilder(
+                                chatModel.user,
+                                36.0,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                chatModel.user.firstName ??
+                                    widget.translations.anonymousUser,
+                                style: theme.appBarTheme.titleTextStyle ??
+                                    const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
+                              ),
+                            ],
                           ),
                         ] else
                           ...[],
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 15.5),
-                            child: widget.chatTitleBuilder != null
-                                ? widget.chatTitleBuilder!.call(
-                                    (chatModel is GroupChatModel)
-                                        ? chatModel.title
-                                        : (chatModel is PersonalChatModel)
-                                            ? chatModel.user.fullName ??
-                                                widget
-                                                    .translations.anonymousUser
-                                            : '',
-                                  )
-                                : Text(
-                                    (chatModel is GroupChatModel)
-                                        ? chatModel.title
-                                        : (chatModel is PersonalChatModel)
-                                            ? chatModel.user.fullName ??
-                                                widget
-                                                    .translations.anonymousUser
-                                            : '',
-                                    style: theme.appBarTheme.titleTextStyle ??
-                                        const TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                  ),
-                          ),
-                        ),
                       ],
               ),
             ),

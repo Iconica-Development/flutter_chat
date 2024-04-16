@@ -102,11 +102,11 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                           )
                         else
                           Text(
-                            widget.message.sender.fullName?.toUpperCase() ??
+                            widget.message.sender.fullName ??
                                 widget.translations.anonymousUser,
                             style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
                               color: Theme.of(context)
                                   .textTheme
                                   .labelMedium
@@ -121,7 +121,8 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                               showFullDate: true,
                             ),
                             style: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w300,
                               color: Color(0xFFBBBBBB),
                             ),
                           ),
