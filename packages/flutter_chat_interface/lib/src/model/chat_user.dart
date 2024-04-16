@@ -3,6 +3,8 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
+import 'package:flutter/material.dart';
+
 abstract class ChatUserModelInterface {
   String? get id;
   String? get firstName;
@@ -14,6 +16,7 @@ abstract class ChatUserModelInterface {
 
 /// A concrete implementation of [ChatUserModelInterface]
 /// representing a chat user.
+@immutable
 class ChatUserModel implements ChatUserModelInterface {
   /// Constructs a [ChatUserModel] instance.
   ///
@@ -24,7 +27,8 @@ class ChatUserModel implements ChatUserModelInterface {
   /// [lastName]: The last name of the user.
   ///
   /// [imageUrl]: The URL of the user's image.
-  ChatUserModel({
+  ///
+  const ChatUserModel({
     this.id,
     this.firstName,
     this.lastName,
@@ -57,4 +61,12 @@ class ChatUserModel implements ChatUserModelInterface {
 
     return fullName == '' ? null : fullName;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is ChatUserModel && id == other.id;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^ firstName.hashCode ^ lastName.hashCode ^ imageUrl.hashCode;
 }

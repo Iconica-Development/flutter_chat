@@ -163,12 +163,13 @@ List<GoRoute> getChatStoryRoutes(
       GoRoute(
         path: ChatUserStoryRoutes.newGroupChatScreen,
         pageBuilder: (context, state) {
-          var newChatScreen = NewGroupChatScreen(
+          var newGroupChatScreen = NewGroupChatScreen(
             options: configuration.chatOptionsBuilder(context),
             translations: configuration.translations,
             service: configuration.chatService,
-            onPressGroupChatOverview: (user) async => context.push(
+            onPressGroupChatOverview: (users) async => context.push(
               ChatUserStoryRoutes.newGroupChatOverviewScreen,
+              extra: users,
             ),
           );
           return buildScreenWithoutTransition(
@@ -176,10 +177,51 @@ List<GoRoute> getChatStoryRoutes(
             state: state,
             child: configuration.chatPageBuilder?.call(
                   context,
-                  newChatScreen,
+                  newGroupChatScreen,
                 ) ??
                 Scaffold(
-                  body: newChatScreen,
+                  body: newGroupChatScreen,
+                ),
+          );
+        },
+      ),
+      GoRoute(
+        path: ChatUserStoryRoutes.newGroupChatOverviewScreen,
+        pageBuilder: (context, state) {
+          var users = state.extra! as List<ChatUserModel>;
+          var newGroupChatOverviewScreen = NewGroupChatOverviewScreen(
+            options: configuration.chatOptionsBuilder(context),
+            translations: configuration.translations,
+            service: configuration.chatService,
+            users: users,
+            onPressCompleteGroupChatCreation: (users, groupChatName) async {
+              configuration.onPressCompleteGroupChatCreation
+                  ?.call(users, groupChatName);
+              var chat = await configuration.chatService.chatOverviewService
+                  .storeChatIfNot(
+                GroupChatModel(
+                  canBeDeleted: true,
+                  title: groupChatName,
+                  imageUrl: 'https://picsum.photos/200/300',
+                  users: users,
+                ),
+              );
+              if (context.mounted) {
+                await context.push(
+                  ChatUserStoryRoutes.chatDetailViewPath(chat.id ?? ''),
+                );
+              }
+            },
+          );
+          return buildScreenWithoutTransition(
+            context: context,
+            state: state,
+            child: configuration.chatPageBuilder?.call(
+                  context,
+                  newGroupChatOverviewScreen,
+                ) ??
+                Scaffold(
+                  body: newGroupChatOverviewScreen,
                 ),
           );
         },
