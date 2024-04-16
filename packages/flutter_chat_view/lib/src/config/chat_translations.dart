@@ -6,7 +6,7 @@ class ChatTranslations {
   const ChatTranslations({
     this.chatsTitle = 'Chats',
     this.chatsUnread = 'unread',
-    this.newChatButton = 'Start chat',
+    this.newChatButton = 'Start a chat',
     this.newGroupChatButton = 'Start group chat',
     this.newChatTitle = 'Start chat',
     this.image = 'Image',

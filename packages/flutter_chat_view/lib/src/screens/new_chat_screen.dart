@@ -152,7 +152,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
             ),
           )
         : Text(
-            widget.translations.newChatButton,
+            widget.translations.newChatTitle,
             style: theme.appBarTheme.titleTextStyle ??
                 const TextStyle(
                   color: Colors.white,
@@ -196,20 +196,40 @@ class _NewChatScreenState extends State<NewChatScreen> {
       return widget.options.noChatsPlaceholderBuilder(widget.translations);
     }
 
-    return ListView.builder(
+    return ListView.separated(
       itemCount: filteredUsers.length,
+      separatorBuilder: (context, index) => const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 28.0),
+        child: Divider(),
+      ), // Add Divider here
       itemBuilder: (context, index) {
         var user = filteredUsers[index];
         return GestureDetector(
           child: widget.options.chatRowContainerBuilder(
             Container(
               color: Colors.transparent,
-              child: ChatRow(
-                avatar: widget.options.userAvatarBuilder(
-                  user,
-                  40.0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12.0, right: 12),
+                      child: widget.options.userAvatarBuilder(user, 40.0),
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 40.0, // Adjust the height as needed
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          user.fullName ?? widget.translations.anonymousUser,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                title: user.fullName ?? widget.translations.anonymousUser,
               ),
             ),
           ),
