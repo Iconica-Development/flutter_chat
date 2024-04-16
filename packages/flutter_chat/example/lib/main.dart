@@ -24,7 +24,12 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: chatNavigatorUserStory(context),
-    );
+        child: chatNavigatorUserStory(context,
+            configuration: ChatUserStoryConfiguration(
+                chatService: LocalChatService(),
+                chatOptionsBuilder: (ctx) => ChatOptions(
+                      noChatsPlaceholderBuilder: (translations) =>
+                          Text(translations.noUsersFound),
+                    ))));
   }
 }

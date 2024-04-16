@@ -20,7 +20,8 @@ class ChatTranslations {
         'Are you sure you want to delete this chat?',
     this.deleteChatModalCancel = 'Cancel',
     this.deleteChatModalConfirm = 'Delete',
-    this.noUsersFound = 'No users found',
+    this.noUsersFound = 'No users were found to start a chat with.',
+    this.noChatsFound = 'Click on \'Start a chat\' to create a new chat.',
     this.anonymousUser = 'Anonymous user',
     this.chatCantBeDeleted = 'This chat can\'t be deleted',
     this.chatProfileUsers = 'Users:',
@@ -42,6 +43,7 @@ class ChatTranslations {
   final String deleteChatModalCancel;
   final String deleteChatModalConfirm;
   final String noUsersFound;
+  final String noChatsFound;
   final String chatCantBeDeleted;
   final String chatProfileUsers;
 

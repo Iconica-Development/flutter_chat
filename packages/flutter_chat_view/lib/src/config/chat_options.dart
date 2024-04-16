@@ -18,6 +18,7 @@ class ChatOptions {
     this.userAvatarBuilder = _createUserAvatar,
     this.groupAvatarBuilder = _createGroupAvatar,
     this.noChatsPlaceholderBuilder = _createNoChatsPlaceholder,
+    this.noUsersPlaceholderBuilder = _createNoUsersPlaceholder,
   });
 
   /// Builder function for the new chat button.
@@ -43,6 +44,9 @@ class ChatOptions {
 
   /// Builder function for the placeholder shown when no chats are available.
   final NoChatsPlaceholderBuilder noChatsPlaceholderBuilder;
+
+  /// Builder function for the placeholder shown when no users are available.
+  final NoUsersPlaceholderBuilder noUsersPlaceholderBuilder;
 }
 
 Widget _createNewChatButton(
@@ -182,6 +186,20 @@ Widget _createNoChatsPlaceholder(
 ) =>
     Center(
       child: Text(
+        translations.noChatsFound,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+        ),
+      ),
+    );
+
+Widget _createNoUsersPlaceholder(
+  ChatTranslations translations,
+) =>
+    Center(
+      child: Text(
         translations.noUsersFound,
         textAlign: TextAlign.center,
         style: const TextStyle(
@@ -229,5 +247,9 @@ typedef GroupAvatarBuilder = Widget Function(
 );
 
 typedef NoChatsPlaceholderBuilder = Widget Function(
+  ChatTranslations translations,
+);
+
+typedef NoUsersPlaceholderBuilder = Widget Function(
   ChatTranslations translations,
 );

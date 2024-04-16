@@ -287,57 +287,59 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-    children: [
-      GestureDetector(
-        onTap: () => widget.onPressChat(chat),
-        child: Container(
-          color: Colors.transparent,
-          child: widget.options.chatRowContainerBuilder(
-            (chat is PersonalChatModel)
-                ? ChatRow(
-              unreadMessages: chat.unreadMessages ?? 0,
-              avatar: widget.options.userAvatarBuilder(
-                (chat as PersonalChatModel).user,
-                40.0,
+        children: [
+          GestureDetector(
+            onTap: () => widget.onPressChat(chat),
+            child: Container(
+              color: Colors.transparent,
+              child: widget.options.chatRowContainerBuilder(
+                (chat is PersonalChatModel)
+                    ? ChatRow(
+                        unreadMessages: chat.unreadMessages ?? 0,
+                        avatar: widget.options.userAvatarBuilder(
+                          (chat as PersonalChatModel).user,
+                          40.0,
+                        ),
+                        title: (chat as PersonalChatModel).user.fullName ??
+                            translations.anonymousUser,
+                        subTitle: chat.lastMessage != null
+                            ? chat.lastMessage is ChatTextMessageModel
+                                ? (chat.lastMessage! as ChatTextMessageModel)
+                                    .text
+                                : '📷 '
+                                    '${translations.image}'
+                            : '',
+                        lastUsed: chat.lastUsed != null
+                            ? _dateFormatter.format(
+                                date: chat.lastUsed!,
+                              )
+                            : null,
+                      )
+                    : ChatRow(
+                        title: (chat as GroupChatModel).title,
+                        unreadMessages: chat.unreadMessages ?? 0,
+                        subTitle: chat.lastMessage != null
+                            ? chat.lastMessage is ChatTextMessageModel
+                                ? (chat.lastMessage! as ChatTextMessageModel)
+                                    .text
+                                : '📷 '
+                                    '${translations.image}'
+                            : '',
+                        avatar: widget.options.groupAvatarBuilder(
+                          (chat as GroupChatModel).title,
+                          (chat as GroupChatModel).imageUrl,
+                          40.0,
+                        ),
+                        lastUsed: chat.lastUsed != null
+                            ? _dateFormatter.format(
+                                date: chat.lastUsed!,
+                              )
+                            : null,
+                      ),
               ),
-              title: (chat as PersonalChatModel).user.fullName ??
-                  translations.anonymousUser,
-              subTitle: chat.lastMessage != null
-                  ? chat.lastMessage is ChatTextMessageModel
-                  ? (chat.lastMessage! as ChatTextMessageModel).text
-                  : '📷 '
-                  '${translations.image}'
-                  : '',
-              lastUsed: chat.lastUsed != null
-                  ? _dateFormatter.format(
-                date: chat.lastUsed!,
-              )
-                  : null,
-            )
-                : ChatRow(
-              title: (chat as GroupChatModel).title,
-              unreadMessages: chat.unreadMessages ?? 0,
-              subTitle: chat.lastMessage != null
-                  ? chat.lastMessage is ChatTextMessageModel
-                  ? (chat.lastMessage! as ChatTextMessageModel).text
-                  : '📷 '
-                  '${translations.image}'
-                  : '',
-              avatar: widget.options.groupAvatarBuilder(
-                (chat as GroupChatModel).title,
-                (chat as GroupChatModel).imageUrl,
-                40.0,
-              ),
-              lastUsed: chat.lastUsed != null
-                  ? _dateFormatter.format(
-                date: chat.lastUsed!,
-              )
-                  : null,
             ),
           ),
-        ),
-      ),
-      const Divider(),
-    ],
-  );
+          const Divider(),
+        ],
+      );
 }

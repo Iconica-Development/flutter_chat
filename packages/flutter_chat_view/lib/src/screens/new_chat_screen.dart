@@ -106,8 +106,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
                 } else if (snapshot.hasData) {
                   return _buildUserList(snapshot.data!);
                 } else {
-                  return widget.options
-                      .noChatsPlaceholderBuilder(widget.translations);
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Text(widget.translations.noUsersFound),
+                  );
                 }
               },
             ),
