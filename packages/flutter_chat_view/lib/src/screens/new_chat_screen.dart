@@ -106,10 +106,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                 } else if (snapshot.hasData) {
                   return _buildUserList(snapshot.data!);
                 } else {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
-                    child: Text(widget.translations.noUsersFound),
-                  );
+                  return Text(widget.translations.noUsersFound);
                 }
               },
             ),
@@ -194,6 +191,22 @@ class _NewChatScreenState extends State<NewChatScreen> {
         )
         .toList();
 
+    if (_textFieldFocusNode.hasFocus && query.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 20.0),
+        child: Center(
+          child: Text(
+            widget.translations.startTyping,
+            style: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      );
+    }
+
     if (filteredUsers.isEmpty) {
       return widget.options.noChatsPlaceholderBuilder(widget.translations);
     }
@@ -203,7 +216,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
       separatorBuilder: (context, index) => const Padding(
         padding: EdgeInsets.symmetric(horizontal: 28.0),
         child: Divider(),
-      ), // Add Divider here
+      ),
       itemBuilder: (context, index) {
         var user = filteredUsers[index];
         return GestureDetector(
@@ -220,11 +233,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
                     ),
                     Expanded(
                       child: Container(
-                        height: 40.0, // Adjust the height as needed
+                        height: 40.0,
                         alignment: Alignment.centerLeft,
                         child: Text(
                           user.fullName ?? widget.translations.anonymousUser,
                           style: const TextStyle(
+                            fontSize: 18.0,
                             fontWeight: FontWeight.w800,
                           ),
                         ),

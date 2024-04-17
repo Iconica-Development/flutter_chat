@@ -11,6 +11,7 @@ class ChatTranslations {
     this.newChatTitle = 'Start chat',
     this.image = 'Image',
     this.searchPlaceholder = 'Search...',
+    this.startTyping = 'Start typing to find a user to chat with.',
     this.cancelImagePickerBtn = 'Cancel',
     this.messagePlaceholder = 'Write your message here...',
     this.imageUploading = 'Image is uploading...',
@@ -35,6 +36,7 @@ class ChatTranslations {
   final String deleteChatButton;
   final String image;
   final String searchPlaceholder;
+  final String startTyping;
   final String cancelImagePickerBtn;
   final String messagePlaceholder;
   final String imageUploading;
