@@ -172,16 +172,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             iconTheme: theme.appBarTheme.iconTheme ??
                 const IconThemeData(color: Colors.white),
             centerTitle: true,
-            leading: (chatModel is GroupChatModel)
-                ? GestureDetector(
+            leading: GestureDetector(
                     onTap: () {
                       Navigator.popUntil(context, (route) => route.isFirst);
                     },
                     child: const Icon(
                       Icons.arrow_back,
                     ),
-                  )
-                : null,
+                  ),
             title: GestureDetector(
               onTap: () => widget.onPressChatTitle.call(context, chatModel!),
               child: Row(
@@ -209,7 +207,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                   (chatModel is GroupChatModel)
                                       ? chatModel.title
                                       : (chatModel is PersonalChatModel)
-                                          ? chatModel.user.fullName ??
+                                          ? chatModel.user.firstName ??
                                               widget.translations.anonymousUser
                                           : '',
                                 )
@@ -217,7 +215,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                   (chatModel is GroupChatModel)
                                       ? chatModel.title
                                       : (chatModel is PersonalChatModel)
-                                          ? chatModel.user.fullName ??
+                                          ? chatModel.user.firstName ??
                                               widget.translations.anonymousUser
                                           : '',
                                   style: theme.appBarTheme.titleTextStyle ??

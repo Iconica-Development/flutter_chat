@@ -130,6 +130,15 @@ class _ChatScreenState extends State<ChatScreen> {
                           await widget.onNoChats!.call();
                         });
                       }
+                      return Center(
+                        child: Text(
+                          translations.noChatsFound,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      );
                     } else {
                       _hasCalledOnNoChats =
                           false; // Reset the flag if there are chats
