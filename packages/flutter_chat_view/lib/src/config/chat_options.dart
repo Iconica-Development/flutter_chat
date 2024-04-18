@@ -137,9 +137,17 @@ Widget _createImagePickerContainer(
       padding: const EdgeInsets.all(8.0),
       color: Colors.white,
       child: ImagePicker(
+        imagePickerTheme: ImagePickerTheme(
+          title: translations.imagePickerTitle,
+          titleTextSize: 16,
+          titleAlignment: TextAlign.center,
+          iconSize: 60.0,
+          makePhotoText: translations.takePicture,
+          selectImageText: translations.uploadFile,
+        ),
         customButton: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black,
+            backgroundColor: const Color.fromRGBO(113, 198, 209, 1),
           ),
           onPressed: onClose,
           child: Text(

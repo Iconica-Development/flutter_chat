@@ -26,6 +26,9 @@ class ChatTranslations {
     this.anonymousUser = 'Anonymous user',
     this.chatCantBeDeleted = 'This chat can\'t be deleted',
     this.chatProfileUsers = 'Users:',
+    this.imagePickerTitle = 'Do you want to upload a file or take a picture?',
+    this.uploadFile = 'UPLOAD FILE',
+    this.takePicture = 'TAKE PICTURE',
   });
 
   final String chatsTitle;
@@ -48,6 +51,9 @@ class ChatTranslations {
   final String noChatsFound;
   final String chatCantBeDeleted;
   final String chatProfileUsers;
+  final String imagePickerTitle;
+  final String uploadFile;
+  final String takePicture;
 
   /// Shown when the user has no name
   final String anonymousUser;
