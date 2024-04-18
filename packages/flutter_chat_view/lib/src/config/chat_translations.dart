@@ -14,6 +14,9 @@ class ChatTranslations {
     this.startTyping = 'Start typing to find a user to chat with.',
     this.cancelImagePickerBtn = 'Cancel',
     this.messagePlaceholder = 'Write your message here...',
+    this.writeMessageToStartChat = 'Write a message to start the chat.',
+    this.writeFirstMessageInGroupChat =
+        'Write the first message in this group chat.',
     this.imageUploading = 'Image is uploading...',
     this.deleteChatButton = 'Delete',
     this.deleteChatModalTitle = 'Delete chat',
@@ -42,6 +45,8 @@ class ChatTranslations {
   final String startTyping;
   final String cancelImagePickerBtn;
   final String messagePlaceholder;
+  final String writeMessageToStartChat;
+  final String writeFirstMessageInGroupChat;
   final String imageUploading;
   final String deleteChatModalTitle;
   final String deleteChatModalDescription;

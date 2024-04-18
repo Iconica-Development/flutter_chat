@@ -267,6 +267,21 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         reverse: true,
                         padding: const EdgeInsets.only(top: 24.0),
                         children: [
+                          if (detailRows.isEmpty)
+                            Center(
+                              child: Text(
+                                (chatModel is GroupChatModel)
+                                    ? widget.translations
+                                        .writeFirstMessageInGroupChat
+                                    : widget
+                                        .translations.writeMessageToStartChat,
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color.fromRGBO(33, 33, 33, 1),
+                                ),
+                              ),
+                            ),
                           ...detailRows,
                         ],
                       ),
