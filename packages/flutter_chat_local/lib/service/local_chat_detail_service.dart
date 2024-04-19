@@ -68,7 +68,7 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
         .chats
         .firstWhere((element) => element.id == chatId);
     var message = ChatImageMessageModel(
-      sender: ChatUserModel(
+      sender: const ChatUserModel(
         id: '3',
         firstName: 'ico',
         lastName: 'nica',
@@ -101,7 +101,7 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
         .chats
         .firstWhere((element) => element.id == chatId);
     var message = ChatTextMessageModel(
-      sender: ChatUserModel(
+      sender: const ChatUserModel(
         id: '3',
         firstName: 'ico',
         lastName: 'nica',

@@ -18,6 +18,7 @@ class ChatOptions {
     this.userAvatarBuilder = _createUserAvatar,
     this.groupAvatarBuilder = _createGroupAvatar,
     this.noChatsPlaceholderBuilder = _createNoChatsPlaceholder,
+    this.noUsersPlaceholderBuilder = _createNoUsersPlaceholder,
   });
 
   /// Builder function for the new chat button.
@@ -43,6 +44,9 @@ class ChatOptions {
 
   /// Builder function for the placeholder shown when no chats are available.
   final NoChatsPlaceholderBuilder noChatsPlaceholderBuilder;
+
+  /// Builder function for the placeholder shown when no users are available.
+  final NoUsersPlaceholderBuilder noUsersPlaceholderBuilder;
 }
 
 Widget _createNewChatButton(
@@ -51,16 +55,23 @@ Widget _createNewChatButton(
   ChatTranslations translations,
 ) =>
     Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.fromLTRB(5, 24, 5, 24),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          minimumSize: const Size.fromHeight(50),
+          backgroundColor: const Color.fromRGBO(113, 198, 209, 1),
+          fixedSize: const Size(254, 44),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(56),
+          ),
         ),
         onPressed: onPressed,
         child: Text(
           translations.newChatButton,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+          ),
         ),
       ),
     );
@@ -112,7 +123,7 @@ Widget _createChatRowContainer(
 ) =>
     Padding(
       padding: const EdgeInsets.symmetric(
-        vertical: 15.0,
+        vertical: 12.0,
         horizontal: 10.0,
       ),
       child: chatRow,
@@ -126,9 +137,17 @@ Widget _createImagePickerContainer(
       padding: const EdgeInsets.all(8.0),
       color: Colors.white,
       child: ImagePicker(
+        imagePickerTheme: ImagePickerTheme(
+          title: translations.imagePickerTitle,
+          titleTextSize: 16,
+          titleAlignment: TextAlign.center,
+          iconSize: 60.0,
+          makePhotoText: translations.takePicture,
+          selectImageText: translations.uploadFile,
+        ),
         customButton: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black,
+            backgroundColor: const Color.fromRGBO(113, 198, 209, 1),
           ),
           onPressed: onClose,
           child: Text(
@@ -171,6 +190,20 @@ Widget _createGroupAvatar(
     );
 
 Widget _createNoChatsPlaceholder(
+  ChatTranslations translations,
+) =>
+    Center(
+      child: Text(
+        translations.noChatsFound,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+        ),
+      ),
+    );
+
+Widget _createNoUsersPlaceholder(
   ChatTranslations translations,
 ) =>
     Center(
@@ -222,5 +255,9 @@ typedef GroupAvatarBuilder = Widget Function(
 );
 
 typedef NoChatsPlaceholderBuilder = Widget Function(
+  ChatTranslations translations,
+);
+
+typedef NoUsersPlaceholderBuilder = Widget Function(
   ChatTranslations translations,
 );

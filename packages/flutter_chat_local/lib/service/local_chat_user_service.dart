@@ -4,19 +4,19 @@ import 'package:flutter_chat_interface/flutter_chat_interface.dart';
 class LocalChatUserService implements ChatUserService {
   /// List of predefined chat users.
   List<ChatUserModel> users = [
-    ChatUserModel(
+    const ChatUserModel(
       id: '1',
       firstName: 'John',
       lastName: 'Doe',
       imageUrl: 'https://picsum.photos/200/300',
     ),
-    ChatUserModel(
+    const ChatUserModel(
       id: '2',
       firstName: 'Jane',
       lastName: 'Doe',
       imageUrl: 'https://picsum.photos/200/300',
     ),
-    ChatUserModel(
+    const ChatUserModel(
       id: '3',
       firstName: 'ico',
       lastName: 'nica',
@@ -29,7 +29,8 @@ class LocalChatUserService implements ChatUserService {
       Future.value(users.where((element) => element.id != '3').toList());
 
   @override
-  Future<ChatUserModel?> getCurrentUser() => Future.value(ChatUserModel());
+  Future<ChatUserModel?> getCurrentUser() =>
+      Future.value(const ChatUserModel());
 
   @override
   Future<ChatUserModel?> getUser(String id) {

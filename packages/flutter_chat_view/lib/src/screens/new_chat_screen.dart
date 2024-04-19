@@ -106,8 +106,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                 } else if (snapshot.hasData) {
                   return _buildUserList(snapshot.data!);
                 } else {
-                  return widget.options
-                      .noChatsPlaceholderBuilder(widget.translations);
+                  return Text(widget.translations.noUsersFound);
                 }
               },
             ),
@@ -152,7 +151,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
             ),
           )
         : Text(
-            widget.translations.newChatButton,
+            widget.translations.newChatTitle,
             style: theme.appBarTheme.titleTextStyle ??
                 const TextStyle(
                   color: Colors.white,
@@ -192,24 +191,61 @@ class _NewChatScreenState extends State<NewChatScreen> {
         )
         .toList();
 
+    if (_textFieldFocusNode.hasFocus && query.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 20.0),
+        child: Center(
+          child: Text(
+            widget.translations.startTyping,
+            style: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      );
+    }
+
     if (filteredUsers.isEmpty) {
       return widget.options.noChatsPlaceholderBuilder(widget.translations);
     }
 
-    return ListView.builder(
+    return ListView.separated(
       itemCount: filteredUsers.length,
+      separatorBuilder: (context, index) => const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 28.0),
+        child: Divider(),
+      ),
       itemBuilder: (context, index) {
         var user = filteredUsers[index];
         return GestureDetector(
           child: widget.options.chatRowContainerBuilder(
             Container(
               color: Colors.transparent,
-              child: ChatRow(
-                avatar: widget.options.userAvatarBuilder(
-                  user,
-                  40.0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12.0, right: 12),
+                      child: widget.options.userAvatarBuilder(user, 40.0),
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 40.0,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          user.fullName ?? widget.translations.anonymousUser,
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                title: user.fullName ?? widget.translations.anonymousUser,
               ),
             ),
           ),

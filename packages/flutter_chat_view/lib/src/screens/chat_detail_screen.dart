@@ -172,16 +172,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             iconTheme: theme.appBarTheme.iconTheme ??
                 const IconThemeData(color: Colors.white),
             centerTitle: true,
-            leading: (chatModel is GroupChatModel)
-                ? GestureDetector(
-                    onTap: () {
-                      Navigator.popUntil(context, (route) => route.isFirst);
-                    },
-                    child: const Icon(
-                      Icons.arrow_back,
-                    ),
-                  )
-                : null,
+            leading: GestureDetector(
+              onTap: () {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+              child: const Icon(
+                Icons.arrow_back,
+              ),
+            ),
             title: GestureDetector(
               onTap: () => widget.onPressChatTitle.call(context, chatModel!),
               child: Row(
@@ -195,40 +193,35 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                             chatModel.imageUrl,
                             36.0,
                           ),
-                        ] else if (chatModel is PersonalChatModel) ...[
-                          widget.options.userAvatarBuilder(
-                            chatModel.user,
-                            36.0,
-                          ),
                         ] else
                           ...[],
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 15.5),
-                            child: widget.chatTitleBuilder != null
-                                ? widget.chatTitleBuilder!.call(
-                                    (chatModel is GroupChatModel)
-                                        ? chatModel.title
-                                        : (chatModel is PersonalChatModel)
-                                            ? chatModel.user.fullName ??
-                                                widget
-                                                    .translations.anonymousUser
-                                            : '',
-                                  )
-                                : Text(
-                                    (chatModel is GroupChatModel)
-                                        ? chatModel.title
-                                        : (chatModel is PersonalChatModel)
-                                            ? chatModel.user.fullName ??
-                                                widget
-                                                    .translations.anonymousUser
-                                            : '',
-                                    style: theme.appBarTheme.titleTextStyle ??
-                                        const TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                  ),
-                          ),
+                        Padding(
+                          padding: (chatModel is GroupChatModel)
+                              ? const EdgeInsets.only(left: 15.5)
+                              : EdgeInsets.zero,
+                          child: widget.chatTitleBuilder != null
+                              ? widget.chatTitleBuilder!.call(
+                                  (chatModel is GroupChatModel)
+                                      ? chatModel.title
+                                      : (chatModel is PersonalChatModel)
+                                          ? chatModel.user.firstName ??
+                                              widget.translations.anonymousUser
+                                          : '',
+                                )
+                              : Text(
+                                  (chatModel is GroupChatModel)
+                                      ? chatModel.title
+                                      : (chatModel is PersonalChatModel)
+                                          ? chatModel.user.firstName ??
+                                              widget.translations.anonymousUser
+                                          : '',
+                                  style: theme.appBarTheme.titleTextStyle ??
+                                      const TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 18.0,
+                                        color: Colors.white,
+                                      ),
+                                ),
                         ),
                       ],
               ),
@@ -269,6 +262,21 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         reverse: true,
                         padding: const EdgeInsets.only(top: 24.0),
                         children: [
+                          if (detailRows.isEmpty)
+                            Center(
+                              child: Text(
+                                (chatModel is GroupChatModel)
+                                    ? widget.translations
+                                        .writeFirstMessageInGroupChat
+                                    : widget
+                                        .translations.writeMessageToStartChat,
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color.fromRGBO(33, 33, 33, 1),
+                                ),
+                              ),
+                            ),
                           ...detailRows,
                         ],
                       ),

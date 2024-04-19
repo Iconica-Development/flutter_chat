@@ -1,3 +1,6 @@
+## 1.4.1
+- Made UI changes to match the Figma design
+
 ## 1.4.0
 - Add way to create group chats
 - Update flutter_profile to 1.3.0

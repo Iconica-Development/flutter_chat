@@ -31,7 +31,7 @@ class ChatRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
@@ -39,7 +39,7 @@ class ChatRow extends StatelessWidget {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22.0),
+              padding: const EdgeInsets.only(left: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -48,10 +48,10 @@ class ChatRow extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: unreadMessages > 0
-                          ? FontWeight.w600
-                          : FontWeight.w400,
+                          ? FontWeight.w900
+                          : FontWeight.w500,
                     ),
                   ),
                   if (subTitle != null)
@@ -62,11 +62,11 @@ class ChatRow extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: unreadMessages > 0
-                              ? FontWeight.w600
-                              : FontWeight.w400,
+                              ? FontWeight.w500
+                              : FontWeight.w300,
                         ),
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                        maxLines: 2,
                       ),
                     ),
                 ],
@@ -77,29 +77,30 @@ class ChatRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                lastUsed ?? '',
-                style: const TextStyle(
-                  color: Color(0xFFBBBBBB),
-                  fontSize: 14,
-                ),
-              ),
-              if (unreadMessages > 0) ...[
+              if (lastUsed != null) // Check if lastUsed is not null
                 Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      shape: BoxShape.circle,
+                  padding: const EdgeInsets.only(bottom: 4.0),
+                  child: Text(
+                    lastUsed!,
+                    style: const TextStyle(
+                      color: Color(0xFFBBBBBB),
+                      fontSize: 14,
                     ),
-                    child: Center(
-                      child: Text(
-                        unreadMessages.toString(),
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
+                  ),
+                ),
+              if (unreadMessages > 0) ...[
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      unreadMessages.toString(),
+                      style: const TextStyle(
+                        fontSize: 14,
                       ),
                     ),
                   ),

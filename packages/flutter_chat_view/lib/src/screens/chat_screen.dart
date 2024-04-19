@@ -92,15 +92,18 @@ class _ChatScreenState extends State<ChatScreen> {
                 widget.service.chatOverviewService.getUnreadChatsCountStream(),
             builder: (BuildContext context, snapshot) => Align(
               alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 22.0),
-                child: Text(
-                  '${snapshot.data ?? 0} ${translations.chatsUnread}',
-                  style: widget.unreadMessageTextStyle ??
-                      const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
+              child: Visibility(
+                visible: (snapshot.data ?? 0) > 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 22.0),
+                  child: Text(
+                    '${snapshot.data ?? 0} ${translations.chatsUnread}',
+                    style: widget.unreadMessageTextStyle ??
+                        const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                  ),
                 ),
               ),
             ),
@@ -113,7 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: ListView(
               controller: controller,
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(top: 15.0),
+              padding: const EdgeInsets.fromLTRB(28, 16, 28, 0),
               children: [
                 StreamBuilder<List<ChatModel>>(
                   stream: widget.service.chatOverviewService.getChatsStream(),
@@ -127,6 +130,15 @@ class _ChatScreenState extends State<ChatScreen> {
                           await widget.onNoChats!.call();
                         });
                       }
+                      return Center(
+                        child: Text(
+                          translations.noChatsFound,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      );
                     } else {
                       _hasCalledOnNoChats =
                           false; // Reset the flag if there are chats
@@ -151,6 +163,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                             padding: const EdgeInsets.all(16.0),
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
                                               children: [
                                                 Text(
                                                   chat.canBeDeleted
@@ -158,50 +172,80 @@ class _ChatScreenState extends State<ChatScreen> {
                                                           .deleteChatModalTitle
                                                       : translations
                                                           .chatCantBeDeleted,
+                                                  textAlign: TextAlign.center,
                                                   style: const TextStyle(
-                                                    fontSize: 20,
+                                                    fontSize: 24,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                const SizedBox(height: 16),
+                                                const SizedBox(height: 24),
                                                 if (chat.canBeDeleted)
-                                                  Text(
-                                                    translations
-                                                        .deleteChatModalDescription,
-                                                    style: const TextStyle(
-                                                      fontSize: 16,
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 16,
+                                                    ),
+                                                    child: Text(
+                                                      translations
+                                                          .deleteChatModalDescription,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: const TextStyle(
+                                                        fontSize: 18,
+                                                      ),
                                                     ),
                                                   ),
-                                                const SizedBox(height: 16),
+                                                const SizedBox(
+                                                  height: 24,
+                                                ),
                                                 Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    TextButton(
-                                                      child: Text(
-                                                        translations
-                                                            .deleteChatModalCancel,
-                                                        style: const TextStyle(
-                                                          fontSize: 16,
-                                                        ),
-                                                      ),
+                                                    ElevatedButton(
                                                       onPressed: () =>
                                                           Navigator.of(
                                                         context,
                                                       ).pop(false),
+                                                      child: Text(
+                                                        translations
+                                                            .deleteChatModalCancel,
+                                                        style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 18,
+                                                        ),
+                                                      ),
                                                     ),
                                                     if (chat.canBeDeleted)
+                                                      const SizedBox(
+                                                        width: 16,
+                                                      ),
+                                                    if (chat.canBeDeleted)
                                                       ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                              const Color
+                                                                  .fromRGBO(
+                                                            113,
+                                                            198,
+                                                            209,
+                                                            1,
+                                                          ),
+                                                        ),
                                                         onPressed: () =>
                                                             Navigator.of(
                                                           context,
-                                                        ).pop(true),
+                                                        ).pop(
+                                                          true,
+                                                        ),
                                                         child: Text(
                                                           translations
                                                               .deleteChatModalConfirm,
                                                           style:
                                                               const TextStyle(
-                                                            fontSize: 16,
+                                                            color: Colors.white,
+                                                            fontSize: 18,
                                                           ),
                                                         ),
                                                       ),
@@ -283,53 +327,60 @@ class ChatListItem extends StatelessWidget {
   final DateFormatter _dateFormatter;
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-        onTap: () => widget.onPressChat(chat),
-        child: Container(
-          color: Colors.transparent,
-          child: widget.options.chatRowContainerBuilder(
-            (chat is PersonalChatModel)
-                ? ChatRow(
-                    unreadMessages: chat.unreadMessages ?? 0,
-                    avatar: widget.options.userAvatarBuilder(
-                      (chat as PersonalChatModel).user,
-                      40.0,
-                    ),
-                    title: (chat as PersonalChatModel).user.fullName ??
-                        translations.anonymousUser,
-                    subTitle: chat.lastMessage != null
-                        ? chat.lastMessage is ChatTextMessageModel
-                            ? (chat.lastMessage! as ChatTextMessageModel).text
-                            : '📷 '
-                                '${translations.image}'
-                        : '',
-                    lastUsed: chat.lastUsed != null
-                        ? _dateFormatter.format(
-                            date: chat.lastUsed!,
-                          )
-                        : null,
-                  )
-                : ChatRow(
-                    title: (chat as GroupChatModel).title,
-                    unreadMessages: chat.unreadMessages ?? 0,
-                    subTitle: chat.lastMessage != null
-                        ? chat.lastMessage is ChatTextMessageModel
-                            ? (chat.lastMessage! as ChatTextMessageModel).text
-                            : '📷 '
-                                '${translations.image}'
-                        : '',
-                    avatar: widget.options.groupAvatarBuilder(
-                      (chat as GroupChatModel).title,
-                      (chat as GroupChatModel).imageUrl,
-                      40.0,
-                    ),
-                    lastUsed: chat.lastUsed != null
-                        ? _dateFormatter.format(
-                            date: chat.lastUsed!,
-                          )
-                        : null,
-                  ),
+  Widget build(BuildContext context) => Column(
+        children: [
+          GestureDetector(
+            onTap: () => widget.onPressChat(chat),
+            child: Container(
+              color: Colors.transparent,
+              child: widget.options.chatRowContainerBuilder(
+                (chat is PersonalChatModel)
+                    ? ChatRow(
+                        unreadMessages: chat.unreadMessages ?? 0,
+                        avatar: widget.options.userAvatarBuilder(
+                          (chat as PersonalChatModel).user,
+                          40.0,
+                        ),
+                        title: (chat as PersonalChatModel).user.fullName ??
+                            translations.anonymousUser,
+                        subTitle: chat.lastMessage != null
+                            ? chat.lastMessage is ChatTextMessageModel
+                                ? (chat.lastMessage! as ChatTextMessageModel)
+                                    .text
+                                : '📷 '
+                                    '${translations.image}'
+                            : '',
+                        lastUsed: chat.lastUsed != null
+                            ? _dateFormatter.format(
+                                date: chat.lastUsed!,
+                              )
+                            : null,
+                      )
+                    : ChatRow(
+                        title: (chat as GroupChatModel).title,
+                        unreadMessages: chat.unreadMessages ?? 0,
+                        subTitle: chat.lastMessage != null
+                            ? chat.lastMessage is ChatTextMessageModel
+                                ? (chat.lastMessage! as ChatTextMessageModel)
+                                    .text
+                                : '📷 '
+                                    '${translations.image}'
+                            : '',
+                        avatar: widget.options.groupAvatarBuilder(
+                          (chat as GroupChatModel).title,
+                          (chat as GroupChatModel).imageUrl,
+                          40.0,
+                        ),
+                        lastUsed: chat.lastUsed != null
+                            ? _dateFormatter.format(
+                                date: chat.lastUsed!,
+                              )
+                            : null,
+                      ),
+              ),
+            ),
           ),
-        ),
+          const Divider(),
+        ],
       );
 }
