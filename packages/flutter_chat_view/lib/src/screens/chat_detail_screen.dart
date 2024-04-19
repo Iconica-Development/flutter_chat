@@ -173,13 +173,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 const IconThemeData(color: Colors.white),
             centerTitle: true,
             leading: GestureDetector(
-                    onTap: () {
-                      Navigator.popUntil(context, (route) => route.isFirst);
-                    },
-                    child: const Icon(
-                      Icons.arrow_back,
-                    ),
-                  ),
+              onTap: () {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+              child: const Icon(
+                Icons.arrow_back,
+              ),
+            ),
             title: GestureDetector(
               onTap: () => widget.onPressChatTitle.call(context, chatModel!),
               child: Row(
@@ -193,15 +193,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                             chatModel.imageUrl,
                             36.0,
                           ),
-                        ] else if (chatModel is PersonalChatModel) ...[
-                          widget.options.userAvatarBuilder(
-                            chatModel.user,
-                            36.0,
-                          ),
                         ] else
                           ...[],
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.5),
+                          padding: (chatModel is GroupChatModel)
+                              ? const EdgeInsets.only(left: 15.5)
+                              : EdgeInsets.zero,
                           child: widget.chatTitleBuilder != null
                               ? widget.chatTitleBuilder!.call(
                                   (chatModel is GroupChatModel)
