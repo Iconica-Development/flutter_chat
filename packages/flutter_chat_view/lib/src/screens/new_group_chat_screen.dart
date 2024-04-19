@@ -146,59 +146,62 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
       return widget.options.noChatsPlaceholderBuilder(widget.translations);
     }
 
-return ListView.separated(
-  itemCount: filteredUsers.length,
-  separatorBuilder: (context, index) => const Padding(
-    padding: EdgeInsets.symmetric(horizontal: 28.0),
-    child: Divider(),
-  ), // Add Divider here
-  itemBuilder: (context, index) {
-    var user = filteredUsers[index];
-    var isSelected = selectedUserList.any((selectedUser) => selectedUser == user);
+    return ListView.separated(
+      itemCount: filteredUsers.length,
+      separatorBuilder: (context, index) => const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 28.0),
+        child: Divider(),
+      ), // Add Divider here
+      itemBuilder: (context, index) {
+        var user = filteredUsers[index];
+        var isSelected =
+            selectedUserList.any((selectedUser) => selectedUser == user);
 
-    return InkWell(
-      onTap: () {
-        setState(() {
-          if (selectedUserList.contains(user)) {
-            selectedUserList.remove(user);
-          } else {
-            selectedUserList.add(user);
-          }
-          debugPrint('The list of selected users is $selectedUserList');
-        });
-      },
-      child: Container(
-        color: isSelected ? Colors.amber.shade200 : Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 12.0, right: 12),
-                child: widget.options.userAvatarBuilder(user, 40.0),
-              ),
-              Expanded(
-                child: Container(
-                  height: 40.0, // Adjust the height as needed
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    user.fullName ?? widget.translations.anonymousUser,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w800,
+        return InkWell(
+          onTap: () {
+            setState(() {
+              if (selectedUserList.contains(user)) {
+                selectedUserList.remove(user);
+              } else {
+                selectedUserList.add(user);
+              }
+              debugPrint('The list of selected users is $selectedUserList');
+            });
+          },
+          child: Container(
+            color: isSelected ? Colors.amber.shade200 : Colors.white,
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0, right: 12),
+                    child: widget.options.userAvatarBuilder(user, 40.0),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 40.0, // Adjust the height as needed
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        user.fullName ?? widget.translations.anonymousUser,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  if (isSelected)
+                    const Padding(
+                      padding: EdgeInsets.only(right: 16.0),
+                      child: Icon(Icons.check_circle, color: Colors.green),
+                    ),
+                ],
               ),
-              if (isSelected)
-                const Padding(
-                  padding: EdgeInsets.only(right: 16.0),
-                  child: Icon(Icons.check_circle, color: Colors.green),
-                ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
-  },
-);
-  }}
+  }
+}

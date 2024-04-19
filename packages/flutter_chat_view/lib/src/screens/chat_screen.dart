@@ -163,6 +163,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                             padding: const EdgeInsets.all(16.0),
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
                                               children: [
                                                 Text(
                                                   chat.canBeDeleted
@@ -170,50 +172,80 @@ class _ChatScreenState extends State<ChatScreen> {
                                                           .deleteChatModalTitle
                                                       : translations
                                                           .chatCantBeDeleted,
+                                                  textAlign: TextAlign.center,
                                                   style: const TextStyle(
-                                                    fontSize: 20,
+                                                    fontSize: 24,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                const SizedBox(height: 16),
+                                                const SizedBox(height: 24),
                                                 if (chat.canBeDeleted)
-                                                  Text(
-                                                    translations
-                                                        .deleteChatModalDescription,
-                                                    style: const TextStyle(
-                                                      fontSize: 16,
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 16,
+                                                    ),
+                                                    child: Text(
+                                                      translations
+                                                          .deleteChatModalDescription,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: const TextStyle(
+                                                        fontSize: 18,
+                                                      ),
                                                     ),
                                                   ),
-                                                const SizedBox(height: 16),
+                                                const SizedBox(
+                                                  height: 24,
+                                                ),
                                                 Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    TextButton(
-                                                      child: Text(
-                                                        translations
-                                                            .deleteChatModalCancel,
-                                                        style: const TextStyle(
-                                                          fontSize: 16,
-                                                        ),
-                                                      ),
+                                                    ElevatedButton(
                                                       onPressed: () =>
                                                           Navigator.of(
                                                         context,
                                                       ).pop(false),
+                                                      child: Text(
+                                                        translations
+                                                            .deleteChatModalCancel,
+                                                        style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 18,
+                                                        ),
+                                                      ),
                                                     ),
                                                     if (chat.canBeDeleted)
+                                                      const SizedBox(
+                                                        width: 16,
+                                                      ),
+                                                    if (chat.canBeDeleted)
                                                       ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                              const Color
+                                                                  .fromRGBO(
+                                                            113,
+                                                            198,
+                                                            209,
+                                                            1,
+                                                          ),
+                                                        ),
                                                         onPressed: () =>
                                                             Navigator.of(
                                                           context,
-                                                        ).pop(true),
+                                                        ).pop(
+                                                          true,
+                                                        ),
                                                         child: Text(
                                                           translations
                                                               .deleteChatModalConfirm,
                                                           style:
                                                               const TextStyle(
-                                                            fontSize: 16,
+                                                            color: Colors.white,
+                                                            fontSize: 18,
                                                           ),
                                                         ),
                                                       ),
