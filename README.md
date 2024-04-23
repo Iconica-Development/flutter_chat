@@ -18,6 +18,14 @@ To use this package, add flutter_chat as a dependency in your pubspec.yaml file:
       path: packages/flutter_chat
 ```
 
+You can use the `LocalChatService` to test the package in your project:
+
+```
+ChatUserStoryConfiguration(
+  chatService: LocalChatService(),
+),
+```
+
 If you are going to use Firebase as the back-end of the Chat, you should also add the following package as a dependency to your pubspec.yaml file:
 
 ```
@@ -32,7 +40,18 @@ Create a Firebase project for your application and add firebase firestore and st
 make sure you are authenticated using the `Firebase_auth` package or adjust your firebase rules, otherwise you won't be able to retreive data.
 
 Also make sure you have the corresponding collections in your firebase project as defined in `FirebaseChatOptions`, you can override the
-default paths as you wish, also the structure of your data should be equal to our predefined models, you can implement any model by making your own model and implementing one of the predefined interfaces like so:
+default paths as you wish:
+```
+  const FirebaseChatOptions({
+    this.groupChatsCollectionName = 'group_chats',
+    this.chatsCollectionName = 'chats',
+    this.messagesCollectionName = 'messages',
+    this.usersCollectionName = 'users',
+    this.chatsMetaDataCollectionName = 'chat_metadata',
+    this.userChatsCollectionName = 'chats',
+  });
+  ```
+ Also the structure of your data should be equal to our predefined models, you can implement any model by making your own model and implementing one of the predefined interfaces like so:
 
 ```
 class ChatMessageModel implements ChatMessageModelInterface {
