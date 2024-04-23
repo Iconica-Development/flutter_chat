@@ -1,3 +1,9 @@
+## 1.4.2
+
+- Added doc comments
+- Fixed bug when creating a group chat with the `LocalChatService`
+- Updated readme
+
 ## 1.4.1
 - Made UI changes to match the Figma design
 

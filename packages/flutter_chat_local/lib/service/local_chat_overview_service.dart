@@ -81,6 +81,7 @@ class LocalChatOverviewService
     var chatExists = _chats.any((element) => element.id == chat.id);
 
     if (!chatExists) {
+      chat.id = chat.hashCode.toString();
       _chats.add(chat);
       _chatsController.add([..._chats]);
       notifyListeners();
