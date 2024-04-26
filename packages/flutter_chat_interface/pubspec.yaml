@@ -4,7 +4,7 @@
 
 name: flutter_chat_interface
 description: A new Flutter package project.
-version: 1.4.2
+version: 1.4.3
 publish_to: none
 
 environment:

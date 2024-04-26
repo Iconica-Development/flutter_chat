@@ -1,6 +1,6 @@
 name: flutter_chat_local
 description: "A new Flutter package project."
-version: 1.4.2
+version: 1.4.3
 publish_to: none
 homepage:
 
@@ -15,7 +15,7 @@ dependencies:
     git:
       url: https://github.com/Iconica-Development/flutter_chat
       path: packages/flutter_chat_interface
-      ref: 1.4.2
+      ref: 1.4.3
 
 dev_dependencies:
   flutter_test:

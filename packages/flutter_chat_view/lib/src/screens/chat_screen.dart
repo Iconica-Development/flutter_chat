@@ -77,12 +77,15 @@ class _ChatScreenState extends State<ChatScreen> {
     var theme = Theme.of(context);
     return widget.options.scaffoldBuilder(
       AppBar(
-        backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
+        backgroundColor:
+            theme.appBarTheme.backgroundColor ?? const Color(0xff212121),
         title: Text(
           translations.chatsTitle,
           style: theme.appBarTheme.titleTextStyle ??
               const TextStyle(
-                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                fontSize: 24,
+                color: Color(0xff71C6D1),
               ),
         ),
         centerTitle: true,
@@ -123,7 +126,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   builder: (BuildContext context, snapshot) {
                     // if the stream is done, empty and noChats is set we should call that
                     if (snapshot.connectionState == ConnectionState.done &&
-                        (snapshot.data?.isEmpty ?? true)) {
+                            (snapshot.data?.isEmpty ?? true) ||
+                        (snapshot.data != null && snapshot.data!.isEmpty)) {
                       if (widget.onNoChats != null && !_hasCalledOnNoChats) {
                         _hasCalledOnNoChats = true; // Set the flag to true
                         WidgetsBinding.instance.addPostFrameCallback((_) async {
