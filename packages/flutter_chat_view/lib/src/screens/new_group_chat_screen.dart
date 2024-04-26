@@ -58,10 +58,11 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xff71C6D1),
         onPressed: () async {
           await widget.onPressGroupChatOverview(selectedUserList);
         },
-        child: const Icon(Icons.arrow_circle_right),
+        child: const Icon(Icons.arrow_forward_ios),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
@@ -105,7 +106,9 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
             widget.translations.newGroupChatButton,
             style: theme.appBarTheme.titleTextStyle ??
                 const TextStyle(
-                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 24,
+                  color: Color(0xff71C6D1),
                 ),
           );
   }

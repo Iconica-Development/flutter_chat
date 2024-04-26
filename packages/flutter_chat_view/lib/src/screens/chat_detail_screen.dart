@@ -177,7 +177,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 Navigator.popUntil(context, (route) => route.isFirst);
               },
               child: const Icon(
-                Icons.arrow_back,
+                Icons.arrow_back_ios,
               ),
             ),
             title: GestureDetector(
@@ -218,8 +218,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                   style: theme.appBarTheme.titleTextStyle ??
                                       const TextStyle(
                                         fontWeight: FontWeight.w800,
-                                        fontSize: 18.0,
-                                        color: Colors.white,
+                                        fontSize: 24,
+                                        color: Color(0xff71C6D1),
                                       ),
                                 ),
                         ),

@@ -274,20 +274,15 @@ Widget _newGroupChatOverviewScreenRoute(
         configuration.onPressCompleteGroupChatCreation
             ?.call(users, groupChatName);
         if (configuration.onPressCreateGroupChat != null) return;
-        debugPrint('----------- The list of users = $users -----------');
-        debugPrint('----------- Group chat name = $groupChatName -----------');
-
         var chat =
             await configuration.chatService.chatOverviewService.storeChatIfNot(
           GroupChatModel(
-            id: const Uuid().v4(),
             canBeDeleted: true,
             title: groupChatName,
             imageUrl: 'https://picsum.photos/200/300',
             users: users,
           ),
         );
-        debugPrint('----------- Chat id = ${chat.id} -----------');
         if (context.mounted) {
           await Navigator.of(context).push(
             MaterialPageRoute(

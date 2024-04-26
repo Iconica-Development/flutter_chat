@@ -1,3 +1,8 @@
+## 1.4.3
+
+- Added default styling.
+- Fixed groupchats using navigator
+
 ## 1.4.2
 
 - Added doc comments
