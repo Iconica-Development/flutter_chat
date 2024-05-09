@@ -70,12 +70,12 @@ List<GoRoute> getChatStoryRoutes(
             service: service,
             chatId: chatId!,
             textfieldBottomPadding: configuration.textfieldBottomPadding ?? 0,
-            onPressUserProfile: (userId) async {
+            onPressUserProfile: (user) async {
               if (configuration.onPressUserProfile != null) {
-                return configuration.onPressUserProfile?.call();
+                return configuration.onPressUserProfile?.call(context, user);
               }
               return context.push(
-                ChatUserStoryRoutes.chatProfileScreenPath(chatId, userId),
+                ChatUserStoryRoutes.chatProfileScreenPath(chatId, user.id),
               );
             },
             onMessageSubmit: (message) async {
@@ -257,11 +257,11 @@ List<GoRoute> getChatStoryRoutes(
             userId: id,
             onTapUser: (user) async {
               if (configuration.onPressUserProfile != null) {
-                return configuration.onPressUserProfile!.call();
+                return configuration.onPressUserProfile!.call(context, user);
               }
 
               return context.push(
-                ChatUserStoryRoutes.chatProfileScreenPath(chatId, user),
+                ChatUserStoryRoutes.chatProfileScreenPath(chatId, user.id),
               );
             },
           );

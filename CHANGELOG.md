@@ -2,6 +2,7 @@
 
 - Add a serviceBuilder to the userstory configuration
 - Add a translationsBuilder to the userstory configuration
+- Change onPressUserProfile callback to use a ChatUserModel instead of a String
 
 ## 1.4.3
 

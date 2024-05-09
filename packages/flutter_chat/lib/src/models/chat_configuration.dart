@@ -82,7 +82,10 @@ class ChatUserStoryConfiguration {
 
   /// Builder for chat options based on context.
   final Function(List<ChatUserModel>, String)? onPressCompleteGroupChatCreation;
+
   final Function()? onPressCreateGroupChat;
+
+  /// Builder for the chat options which can be used to style the UI of the chat
   final ChatOptions Function(BuildContext context) chatOptionsBuilder;
 
   /// If true, the user will be routed to the new chat screen if there are
@@ -108,11 +111,18 @@ class ChatUserStoryConfiguration {
   final Function()? onPressStartChat;
 
   /// Callback function triggered when user profile is pressed.
-  final Function()? onPressUserProfile;
+  final Function(BuildContext context, ChatUserModel user)? onPressUserProfile;
+
   final double? textfieldBottomPadding;
+
   final Color? iconDisabledColor;
+
+  /// The text style used for the unread message counter.
   final TextStyle? unreadMessageTextStyle;
+
   final Widget? Function(BuildContext context)? loadingWidgetBuilder;
+
   final Widget Function(String userFullName)? usernameBuilder;
+
   final Widget Function(String chatTitle)? chatTitleBuilder;
 }

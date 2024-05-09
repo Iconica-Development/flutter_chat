@@ -95,9 +95,9 @@ Widget _chatDetailScreenRoute(
       service: configuration.chatService,
       chatId: chatId,
       textfieldBottomPadding: configuration.textfieldBottomPadding ?? 0,
-      onPressUserProfile: (userId) async {
+      onPressUserProfile: (user) async {
         if (configuration.onPressUserProfile != null) {
-          return configuration.onPressUserProfile?.call();
+          return configuration.onPressUserProfile?.call(context, user);
         }
         return Navigator.of(context).push(
           MaterialPageRoute(
@@ -105,7 +105,7 @@ Widget _chatDetailScreenRoute(
               configuration,
               context,
               chatId,
-              userId,
+              user.id,
             ),
           ),
         );
@@ -171,7 +171,7 @@ Widget _chatProfileScreenRoute(
       userId: userId,
       onTapUser: (user) async {
         if (configuration.onPressUserProfile != null) {
-          return configuration.onPressUserProfile!.call();
+          return configuration.onPressUserProfile!.call(context, user);
         }
 
         return Navigator.of(context).push(
