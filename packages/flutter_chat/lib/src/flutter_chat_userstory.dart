@@ -133,6 +133,7 @@ List<GoRoute> getChatStoryRoutes(
             translations: configuration.translationsBuilder?.call(context) ??
                 configuration.translations,
             service: service,
+            showGroupChatButton: configuration.enableGroupChatCreation,
             onPressCreateChat: (user) async {
               configuration.onPressCreateChat?.call(user);
               if (configuration.onPressCreateChat != null) return;

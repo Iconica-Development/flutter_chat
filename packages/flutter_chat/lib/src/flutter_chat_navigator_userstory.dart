@@ -199,6 +199,7 @@ Widget _newChatScreenRoute(
       options: configuration.chatOptionsBuilder(context),
       translations: configuration.translations,
       service: configuration.chatService,
+      showGroupChatButton: configuration.enableGroupChatCreation,
       onPressCreateGroupChat: () async {
         configuration.onPressCreateGroupChat?.call();
         if (context.mounted) {

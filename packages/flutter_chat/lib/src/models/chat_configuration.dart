@@ -28,6 +28,7 @@ class ChatUserStoryConfiguration {
     this.deleteChatDialog,
     this.disableDismissForPermanentChats = false,
     this.routeToNewChatIfEmpty = true,
+    this.enableGroupChatCreation = true,
     this.translations = const ChatTranslations(),
     this.translationsBuilder,
     this.chatPageBuilder,
@@ -94,6 +95,10 @@ class ChatUserStoryConfiguration {
 
   /// The size of each page of messages.
   final int messagePageSize;
+
+  /// Whether to enable group chat creation for the user. If false,
+  /// the button will be hidden
+  final bool enableGroupChatCreation;
 
   /// Dialog for confirming chat deletion.
   final Future<bool?> Function(BuildContext, ChatModel)? deleteChatDialog;

@@ -7,7 +7,7 @@ class ChatTranslations {
     this.chatsTitle = 'Chats',
     this.chatsUnread = 'unread',
     this.newChatButton = 'Start a chat',
-    this.newGroupChatButton = 'Start group chat',
+    this.newGroupChatButton = 'Create a group chat',
     this.newChatTitle = 'Start a chat',
     this.image = 'Image',
     this.searchPlaceholder = 'Search...',
