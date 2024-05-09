@@ -14,6 +14,7 @@ class ChatUserStoryConfiguration {
   const ChatUserStoryConfiguration({
     required this.chatService,
     required this.chatOptionsBuilder,
+    this.chatServiceBuilder,
     this.onPressStartChat,
     this.onPressChat,
     this.onDeleteChat,
@@ -28,6 +29,7 @@ class ChatUserStoryConfiguration {
     this.disableDismissForPermanentChats = false,
     this.routeToNewChatIfEmpty = true,
     this.translations = const ChatTranslations(),
+    this.translationsBuilder,
     this.chatPageBuilder,
     this.onPressChatTitle,
     this.afterMessageSent,
@@ -44,6 +46,9 @@ class ChatUserStoryConfiguration {
   /// The service responsible for handling chat-related functionalities.
   final ChatService chatService;
 
+  /// A method to get the chat service only when needed and with a context.
+  final ChatService Function(BuildContext context)? chatServiceBuilder;
+
   /// Callback function triggered when a chat is pressed.
   final Function(BuildContext, ChatModel)? onPressChat;
 
@@ -52,6 +57,9 @@ class ChatUserStoryConfiguration {
 
   /// Translations for internationalization/localization support.
   final ChatTranslations translations;
+
+  /// Translations builder because context might be needed for translations.
+  final ChatTranslations Function(BuildContext context)? translationsBuilder;
 
   /// Determines whether dismissing is disabled for permanent chats.
   final bool disableDismissForPermanentChats;

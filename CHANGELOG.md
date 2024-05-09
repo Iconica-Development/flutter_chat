@@ -1,3 +1,8 @@
+## 2.0.0
+
+- Add a serviceBuilder to the userstory configuration
+- Add a translationsBuilder to the userstory configuration
+
 ## 1.4.3
 
 - Added default styling.

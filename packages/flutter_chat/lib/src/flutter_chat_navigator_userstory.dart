@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat/flutter_chat.dart';
-import 'package:uuid/uuid.dart';
 
 /// Navigates to the chat user story screen.
 ///
