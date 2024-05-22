@@ -4,6 +4,7 @@
 - Add a translationsBuilder to the userstory configuration
 - Change onPressUserProfile callback to use a ChatUserModel instead of a String
 - Add a enableGroupChatCreation boolean to the userstory configuration to enable or disable group chat creation
+- Change the ChatTranslations constructor to require all translations or use the ChatTranslations.empty constructor if you don't want to specify all translations
 
 ## 1.4.3
 

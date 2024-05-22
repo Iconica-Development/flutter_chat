@@ -26,7 +26,7 @@ class ChatDetailScreen extends StatefulWidget {
     this.chatTitleBuilder,
     this.usernameBuilder,
     this.loadingWidgetBuilder,
-    this.translations = const ChatTranslations(),
+    this.translations = const ChatTranslations.empty(),
     this.iconColor,
     this.iconDisabledColor,
     this.showTime = false,

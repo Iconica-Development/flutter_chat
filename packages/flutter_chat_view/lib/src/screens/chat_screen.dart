@@ -20,7 +20,7 @@ class ChatScreen extends StatefulWidget {
     this.unreadMessageTextStyle,
     this.onNoChats,
     this.deleteChatDialog,
-    this.translations = const ChatTranslations(),
+    this.translations = const ChatTranslations.empty(),
     this.disableDismissForPermanentChats = false,
     super.key,
   });
