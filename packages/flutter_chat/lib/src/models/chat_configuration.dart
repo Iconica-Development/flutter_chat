@@ -29,7 +29,7 @@ class ChatUserStoryConfiguration {
     this.disableDismissForPermanentChats = false,
     this.routeToNewChatIfEmpty = true,
     this.enableGroupChatCreation = true,
-    this.translations = const ChatTranslations(),
+    this.translations = const ChatTranslations.empty(),
     this.translationsBuilder,
     this.chatPageBuilder,
     this.onPressChatTitle,

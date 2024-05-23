@@ -221,12 +221,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
       return widget.options.noChatsPlaceholderBuilder(widget.translations);
     }
 
-    return ListView.separated(
+    return ListView.builder(
       itemCount: filteredUsers.length,
-      separatorBuilder: (context, index) => const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 28.0),
-        child: Divider(),
-      ),
       itemBuilder: (context, index) {
         var user = filteredUsers[index];
         return GestureDetector(

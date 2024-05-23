@@ -384,7 +384,6 @@ class ChatListItem extends StatelessWidget {
               ),
             ),
           ),
-          const Divider(),
         ],
       );
 }
