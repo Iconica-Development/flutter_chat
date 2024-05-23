@@ -119,7 +119,8 @@ class _ChatScreenState extends State<ChatScreen> {
             child: ListView(
               controller: controller,
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(28, 16, 28, 0),
+              padding: widget.options.paddingAroundChatList ??
+                  const EdgeInsets.fromLTRB(28, 16, 28, 0),
               children: [
                 StreamBuilder<List<ChatModel>>(
                   stream: widget.service.chatOverviewService.getChatsStream(),

@@ -19,6 +19,7 @@ class ChatOptions {
     this.groupAvatarBuilder = _createGroupAvatar,
     this.noChatsPlaceholderBuilder = _createNoChatsPlaceholder,
     this.noUsersPlaceholderBuilder = _createNoUsersPlaceholder,
+    this.paddingAroundChatList,
   });
 
   /// Builder function for the new chat button.
@@ -47,6 +48,9 @@ class ChatOptions {
 
   /// Builder function for the placeholder shown when no users are available.
   final NoUsersPlaceholderBuilder noUsersPlaceholderBuilder;
+
+  /// The padding around the chat list.
+  final EdgeInsets? paddingAroundChatList;
 }
 
 Widget _createNewChatButton(

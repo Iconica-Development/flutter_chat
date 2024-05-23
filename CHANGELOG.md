@@ -6,6 +6,7 @@
 - Add a enableGroupChatCreation boolean to the userstory configuration to enable or disable group chat creation
 - Change the ChatTranslations constructor to require all translations or use the ChatTranslations.empty constructor if you don't want to specify all translations
 - Remove the Divider between the users on the new chat screen
+- Add option to set a custom padding around the list of chats
 
 ## 1.4.3
 
