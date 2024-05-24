@@ -91,11 +91,15 @@ class FirebaseChatOverviewService implements ChatOverviewService {
               var chat = element.doc.data();
               if (chat == null) return;
 
-              var otherUser = await _userService.getUser(
-                chat.users.firstWhere(
-                  (element) => element != currentUser?.id,
-                ),
-              );
+              var otherUser = chat.users.any(
+                (element) => element != currentUser?.id,
+              )
+                  ? await _userService.getUser(
+                      chat.users.firstWhere(
+                        (element) => element != currentUser?.id,
+                      ),
+                    )
+                  : null;
 
               var unread =
                   await _addUnreadChatSubscription(chat.id!, currentUser!.id!);
@@ -144,10 +148,10 @@ class FirebaseChatOverviewService implements ChatOverviewService {
                   imageUrl: chat.imageUrl ?? '',
                   unreadMessages: unread,
                   users: users,
-                  lastMessage: chat.lastMessage != null
+                  lastMessage: chat.lastMessage != null && otherUser != null
                       ? chat.lastMessage!.imageUrl == null
                           ? ChatTextMessageModel(
-                              sender: otherUser!,
+                              sender: otherUser,
                               text: chat.lastMessage!.text!,
                               timestamp: DateTime.fromMillisecondsSinceEpoch(
                                 chat.lastMessage!.timestamp
@@ -155,7 +159,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
                               ),
                             )
                           : ChatImageMessageModel(
-                              sender: otherUser!,
+                              sender: otherUser,
                               imageUrl: chat.lastMessage!.imageUrl!,
                               timestamp: DateTime.fromMillisecondsSinceEpoch(
                                 chat.lastMessage!.timestamp

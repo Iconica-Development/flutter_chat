@@ -7,6 +7,7 @@
 - Change the ChatTranslations constructor to require all translations or use the ChatTranslations.empty constructor if you don't want to specify all translations
 - Remove the Divider between the users on the new chat screen
 - Add option to set a custom padding around the list of chats
+- Fix nullpointer when firstWhere returns null because there is only 1 person in a groupchat
 
 ## 1.4.3
 
