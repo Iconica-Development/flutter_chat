@@ -11,7 +11,8 @@ class NewChatScreen extends StatefulWidget {
     required this.onPressCreateChat,
     required this.service,
     required this.onPressCreateGroupChat,
-    this.translations = const ChatTranslations(),
+    this.showGroupChatButton = true,
+    this.translations = const ChatTranslations.empty(),
     super.key,
   });
 
@@ -23,7 +24,12 @@ class NewChatScreen extends StatefulWidget {
 
   /// Callback function for creating a new chat with a user.
   final Function(ChatUserModel) onPressCreateChat;
+
+  /// Callback function for creating a new group chat.
   final Function() onPressCreateGroupChat;
+
+  /// Option to enable the group chat creation button.
+  final bool showGroupChatButton;
 
   /// Translations for the chat.
   final ChatTranslations translations;
@@ -52,48 +58,50 @@ class _NewChatScreenState extends State<NewChatScreen> {
       ),
       body: Column(
         children: [
-          GestureDetector(
-            onTap: () async {
-              await widget.onPressCreateGroupChat();
-            },
-            child: Container(
-              color: Colors.grey[900],
-              child: SizedBox(
-                height: 60.0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 16.0,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.group,
-                              color: Colors.white,
+          if (widget.showGroupChatButton) ...[
+            GestureDetector(
+              onTap: () async {
+                await widget.onPressCreateGroupChat();
+              },
+              child: Container(
+                color: Colors.grey[900],
+                child: SizedBox(
+                  height: 60.0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 16.0,
                             ),
-                            onPressed: () {
-                              // Handle group chat creation
-                            },
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.group,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                // Handle group chat creation
+                              },
+                            ),
                           ),
-                        ),
-                        const Text(
-                          'Create group chat',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16.0,
+                          Text(
+                            widget.translations.newGroupChatButton,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
           Expanded(
             child: FutureBuilder<List<ChatUserModel>>(
               // ignore: discarded_futures
@@ -213,12 +221,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
       return widget.options.noChatsPlaceholderBuilder(widget.translations);
     }
 
-    return ListView.separated(
+    return ListView.builder(
       itemCount: filteredUsers.length,
-      separatorBuilder: (context, index) => const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 28.0),
-        child: Divider(),
-      ),
       itemBuilder: (context, index) {
         var user = filteredUsers[index];
         return GestureDetector(

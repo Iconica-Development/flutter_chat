@@ -26,7 +26,7 @@ class ChatDetailScreen extends StatefulWidget {
     this.chatTitleBuilder,
     this.usernameBuilder,
     this.loadingWidgetBuilder,
-    this.translations = const ChatTranslations(),
+    this.translations = const ChatTranslations.empty(),
     this.iconColor,
     this.iconDisabledColor,
     this.showTime = false,
@@ -53,7 +53,7 @@ class ChatDetailScreen extends StatefulWidget {
   final int pageSize;
   final double textfieldBottomPadding;
   final Color? iconDisabledColor;
-  final Function(String? userId) onPressUserProfile;
+  final Function(ChatUserModel user) onPressUserProfile;
   // ignore: avoid_positional_boolean_parameters
   final Widget? Function(BuildContext context)? loadingWidgetBuilder;
   final Widget Function(String userFullName)? usernameBuilder;

@@ -31,7 +31,7 @@ class ChatDetailRow extends StatefulWidget {
 
   /// The previous chat message model.
   final ChatMessageModel? previousMessage;
-  final Function(String? userId) onPressUserProfile;
+  final Function(ChatUserModel user) onPressUserProfile;
   final Widget Function(String userFullName)? usernameBuilder;
 
   /// Flag indicating whether to show the time.
@@ -65,7 +65,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
           if (isNewDate || isSameSender) ...[
             GestureDetector(
               onTap: () => widget.onPressUserProfile(
-                widget.message.sender.id,
+                widget.message.sender,
               ),
               child: Padding(
                 padding: const EdgeInsets.only(left: 10.0),

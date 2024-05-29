@@ -14,9 +14,11 @@ List<GoRoute> getChatStoryRoutes(
       GoRoute(
         path: ChatUserStoryRoutes.chatScreen,
         pageBuilder: (context, state) {
+          var service = configuration.chatServiceBuilder?.call(context) ??
+              configuration.chatService;
           var chatScreen = ChatScreen(
             unreadMessageTextStyle: configuration.unreadMessageTextStyle,
-            service: configuration.chatService,
+            service: service,
             options: configuration.chatOptionsBuilder(context),
             onNoChats: () async =>
                 context.push(ChatUserStoryRoutes.newChatScreen),
@@ -34,7 +36,8 @@ List<GoRoute> getChatStoryRoutes(
                 configuration.onDeleteChat?.call(context, chat) ??
                 configuration.chatService.chatOverviewService.deleteChat(chat),
             deleteChatDialog: configuration.deleteChatDialog,
-            translations: configuration.translations,
+            translations: configuration.translationsBuilder?.call(context) ??
+                configuration.translations,
           );
           return buildScreenWithoutTransition(
             context: context,
@@ -53,6 +56,8 @@ List<GoRoute> getChatStoryRoutes(
         path: ChatUserStoryRoutes.chatDetailScreen,
         pageBuilder: (context, state) {
           var chatId = state.pathParameters['id'];
+          var service = configuration.chatServiceBuilder?.call(context) ??
+              configuration.chatService;
           var chatDetailScreen = ChatDetailScreen(
             chatTitleBuilder: configuration.chatTitleBuilder,
             usernameBuilder: configuration.usernameBuilder,
@@ -60,16 +65,17 @@ List<GoRoute> getChatStoryRoutes(
             iconDisabledColor: configuration.iconDisabledColor,
             pageSize: configuration.messagePageSize,
             options: configuration.chatOptionsBuilder(context),
-            translations: configuration.translations,
-            service: configuration.chatService,
+            translations: configuration.translationsBuilder?.call(context) ??
+                configuration.translations,
+            service: service,
             chatId: chatId!,
             textfieldBottomPadding: configuration.textfieldBottomPadding ?? 0,
-            onPressUserProfile: (userId) async {
+            onPressUserProfile: (user) async {
               if (configuration.onPressUserProfile != null) {
-                return configuration.onPressUserProfile?.call();
+                return configuration.onPressUserProfile?.call(context, user);
               }
               return context.push(
-                ChatUserStoryRoutes.chatProfileScreenPath(chatId, userId),
+                ChatUserStoryRoutes.chatProfileScreenPath(chatId, user.id),
               );
             },
             onMessageSubmit: (message) async {
@@ -120,10 +126,14 @@ List<GoRoute> getChatStoryRoutes(
       GoRoute(
         path: ChatUserStoryRoutes.newChatScreen,
         pageBuilder: (context, state) {
+          var service = configuration.chatServiceBuilder?.call(context) ??
+              configuration.chatService;
           var newChatScreen = NewChatScreen(
             options: configuration.chatOptionsBuilder(context),
-            translations: configuration.translations,
-            service: configuration.chatService,
+            translations: configuration.translationsBuilder?.call(context) ??
+                configuration.translations,
+            service: service,
+            showGroupChatButton: configuration.enableGroupChatCreation,
             onPressCreateChat: (user) async {
               configuration.onPressCreateChat?.call(user);
               if (configuration.onPressCreateChat != null) return;
@@ -163,10 +173,13 @@ List<GoRoute> getChatStoryRoutes(
       GoRoute(
         path: ChatUserStoryRoutes.newGroupChatScreen,
         pageBuilder: (context, state) {
+          var service = configuration.chatServiceBuilder?.call(context) ??
+              configuration.chatService;
           var newGroupChatScreen = NewGroupChatScreen(
             options: configuration.chatOptionsBuilder(context),
-            translations: configuration.translations,
-            service: configuration.chatService,
+            translations: configuration.translationsBuilder?.call(context) ??
+                configuration.translations,
+            service: service,
             onPressGroupChatOverview: (users) async => context.push(
               ChatUserStoryRoutes.newGroupChatOverviewScreen,
               extra: users,
@@ -188,11 +201,14 @@ List<GoRoute> getChatStoryRoutes(
       GoRoute(
         path: ChatUserStoryRoutes.newGroupChatOverviewScreen,
         pageBuilder: (context, state) {
+          var service = configuration.chatServiceBuilder?.call(context) ??
+              configuration.chatService;
           var users = state.extra! as List<ChatUserModel>;
           var newGroupChatOverviewScreen = NewGroupChatOverviewScreen(
             options: configuration.chatOptionsBuilder(context),
-            translations: configuration.translations,
-            service: configuration.chatService,
+            translations: configuration.translationsBuilder?.call(context) ??
+                configuration.translations,
+            service: service,
             users: users,
             onPressCompleteGroupChatCreation: (users, groupChatName) async {
               configuration.onPressCompleteGroupChatCreation
@@ -232,18 +248,21 @@ List<GoRoute> getChatStoryRoutes(
           var chatId = state.pathParameters['id'];
           var userId = state.pathParameters['userId'];
           var id = userId == 'null' ? null : userId;
+          var service = configuration.chatServiceBuilder?.call(context) ??
+              configuration.chatService;
           var profileScreen = ChatProfileScreen(
-            translations: configuration.translations,
-            chatService: configuration.chatService,
+            translations: configuration.translationsBuilder?.call(context) ??
+                configuration.translations,
+            chatService: service,
             chatId: chatId!,
             userId: id,
             onTapUser: (user) async {
               if (configuration.onPressUserProfile != null) {
-                return configuration.onPressUserProfile!.call();
+                return configuration.onPressUserProfile!.call(context, user);
               }
 
               return context.push(
-                ChatUserStoryRoutes.chatProfileScreenPath(chatId, user),
+                ChatUserStoryRoutes.chatProfileScreenPath(chatId, user.id),
               );
             },
           );

@@ -2,12 +2,48 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
+/// Class that holds all the translations for the chat component view and
+///  the corresponding userstory
 class ChatTranslations {
+  /// ChatTranslations constructor where everything is required use this
+  /// if you want to be sure to have all translations specified
+  /// If you just want the default values use the empty constructor
+  /// and optionally override the values with the copyWith method
   const ChatTranslations({
+    required this.chatsTitle,
+    required this.chatsUnread,
+    required this.newChatButton,
+    required this.newGroupChatButton,
+    required this.newChatTitle,
+    required this.deleteChatButton,
+    required this.image,
+    required this.searchPlaceholder,
+    required this.startTyping,
+    required this.cancelImagePickerBtn,
+    required this.messagePlaceholder,
+    required this.writeMessageToStartChat,
+    required this.writeFirstMessageInGroupChat,
+    required this.imageUploading,
+    required this.deleteChatModalTitle,
+    required this.deleteChatModalDescription,
+    required this.deleteChatModalCancel,
+    required this.deleteChatModalConfirm,
+    required this.noUsersFound,
+    required this.noChatsFound,
+    required this.chatCantBeDeleted,
+    required this.chatProfileUsers,
+    required this.imagePickerTitle,
+    required this.uploadFile,
+    required this.takePicture,
+    required this.anonymousUser,
+  });
+
+  /// Default translations for the chat component view
+  const ChatTranslations.empty({
     this.chatsTitle = 'Chats',
     this.chatsUnread = 'unread',
     this.newChatButton = 'Start a chat',
-    this.newGroupChatButton = 'Start group chat',
+    this.newGroupChatButton = 'Create a group chat',
     this.newChatTitle = 'Start a chat',
     this.image = 'Image',
     this.searchPlaceholder = 'Search...',
@@ -62,4 +98,67 @@ class ChatTranslations {
 
   /// Shown when the user has no name
   final String anonymousUser;
+
+  // copyWith method to override the default values
+  ChatTranslations copyWith({
+    String? chatsTitle,
+    String? chatsUnread,
+    String? newChatButton,
+    String? newGroupChatButton,
+    String? newChatTitle,
+    String? deleteChatButton,
+    String? image,
+    String? searchPlaceholder,
+    String? startTyping,
+    String? cancelImagePickerBtn,
+    String? messagePlaceholder,
+    String? writeMessageToStartChat,
+    String? writeFirstMessageInGroupChat,
+    String? imageUploading,
+    String? deleteChatModalTitle,
+    String? deleteChatModalDescription,
+    String? deleteChatModalCancel,
+    String? deleteChatModalConfirm,
+    String? noUsersFound,
+    String? noChatsFound,
+    String? chatCantBeDeleted,
+    String? chatProfileUsers,
+    String? imagePickerTitle,
+    String? uploadFile,
+    String? takePicture,
+    String? anonymousUser,
+  }) =>
+      ChatTranslations(
+        chatsTitle: chatsTitle ?? this.chatsTitle,
+        chatsUnread: chatsUnread ?? this.chatsUnread,
+        newChatButton: newChatButton ?? this.newChatButton,
+        newGroupChatButton: newGroupChatButton ?? this.newGroupChatButton,
+        newChatTitle: newChatTitle ?? this.newChatTitle,
+        deleteChatButton: deleteChatButton ?? this.deleteChatButton,
+        image: image ?? this.image,
+        searchPlaceholder: searchPlaceholder ?? this.searchPlaceholder,
+        startTyping: startTyping ?? this.startTyping,
+        cancelImagePickerBtn: cancelImagePickerBtn ?? this.cancelImagePickerBtn,
+        messagePlaceholder: messagePlaceholder ?? this.messagePlaceholder,
+        writeMessageToStartChat:
+            writeMessageToStartChat ?? this.writeMessageToStartChat,
+        writeFirstMessageInGroupChat:
+            writeFirstMessageInGroupChat ?? this.writeFirstMessageInGroupChat,
+        imageUploading: imageUploading ?? this.imageUploading,
+        deleteChatModalTitle: deleteChatModalTitle ?? this.deleteChatModalTitle,
+        deleteChatModalDescription:
+            deleteChatModalDescription ?? this.deleteChatModalDescription,
+        deleteChatModalCancel:
+            deleteChatModalCancel ?? this.deleteChatModalCancel,
+        deleteChatModalConfirm:
+            deleteChatModalConfirm ?? this.deleteChatModalConfirm,
+        noUsersFound: noUsersFound ?? this.noUsersFound,
+        noChatsFound: noChatsFound ?? this.noChatsFound,
+        chatCantBeDeleted: chatCantBeDeleted ?? this.chatCantBeDeleted,
+        chatProfileUsers: chatProfileUsers ?? this.chatProfileUsers,
+        imagePickerTitle: imagePickerTitle ?? this.imagePickerTitle,
+        uploadFile: uploadFile ?? this.uploadFile,
+        takePicture: takePicture ?? this.takePicture,
+        anonymousUser: anonymousUser ?? this.anonymousUser,
+      );
 }

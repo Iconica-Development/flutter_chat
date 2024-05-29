@@ -26,7 +26,7 @@ class ChatProfileScreen extends StatefulWidget {
   final String? userId;
 
   /// Callback function for tapping on a user.
-  final Function(String userId) onTapUser;
+  final Function(ChatUserModel user) onTapUser;
 
   @override
   State<ChatProfileScreen> createState() => _ProfileScreenState();
@@ -124,7 +124,7 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: GestureDetector(
-                            onTap: () => widget.onTapUser.call(e.id!),
+                            onTap: () => widget.onTapUser.call(e),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,

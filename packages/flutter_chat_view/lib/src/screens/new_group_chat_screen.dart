@@ -8,7 +8,7 @@ class NewGroupChatScreen extends StatefulWidget {
     required this.options,
     required this.onPressGroupChatOverview,
     required this.service,
-    this.translations = const ChatTranslations(),
+    this.translations = const ChatTranslations.empty(),
     super.key,
   });
 

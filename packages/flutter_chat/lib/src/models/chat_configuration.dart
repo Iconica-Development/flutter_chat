@@ -14,6 +14,7 @@ class ChatUserStoryConfiguration {
   const ChatUserStoryConfiguration({
     required this.chatService,
     required this.chatOptionsBuilder,
+    this.chatServiceBuilder,
     this.onPressStartChat,
     this.onPressChat,
     this.onDeleteChat,
@@ -27,7 +28,9 @@ class ChatUserStoryConfiguration {
     this.deleteChatDialog,
     this.disableDismissForPermanentChats = false,
     this.routeToNewChatIfEmpty = true,
-    this.translations = const ChatTranslations(),
+    this.enableGroupChatCreation = true,
+    this.translations = const ChatTranslations.empty(),
+    this.translationsBuilder,
     this.chatPageBuilder,
     this.onPressChatTitle,
     this.afterMessageSent,
@@ -44,6 +47,9 @@ class ChatUserStoryConfiguration {
   /// The service responsible for handling chat-related functionalities.
   final ChatService chatService;
 
+  /// A method to get the chat service only when needed and with a context.
+  final ChatService Function(BuildContext context)? chatServiceBuilder;
+
   /// Callback function triggered when a chat is pressed.
   final Function(BuildContext, ChatModel)? onPressChat;
 
@@ -52,6 +58,9 @@ class ChatUserStoryConfiguration {
 
   /// Translations for internationalization/localization support.
   final ChatTranslations translations;
+
+  /// Translations builder because context might be needed for translations.
+  final ChatTranslations Function(BuildContext context)? translationsBuilder;
 
   /// Determines whether dismissing is disabled for permanent chats.
   final bool disableDismissForPermanentChats;
@@ -74,7 +83,10 @@ class ChatUserStoryConfiguration {
 
   /// Builder for chat options based on context.
   final Function(List<ChatUserModel>, String)? onPressCompleteGroupChatCreation;
+
   final Function()? onPressCreateGroupChat;
+
+  /// Builder for the chat options which can be used to style the UI of the chat
   final ChatOptions Function(BuildContext context) chatOptionsBuilder;
 
   /// If true, the user will be routed to the new chat screen if there are
@@ -83,6 +95,10 @@ class ChatUserStoryConfiguration {
 
   /// The size of each page of messages.
   final int messagePageSize;
+
+  /// Whether to enable group chat creation for the user. If false,
+  /// the button will be hidden
+  final bool enableGroupChatCreation;
 
   /// Dialog for confirming chat deletion.
   final Future<bool?> Function(BuildContext, ChatModel)? deleteChatDialog;
@@ -100,11 +116,18 @@ class ChatUserStoryConfiguration {
   final Function()? onPressStartChat;
 
   /// Callback function triggered when user profile is pressed.
-  final Function()? onPressUserProfile;
+  final Function(BuildContext context, ChatUserModel user)? onPressUserProfile;
+
   final double? textfieldBottomPadding;
+
   final Color? iconDisabledColor;
+
+  /// The text style used for the unread message counter.
   final TextStyle? unreadMessageTextStyle;
+
   final Widget? Function(BuildContext context)? loadingWidgetBuilder;
+
   final Widget Function(String userFullName)? usernameBuilder;
+
   final Widget Function(String chatTitle)? chatTitleBuilder;
 }

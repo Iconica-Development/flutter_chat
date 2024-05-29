@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat/flutter_chat.dart';
-import 'package:uuid/uuid.dart';
 
 /// Navigates to the chat user story screen.
 ///
@@ -96,9 +95,9 @@ Widget _chatDetailScreenRoute(
       service: configuration.chatService,
       chatId: chatId,
       textfieldBottomPadding: configuration.textfieldBottomPadding ?? 0,
-      onPressUserProfile: (userId) async {
+      onPressUserProfile: (user) async {
         if (configuration.onPressUserProfile != null) {
-          return configuration.onPressUserProfile?.call();
+          return configuration.onPressUserProfile?.call(context, user);
         }
         return Navigator.of(context).push(
           MaterialPageRoute(
@@ -106,7 +105,7 @@ Widget _chatDetailScreenRoute(
               configuration,
               context,
               chatId,
-              userId,
+              user.id,
             ),
           ),
         );
@@ -172,7 +171,7 @@ Widget _chatProfileScreenRoute(
       userId: userId,
       onTapUser: (user) async {
         if (configuration.onPressUserProfile != null) {
-          return configuration.onPressUserProfile!.call();
+          return configuration.onPressUserProfile!.call(context, user);
         }
 
         return Navigator.of(context).push(
@@ -200,6 +199,7 @@ Widget _newChatScreenRoute(
       options: configuration.chatOptionsBuilder(context),
       translations: configuration.translations,
       service: configuration.chatService,
+      showGroupChatButton: configuration.enableGroupChatCreation,
       onPressCreateGroupChat: () async {
         configuration.onPressCreateGroupChat?.call();
         if (context.mounted) {

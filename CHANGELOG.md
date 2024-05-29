@@ -1,3 +1,14 @@
+## 2.0.0
+
+- Add a serviceBuilder to the userstory configuration
+- Add a translationsBuilder to the userstory configuration
+- Change onPressUserProfile callback to use a ChatUserModel instead of a String
+- Add a enableGroupChatCreation boolean to the userstory configuration to enable or disable group chat creation
+- Change the ChatTranslations constructor to require all translations or use the ChatTranslations.empty constructor if you don't want to specify all translations
+- Remove the Divider between the users on the new chat screen
+- Add option to set a custom padding around the list of chats
+- Fix nullpointer when firstWhere returns null because there is only 1 person in a groupchat
+
 ## 1.4.3
 
 - Added default styling.
