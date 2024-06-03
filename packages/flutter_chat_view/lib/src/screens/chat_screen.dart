@@ -82,10 +82,10 @@ class _ChatScreenState extends State<ChatScreen> {
         title: Text(
           translations.chatsTitle,
           style: theme.appBarTheme.titleTextStyle ??
-              const TextStyle(
+              TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: 24,
-                color: Color(0xff71C6D1),
+                color: Theme.of(context).primaryColor,
               ),
         ),
         centerTitle: true,
@@ -230,13 +230,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                                         style: ElevatedButton
                                                             .styleFrom(
                                                           backgroundColor:
-                                                              const Color
-                                                                  .fromRGBO(
-                                                            113,
-                                                            198,
-                                                            209,
-                                                            1,
-                                                          ),
+                                                              Theme.of(context)
+                                                                  .primaryColor,
                                                         ),
                                                         onPressed: () =>
                                                             Navigator.of(

@@ -124,7 +124,9 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: GestureDetector(
-                            onTap: () => widget.onTapUser.call(e),
+                            onTap: () {
+                              widget.onTapUser.call(e);
+                            },
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,

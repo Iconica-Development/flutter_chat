@@ -53,6 +53,7 @@ class _NewGroupChatOverviewScreenState
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
         onPressed: () async {
           await widget.onPressCompleteGroupChatCreation(
             widget.users,

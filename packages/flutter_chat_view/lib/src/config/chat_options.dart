@@ -62,7 +62,7 @@ Widget _createNewChatButton(
       padding: const EdgeInsets.fromLTRB(5, 24, 5, 24),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromRGBO(113, 198, 209, 1),
+          backgroundColor: Theme.of(context).primaryColor,
           fixedSize: const Size(254, 44),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(56),
@@ -136,6 +136,7 @@ Widget _createChatRowContainer(
 Widget _createImagePickerContainer(
   VoidCallback onClose,
   ChatTranslations translations,
+  BuildContext context,
 ) =>
     Container(
       padding: const EdgeInsets.all(8.0),
@@ -151,7 +152,7 @@ Widget _createImagePickerContainer(
         ),
         customButton: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(113, 198, 209, 1),
+            backgroundColor: Theme.of(context).primaryColor,
           ),
           onPressed: onClose,
           child: Text(
@@ -240,6 +241,7 @@ typedef ContainerBuilder = Widget Function(
 typedef ImagePickerContainerBuilder = Widget Function(
   VoidCallback onClose,
   ChatTranslations translations,
+  BuildContext context,
 );
 
 typedef ScaffoldBuilder = Scaffold Function(

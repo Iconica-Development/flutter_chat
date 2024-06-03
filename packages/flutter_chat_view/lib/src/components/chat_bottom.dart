@@ -43,6 +43,8 @@ class ChatBottom extends StatefulWidget {
 class _ChatBottomState extends State<ChatBottom> {
   final TextEditingController _textEditingController = TextEditingController();
   bool _isTyping = false;
+  bool _isSending = false;
+
   @override
   Widget build(BuildContext context) {
     _textEditingController.addListener(() {
@@ -78,14 +80,22 @@ class _ChatBottomState extends State<ChatBottom> {
               IconButton(
                 disabledColor: widget.iconDisabledColor,
                 color: widget.iconColor,
-                onPressed: _isTyping
+                onPressed: _isTyping && !_isSending
                     ? () async {
+                        setState(() {
+                          _isSending = true;
+                        });
+
                         var value = _textEditingController.text;
 
                         if (value.isNotEmpty) {
                           await widget.onMessageSubmit(value);
                           _textEditingController.clear();
                         }
+
+                        setState(() {
+                          _isSending = false;
+                        });
                       }
                     : null,
                 icon: const Icon(
