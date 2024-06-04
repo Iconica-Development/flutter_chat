@@ -58,7 +58,7 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff71C6D1),
+        backgroundColor: Theme.of(context).primaryColor,
         onPressed: () async {
           await widget.onPressGroupChatOverview(selectedUserList);
         },
@@ -105,10 +105,10 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
         : Text(
             widget.translations.newGroupChatButton,
             style: theme.appBarTheme.titleTextStyle ??
-                const TextStyle(
+                TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 24,
-                  color: Color(0xff71C6D1),
+                  color: Theme.of(context).primaryColor,
                 ),
           );
   }

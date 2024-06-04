@@ -145,6 +145,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               widget.options.imagePickerContainerBuilder(
             () => Navigator.of(context).pop(),
             widget.translations,
+            context,
           ),
         ).then(
           (image) async {
@@ -216,10 +217,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                               widget.translations.anonymousUser
                                           : '',
                                   style: theme.appBarTheme.titleTextStyle ??
-                                      const TextStyle(
+                                      TextStyle(
                                         fontWeight: FontWeight.w800,
                                         fontSize: 24,
-                                        color: Color(0xff71C6D1),
+                                        color: Theme.of(context).primaryColor,
                                       ),
                                 ),
                         ),
@@ -259,7 +260,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         shrinkWrap: true,
                         physics: const AlwaysScrollableScrollPhysics(),
                         controller: controller,
-                        reverse: true,
+                        reverse: detailRows.isNotEmpty,
                         padding: const EdgeInsets.only(top: 24.0),
                         children: [
                           if (detailRows.isEmpty)

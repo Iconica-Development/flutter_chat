@@ -161,10 +161,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
         : Text(
             widget.translations.newChatTitle,
             style: theme.appBarTheme.titleTextStyle ??
-                const TextStyle(
+                TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 24,
-                  color: Color(0xff71C6D1),
+                  color: Theme.of(context).primaryColor,
                 ),
           );
   }

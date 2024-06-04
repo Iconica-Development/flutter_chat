@@ -180,7 +180,7 @@ Widget _chatProfileScreenRoute(
               configuration,
               context,
               chatId,
-              userId,
+              user.id,
             ),
           ),
         );
