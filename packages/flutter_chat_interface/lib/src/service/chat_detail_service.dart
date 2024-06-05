@@ -1,6 +1,6 @@
-import 'dart:typed_data';
-import 'package:flutter/material.dart';
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
+import "dart:typed_data";
+import "package:flutter/material.dart";
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
 
 /// An abstract class defining the interface for a chat detail service.
 abstract class ChatDetailService with ChangeNotifier {

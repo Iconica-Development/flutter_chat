@@ -30,84 +30,83 @@ class ChatRow extends StatelessWidget {
   final Widget? avatar;
 
   @override
-  Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: avatar,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: unreadMessages > 0
-                          ? FontWeight.w900
-                          : FontWeight.w500,
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: avatar,
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: unreadMessages > 0
+                      ? theme.textTheme.bodyLarge
+                      : theme.textTheme.bodyMedium,
+                ),
+                if (subTitle != null) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 3.0),
+                    child: Text(
+                      subTitle!,
+                      style: unreadMessages > 0
+                          ? theme.textTheme.bodyLarge
+                          : theme.textTheme.bodyMedium,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
                   ),
-                  if (subTitle != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 3.0),
-                      child: Text(
-                        subTitle!,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: unreadMessages > 0
-                              ? FontWeight.w500
-                              : FontWeight.w300,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                      ),
-                    ),
                 ],
-              ),
+              ],
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (lastUsed != null) // Check if lastUsed is not null
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4.0),
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            if (lastUsed != null) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4.0),
+                child: Text(
+                  lastUsed!,
+                  style: const TextStyle(
+                    color: Color(0xFFBBBBBB),
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+            if (unreadMessages > 0) ...[
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
                   child: Text(
-                    lastUsed!,
+                    unreadMessages.toString(),
                     style: const TextStyle(
-                      color: Color(0xFFBBBBBB),
                       fontSize: 14,
                     ),
                   ),
                 ),
-              if (unreadMessages > 0) ...[
-                Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      unreadMessages.toString(),
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ],
-          ),
-        ],
-      );
+          ],
+        ),
+      ],
+    );
+  }
 }

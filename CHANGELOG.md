@@ -1,3 +1,10 @@
+## 3.0.0
+
+- Add theming
+- add validator for group name
+- fix spamming buttons
+- fix user list flickering on the group creation screen
+
 ## 2.0.0
 
 - Add a serviceBuilder to the userstory configuration

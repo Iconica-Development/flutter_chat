@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_view/flutter_chat_view.dart';
-import 'package:flutter_chat_view/src/services/profile_service.dart';
 import 'package:flutter_profile/flutter_profile.dart';
 
 class ChatProfileScreen extends StatefulWidget {
@@ -35,7 +34,6 @@ class ChatProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ChatProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     var hasUser = widget.userId == null;
     var theme = Theme.of(context);
     return FutureBuilder<dynamic>(
@@ -67,10 +65,10 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
             imageUrl: data.imageUrl,
           );
         }
-
         return Scaffold(
+          backgroundColor: theme.colorScheme.surface,
           appBar: AppBar(
-            backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
+            backgroundColor: theme.appBarTheme.backgroundColor,
             iconTheme: theme.appBarTheme.iconTheme ??
                 const IconThemeData(color: Colors.white),
             title: Text(
@@ -81,32 +79,28 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
                       : (data is GroupChatModel)
                           ? data.title
                           : '',
-              style: theme.appBarTheme.titleTextStyle ??
-                  const TextStyle(
-                    color: Colors.white,
-                  ),
+              style: theme.appBarTheme.titleTextStyle,
             ),
           ),
           body: snapshot.hasData
               ? ListView(
                   children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 200,
-                      width: size.width,
-                      child: ProfilePage(
-                        user: user!,
-                        itemBuilderOptions: ItemBuilderOptions(
-                          readOnly: true,
-                        ),
-                        service: ChatProfileService(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Avatar(
+                        user: user,
                       ),
+                    ),
+                    const Divider(
+                      color: Colors.white,
+                      thickness: 10,
                     ),
                     if (data is GroupChatModel) ...[
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 100),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 100,
+                          vertical: 20,
+                        ),
                         child: Text(
                           widget.translations.chatProfileUsers,
                           style: const TextStyle(

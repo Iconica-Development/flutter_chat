@@ -59,7 +59,10 @@ Widget _createNewChatButton(
   ChatTranslations translations,
 ) =>
     Padding(
-      padding: const EdgeInsets.fromLTRB(5, 24, 5, 24),
+      padding: const EdgeInsets.symmetric(
+        vertical: 24,
+        horizontal: 5,
+      ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).primaryColor,
@@ -74,7 +77,7 @@ Widget _createNewChatButton(
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w800,
-            fontSize: 18,
+            fontSize: 20,
           ),
         ),
       ),
@@ -84,43 +87,43 @@ Widget _createMessageInput(
   TextEditingController textEditingController,
   Widget suffixIcon,
   ChatTranslations translations,
-) =>
-    TextField(
-      textCapitalization: TextCapitalization.sentences,
-      controller: textEditingController,
-      decoration: InputDecoration(
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(26.5),
-          borderSide: const BorderSide(
-            color: Colors.black,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(26.5),
-          borderSide: const BorderSide(
-            color: Colors.black,
-          ),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 0,
-          horizontal: 30,
-        ),
-        hintText: translations.messagePlaceholder,
-        hintStyle: const TextStyle(
-          fontWeight: FontWeight.normal,
+  BuildContext context,
+) {
+  var theme = Theme.of(context);
+  return TextField(
+    textCapitalization: TextCapitalization.sentences,
+    controller: textEditingController,
+    decoration: InputDecoration(
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(25),
+        borderSide: const BorderSide(
           color: Colors.black,
         ),
-        fillColor: Colors.white,
-        filled: true,
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(26.5),
-          ),
-          borderSide: BorderSide.none,
-        ),
-        suffixIcon: suffixIcon,
       ),
-    );
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(25),
+        borderSide: const BorderSide(
+          color: Colors.black,
+        ),
+      ),
+      contentPadding: const EdgeInsets.symmetric(
+        vertical: 0,
+        horizontal: 30,
+      ),
+      hintText: translations.messagePlaceholder,
+      hintStyle: theme.inputDecorationTheme.hintStyle,
+      fillColor: Colors.white,
+      filled: true,
+      border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(25),
+        ),
+        borderSide: BorderSide.none,
+      ),
+      suffixIcon: suffixIcon,
+    ),
+  );
+}
 
 Widget _createChatRowContainer(
   Widget chatRow,
@@ -130,7 +133,10 @@ Widget _createChatRowContainer(
         vertical: 12.0,
         horizontal: 10.0,
       ),
-      child: chatRow,
+      child: Container(
+        color: Colors.transparent,
+        child: chatRow,
+      ),
     );
 
 Widget _createImagePickerContainer(
@@ -166,6 +172,7 @@ Widget _createImagePickerContainer(
 Scaffold _createScaffold(
   AppBar appbar,
   Widget body,
+  Color backgroundColor,
 ) =>
     Scaffold(
       appBar: appbar,
@@ -196,31 +203,32 @@ Widget _createGroupAvatar(
 
 Widget _createNoChatsPlaceholder(
   ChatTranslations translations,
-) =>
-    Center(
-      child: Text(
-        translations.noChatsFound,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-        ),
-      ),
-    );
+  BuildContext context,
+) {
+  var theme = Theme.of(context);
+  return Center(
+    child: Text(
+      translations.noChatsFound,
+      textAlign: TextAlign.center,
+      style: theme.textTheme.bodySmall,
+    ),
+  );
+}
 
 Widget _createNoUsersPlaceholder(
   ChatTranslations translations,
-) =>
-    Center(
-      child: Text(
-        translations.noUsersFound,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-        ),
-      ),
-    );
+  BuildContext context,
+) {
+  var theme = Theme.of(context);
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 20),
+    child: Text(
+      translations.noUsersFound,
+      textAlign: TextAlign.center,
+      style: theme.textTheme.bodySmall,
+    ),
+  );
+}
 
 typedef ButtonBuilder = Widget Function(
   BuildContext context,
@@ -232,6 +240,7 @@ typedef TextInputBuilder = Widget Function(
   TextEditingController textEditingController,
   Widget suffixIcon,
   ChatTranslations translations,
+  BuildContext context,
 );
 
 typedef ContainerBuilder = Widget Function(
@@ -247,6 +256,7 @@ typedef ImagePickerContainerBuilder = Widget Function(
 typedef ScaffoldBuilder = Scaffold Function(
   AppBar appBar,
   Widget body,
+  Color backgroundColor,
 );
 
 typedef UserAvatarBuilder = Widget Function(
@@ -262,8 +272,10 @@ typedef GroupAvatarBuilder = Widget Function(
 
 typedef NoChatsPlaceholderBuilder = Widget Function(
   ChatTranslations translations,
+  BuildContext context,
 );
 
 typedef NoUsersPlaceholderBuilder = Widget Function(
   ChatTranslations translations,
+  BuildContext context,
 );

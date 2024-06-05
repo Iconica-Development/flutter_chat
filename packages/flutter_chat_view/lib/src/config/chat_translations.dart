@@ -36,13 +36,17 @@ class ChatTranslations {
     required this.uploadFile,
     required this.takePicture,
     required this.anonymousUser,
+    required this.groupNameValidatorEmpty,
+    required this.groupNameValidatorTooLong,
+    required this.groupNameHintText,
+    required this.newGroupChatTitle,
   });
 
   /// Default translations for the chat component view
   const ChatTranslations.empty({
     this.chatsTitle = 'Chats',
     this.chatsUnread = 'unread',
-    this.newChatButton = 'Start a chat',
+    this.newChatButton = 'Start chat',
     this.newGroupChatButton = 'Create a group chat',
     this.newChatTitle = 'Start a chat',
     this.image = 'Image',
@@ -68,6 +72,11 @@ class ChatTranslations {
     this.imagePickerTitle = 'Do you want to upload a file or take a picture?',
     this.uploadFile = 'UPLOAD FILE',
     this.takePicture = 'TAKE PICTURE',
+    this.groupNameHintText = 'Group chat name',
+    this.groupNameValidatorEmpty = 'Please enter a group chat name',
+    this.groupNameValidatorTooLong =
+        'Group name is too long, max 15 characters',
+    this.newGroupChatTitle = 'New Group Chat',
   });
 
   final String chatsTitle;
@@ -98,6 +107,10 @@ class ChatTranslations {
 
   /// Shown when the user has no name
   final String anonymousUser;
+  final String groupNameValidatorEmpty;
+  final String groupNameValidatorTooLong;
+  final String groupNameHintText;
+  final String newGroupChatTitle;
 
   // copyWith method to override the default values
   ChatTranslations copyWith({
@@ -127,6 +140,10 @@ class ChatTranslations {
     String? uploadFile,
     String? takePicture,
     String? anonymousUser,
+    String? groupNameValidatorEmpty,
+    String? groupNameValidatorTooLong,
+    String? groupNameHintText,
+    String? newGroupChatTitle,
   }) =>
       ChatTranslations(
         chatsTitle: chatsTitle ?? this.chatsTitle,
@@ -160,5 +177,9 @@ class ChatTranslations {
         uploadFile: uploadFile ?? this.uploadFile,
         takePicture: takePicture ?? this.takePicture,
         anonymousUser: anonymousUser ?? this.anonymousUser,
+        groupNameValidatorEmpty: this.groupNameValidatorEmpty,
+        groupNameValidatorTooLong: this.groupNameValidatorTooLong,
+        groupNameHintText: this.groupNameHintText,
+        newGroupChatTitle: this.newGroupChatTitle,
       );
 }

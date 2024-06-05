@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 abstract class ChatUserModelInterface {
   String? get id;
@@ -49,17 +49,17 @@ class ChatUserModel implements ChatUserModelInterface {
 
   @override
   String? get fullName {
-    var fullName = '';
+    var fullName = "";
 
     if (firstName != null && lastName != null) {
-      fullName += '$firstName $lastName';
+      fullName += "$firstName $lastName";
     } else if (firstName != null) {
       fullName += firstName!;
     } else if (lastName != null) {
       fullName += lastName!;
     }
 
-    return fullName == '' ? null : fullName;
+    return fullName == "" ? null : fullName;
   }
 
   @override

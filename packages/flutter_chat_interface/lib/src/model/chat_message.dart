@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter_chat_interface/src/model/chat_user.dart';
+import "package:flutter_chat_interface/src/model/chat_user.dart";
 
 abstract class ChatMessageModelInterface {
   ChatUserModel get sender;
