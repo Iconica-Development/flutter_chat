@@ -284,7 +284,7 @@ Widget _newGroupChatOverviewScreenRoute(
           ),
         );
         if (context.mounted) {
-          await Navigator.of(context).push(
+          await Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => _chatDetailScreenRoute(
                 configuration,

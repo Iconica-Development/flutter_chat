@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
-import 'package:flutter_data_interface/flutter_data_interface.dart';
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
+import "package:flutter_data_interface/flutter_data_interface.dart";
 
 class ChatDataProvider extends DataInterface {
   ChatDataProvider({

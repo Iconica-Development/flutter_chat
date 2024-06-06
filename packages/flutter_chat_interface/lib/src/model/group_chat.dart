@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
 
 abstract class GroupChatModelInterface extends ChatModel {
   GroupChatModelInterface({

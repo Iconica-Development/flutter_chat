@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
 
 /// An abstract class defining the interface for an image message in a chat.
 abstract class ChatImageMessageModelInterface extends ChatMessageModel {

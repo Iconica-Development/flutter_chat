@@ -73,7 +73,7 @@ class _ChatBottomState extends State<ChatBottom> {
               IconButton(
                 onPressed: widget.onPressSelectImage,
                 icon: Icon(
-                  Icons.image,
+                  Icons.image_outlined,
                   color: widget.iconColor,
                 ),
               ),
@@ -105,6 +105,7 @@ class _ChatBottomState extends State<ChatBottom> {
             ],
           ),
           widget.translations,
+          context,
         ),
       ),
     );

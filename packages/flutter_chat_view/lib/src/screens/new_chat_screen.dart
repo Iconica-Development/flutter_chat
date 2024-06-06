@@ -47,10 +47,11 @@ class _NewChatScreenState extends State<NewChatScreen> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         iconTheme: theme.appBarTheme.iconTheme ??
             const IconThemeData(color: Colors.white),
-        backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         title: _buildSearchField(),
         actions: [
           _buildSearchIcon(),
@@ -114,7 +115,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
                 } else if (snapshot.hasData) {
                   return _buildUserList(snapshot.data!);
                 } else {
-                  return Text(widget.translations.noUsersFound);
+                  return widget.options
+                      .noUsersPlaceholderBuilder(widget.translations, context);
                 }
               },
             ),
@@ -128,44 +130,28 @@ class _NewChatScreenState extends State<NewChatScreen> {
     var theme = Theme.of(context);
 
     return _isSearching
-        ? Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: TextField(
-              focusNode: _textFieldFocusNode,
-              onChanged: (value) {
-                setState(() {
-                  query = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: widget.translations.searchPlaceholder,
-                hintStyle: theme.inputDecorationTheme.hintStyle ??
-                    const TextStyle(
-                      color: Colors.white,
-                    ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: theme.inputDecorationTheme.focusedBorder?.borderSide
-                            .color ??
-                        Colors.white,
-                  ),
+        ? TextField(
+            focusNode: _textFieldFocusNode,
+            onChanged: (value) {
+              setState(() {
+                query = value;
+              });
+            },
+            decoration: InputDecoration(
+              hintText: widget.translations.searchPlaceholder,
+              hintStyle: theme.inputDecorationTheme.hintStyle,
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: theme.colorScheme.primary,
                 ),
               ),
-              style: theme.inputDecorationTheme.hintStyle ??
-                  const TextStyle(
-                    color: Colors.white,
-                  ),
-              cursorColor: theme.textSelectionTheme.cursorColor ?? Colors.white,
             ),
+            style: theme.inputDecorationTheme.hintStyle,
+            cursorColor: theme.textSelectionTheme.cursorColor ?? Colors.white,
           )
         : Text(
             widget.translations.newChatTitle,
-            style: theme.appBarTheme.titleTextStyle ??
-                TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 24,
-                  color: Theme.of(context).primaryColor,
-                ),
+            style: theme.appBarTheme.titleTextStyle,
           );
   }
 
@@ -191,6 +177,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   Widget _buildUserList(List<ChatUserModel> users) {
+    var theme = Theme.of(context);
     var filteredUsers = users
         .where(
           (user) =>
@@ -204,60 +191,71 @@ class _NewChatScreenState extends State<NewChatScreen> {
     if (_textFieldFocusNode.hasFocus && query.isEmpty) {
       return Padding(
         padding: const EdgeInsets.only(top: 20.0),
-        child: Center(
-          child: Text(
-            widget.translations.startTyping,
-            style: const TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-          ),
+        child: Text(
+          widget.translations.startTyping,
+          style: theme.textTheme.bodySmall,
         ),
       );
     }
 
     if (filteredUsers.isEmpty) {
-      return widget.options.noChatsPlaceholderBuilder(widget.translations);
+      return widget.options
+          .noUsersPlaceholderBuilder(widget.translations, context);
     }
-
+    var isPressed = false;
     return ListView.builder(
       itemCount: filteredUsers.length,
       itemBuilder: (context, index) {
         var user = filteredUsers[index];
-        return GestureDetector(
-          child: widget.options.chatRowContainerBuilder(
-            Container(
-              color: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 12.0, right: 12),
-                      child: widget.options.userAvatarBuilder(user, 40.0),
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 40.0,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          user.fullName ?? widget.translations.anonymousUser,
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+        return Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: theme.colorScheme.secondary.withOpacity(0.3),
+                width: 0.5,
               ),
             ),
           ),
-          onTap: () async {
-            await widget.onPressCreateChat(user);
-          },
+          child: GestureDetector(
+            child: widget.options.chatRowContainerBuilder(
+              Padding(
+                padding: widget.options.paddingAroundChatList ??
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 28),
+                child: Container(
+                  color: Colors.transparent,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: widget.options.userAvatarBuilder(user, 40.0),
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 40.0,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              user.fullName ??
+                                  widget.translations.anonymousUser,
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            onTap: () async {
+              if (!isPressed) {
+                isPressed = true;
+                await widget.onPressCreateChat(user);
+                isPressed = false;
+              }
+            },
+          ),
         );
       },
     );

@@ -33,34 +33,57 @@ class _NewGroupChatOverviewScreenState
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+    var formKey = GlobalKey<FormState>();
+    var isPressed = false;
     return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         iconTheme: theme.appBarTheme.iconTheme ??
             const IconThemeData(color: Colors.white),
-        backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
-        title: const Text(
-          'New Group Chat',
-          style: TextStyle(color: Colors.white),
+        backgroundColor: theme.appBarTheme.backgroundColor,
+        title: Text(
+          widget.translations.newGroupChatTitle,
+          style: theme.appBarTheme.titleTextStyle,
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: TextField(
-          controller: _textEditingController,
-          decoration: const InputDecoration(
-            hintText: 'Group chat name',
+        child: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: _textEditingController,
+            decoration: InputDecoration(
+              hintText: widget.translations.groupNameHintText,
+              hintStyle: theme.inputDecorationTheme.hintStyle,
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return widget.translations.groupNameValidatorEmpty;
+              }
+              if (value.length > 15)
+                return widget.translations.groupNameValidatorTooLong;
+              return null;
+            },
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         onPressed: () async {
-          await widget.onPressCompleteGroupChatCreation(
-            widget.users,
-            _textEditingController.text,
-          );
+          if (!isPressed) {
+            isPressed = true;
+            if (formKey.currentState!.validate()) {
+              await widget.onPressCompleteGroupChatCreation(
+                widget.users,
+                _textEditingController.text,
+              );
+            }
+            isPressed = false;
+          }
         },
-        child: const Icon(Icons.check_circle),
+        child: const Icon(
+          Icons.check_circle,
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

@@ -1,4 +1,4 @@
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
 
 abstract class ChatUserService {
   /// Retrieves a user based on the ID.

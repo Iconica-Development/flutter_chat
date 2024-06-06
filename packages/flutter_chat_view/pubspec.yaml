@@ -4,7 +4,7 @@
 
 name: flutter_chat_view
 description: A standard flutter package.
-version: 2.0.0
+version: 3.0.0
 
 publish_to: none
 
@@ -20,7 +20,7 @@ dependencies:
     git:
       url: https://github.com/Iconica-Development/flutter_chat
       path: packages/flutter_chat_interface
-      ref: 2.0.0
+      ref: 3.0.0
   cached_network_image: ^3.2.2
   flutter_image_picker:
     git:
@@ -37,6 +37,6 @@ dev_dependencies:
   flutter_iconica_analysis:
     git:
       url: https://github.com/Iconica-Development/flutter_iconica_analysis
-      ref: 6.0.0
+      ref: 7.0.0
 
 flutter:

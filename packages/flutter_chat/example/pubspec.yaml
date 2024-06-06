@@ -16,11 +16,23 @@ dependencies:
     path: ../
   flutter_chat_firebase:
     path: ../../flutter_chat_firebase
+dependency_overrides:
+  flutter_chat:
+    path: ../../flutter_chat
+  flutter_chat_interface:
+    path: ../../flutter_chat_interface
+  flutter_chat_local:
+    path: ../../flutter_chat_local
+  flutter_chat_view:
+    path: ../../flutter_chat_view
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_iconica_analysis:
+    git:
+      url: https://github.com/Iconica-Development/flutter_iconica_analysis
+      ref: 7.0.0
 
 flutter:
   uses-material-design: true

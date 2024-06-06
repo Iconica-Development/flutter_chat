@@ -54,7 +54,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
         widget.message.timestamp.minute ==
             widget.previousMessage?.timestamp.minute;
     var hasHeader = isNewDate || isSameSender;
-
+    var theme = Theme.of(context);
     return Padding(
       padding: EdgeInsets.only(
         top: isNewDate || isSameSender ? 25.0 : 0,
@@ -160,10 +160,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                                       )
                                       .split(' ')
                                       .last,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xFFBBBBBB),
-                                  ),
+                                  style: theme.textTheme.bodySmall,
                                   textAlign: TextAlign.end,
                                 ),
                             ],

@@ -168,8 +168,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       builder: (context, AsyncSnapshot<ChatModel> snapshot) {
         var chatModel = snapshot.data;
         return Scaffold(
+          backgroundColor: theme.colorScheme.surface,
           appBar: AppBar(
-            backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
+            backgroundColor: theme.appBarTheme.backgroundColor,
             iconTheme: theme.appBarTheme.iconTheme ??
                 const IconThemeData(color: Colors.white),
             centerTitle: true,
@@ -188,14 +189,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 children: chat == null
                     ? []
                     : [
-                        if (chatModel is GroupChatModel) ...[
-                          widget.options.groupAvatarBuilder(
-                            chatModel.title,
-                            chatModel.imageUrl,
-                            36.0,
-                          ),
-                        ] else
-                          ...[],
                         Padding(
                           padding: (chatModel is GroupChatModel)
                               ? const EdgeInsets.only(left: 15.5)
@@ -216,12 +209,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                           ? chatModel.user.firstName ??
                                               widget.translations.anonymousUser
                                           : '',
-                                  style: theme.appBarTheme.titleTextStyle ??
-                                      TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 24,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
+                                  style: theme.appBarTheme.titleTextStyle,
                                 ),
                         ),
                       ],
@@ -271,11 +259,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                         .writeFirstMessageInGroupChat
                                     : widget
                                         .translations.writeMessageToStartChat,
-                                style: const TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color.fromRGBO(33, 33, 33, 1),
-                                ),
+                                style: theme.textTheme.bodySmall,
                               ),
                             ),
                           ...detailRows,

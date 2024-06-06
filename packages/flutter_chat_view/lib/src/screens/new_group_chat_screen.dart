@@ -32,10 +32,11 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         iconTheme: theme.appBarTheme.iconTheme ??
             const IconThemeData(color: Colors.white),
-        backgroundColor: theme.appBarTheme.backgroundColor ?? Colors.black,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         title: _buildSearchField(),
         actions: [
           _buildSearchIcon(),
@@ -51,10 +52,8 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
             return Text('Error: ${snapshot.error}');
           } else if (snapshot.hasData) {
             return _buildUserList(snapshot.data!);
-          } else {
-            return widget.options
-                .noChatsPlaceholderBuilder(widget.translations);
           }
+          return const SizedBox.shrink();
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -72,44 +71,28 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
     var theme = Theme.of(context);
 
     return _isSearching
-        ? Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: TextField(
-              focusNode: _textFieldFocusNode,
-              onChanged: (value) {
-                setState(() {
-                  query = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: widget.translations.searchPlaceholder,
-                hintStyle: theme.inputDecorationTheme.hintStyle ??
-                    const TextStyle(
-                      color: Colors.white,
-                    ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: theme.inputDecorationTheme.focusedBorder?.borderSide
-                            .color ??
-                        Colors.white,
-                  ),
+        ? TextField(
+            focusNode: _textFieldFocusNode,
+            onChanged: (value) {
+              setState(() {
+                query = value;
+              });
+            },
+            decoration: InputDecoration(
+              hintText: widget.translations.searchPlaceholder,
+              hintStyle: theme.inputDecorationTheme.hintStyle,
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: theme.colorScheme.primary,
                 ),
               ),
-              style: theme.inputDecorationTheme.hintStyle ??
-                  const TextStyle(
-                    color: Colors.white,
-                  ),
-              cursorColor: theme.textSelectionTheme.cursorColor ?? Colors.white,
             ),
+            style: theme.inputDecorationTheme.hintStyle,
+            cursorColor: theme.textSelectionTheme.cursorColor ?? Colors.white,
           )
         : Text(
             widget.translations.newGroupChatButton,
-            style: theme.appBarTheme.titleTextStyle ??
-                TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 24,
-                  color: Theme.of(context).primaryColor,
-                ),
+            style: theme.appBarTheme.titleTextStyle,
           );
   }
 
@@ -146,65 +129,113 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
         .toList();
 
     if (filteredUsers.isEmpty) {
-      return widget.options.noChatsPlaceholderBuilder(widget.translations);
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          widget.options
+              .noUsersPlaceholderBuilder(widget.translations, context),
+        ],
+      );
     }
 
-    return ListView.separated(
-      itemCount: filteredUsers.length,
-      separatorBuilder: (context, index) => const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 28.0),
-        child: Divider(),
-      ), // Add Divider here
-      itemBuilder: (context, index) {
-        var user = filteredUsers[index];
-        var isSelected =
-            selectedUserList.any((selectedUser) => selectedUser == user);
-
-        return InkWell(
-          onTap: () {
-            setState(() {
-              if (selectedUserList.contains(user)) {
-                selectedUserList.remove(user);
-              } else {
-                selectedUserList.add(user);
-              }
-              debugPrint('The list of selected users is $selectedUserList');
-            });
-          },
-          child: Container(
-            color: isSelected ? Colors.amber.shade200 : Colors.white,
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12.0, right: 12),
-                    child: widget.options.userAvatarBuilder(user, 40.0),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 40.0, // Adjust the height as needed
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        user.fullName ?? widget.translations.anonymousUser,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (isSelected)
-                    const Padding(
-                      padding: EdgeInsets.only(right: 16.0),
-                      child: Icon(Icons.check_circle, color: Colors.green),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
+    return UserList(
+      filteredUsers: filteredUsers,
+      selectedUserList: selectedUserList,
+      options: widget.options,
+      translations: widget.translations,
     );
   }
+}
+
+class UserList extends StatefulWidget {
+  const UserList({
+    required this.filteredUsers,
+    required this.selectedUserList,
+    required this.options,
+    required this.translations,
+    super.key,
+  });
+
+  final List<ChatUserModel> filteredUsers;
+  final List<ChatUserModel> selectedUserList;
+  final ChatOptions options;
+  final ChatTranslations translations;
+
+  @override
+  State<UserList> createState() => _UserListState();
+}
+
+class _UserListState extends State<UserList> {
+  @override
+  Widget build(BuildContext context) => ListView.builder(
+        itemCount: widget.filteredUsers.length,
+        itemBuilder: (context, index) {
+          var user = widget.filteredUsers[index];
+          var isSelected = widget.selectedUserList
+              .any((selectedUser) => selectedUser == user);
+          var theme = Theme.of(context);
+          return Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: theme.colorScheme.secondary.withOpacity(0.3),
+                  width: 0.5,
+                ),
+              ),
+            ),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  if (widget.selectedUserList.contains(user)) {
+                    widget.selectedUserList.remove(user);
+                  } else {
+                    widget.selectedUserList.add(user);
+                  }
+                });
+              },
+              child: Padding(
+                padding: widget.options.paddingAroundChatList ??
+                    const EdgeInsets.fromLTRB(28, 8, 28, 8),
+                child: Container(
+                  color: Colors.transparent,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12.0,
+                      horizontal: 30,
+                    ),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: widget.options.userAvatarBuilder(user, 40.0),
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 40,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              user.fullName ??
+                                  widget.translations.anonymousUser,
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          ),
+                        ),
+                        if (isSelected) ...[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: Icon(
+                              Icons.check_circle,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
 }
