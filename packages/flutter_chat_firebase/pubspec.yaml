@@ -4,7 +4,7 @@
 
 name: flutter_chat_firebase
 description: A new Flutter package project.
-version: 3.0.0
+version: 3.0.1
 publish_to: none
 
 environment:
@@ -23,7 +23,7 @@ dependencies:
     git:
       url: https://github.com/Iconica-Development/flutter_chat
       path: packages/flutter_chat_interface
-      ref: 3.0.0
+      ref: 3.0.1
 
 dev_dependencies:
   flutter_iconica_analysis:

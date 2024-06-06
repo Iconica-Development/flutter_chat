@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter/material.dart';
-import 'package:flutter_chat/flutter_chat.dart';
-import 'package:flutter_chat/src/go_router.dart';
-import 'package:go_router/go_router.dart';
+import "package:flutter/material.dart";
+import "package:flutter_chat/flutter_chat.dart";
+import "package:flutter_chat/src/go_router.dart";
+import "package:go_router/go_router.dart";
 
 List<GoRoute> getChatStoryRoutes(
   ChatUserStoryConfiguration configuration,
@@ -57,7 +57,7 @@ List<GoRoute> getChatStoryRoutes(
       GoRoute(
         path: ChatUserStoryRoutes.chatDetailScreen,
         pageBuilder: (context, state) {
-          var chatId = state.pathParameters['id'];
+          var chatId = state.pathParameters["id"];
           var service = configuration.chatServiceBuilder?.call(context) ??
               configuration.chatService;
           var theme = Theme.of(context);
@@ -156,7 +156,7 @@ List<GoRoute> getChatStoryRoutes(
               }
               if (context.mounted) {
                 await context.push(
-                  ChatUserStoryRoutes.chatDetailViewPath(chat.id ?? ''),
+                  ChatUserStoryRoutes.chatDetailViewPath(chat.id ?? ""),
                 );
               }
             },
@@ -231,13 +231,13 @@ List<GoRoute> getChatStoryRoutes(
                 GroupChatModel(
                   canBeDeleted: true,
                   title: groupChatName,
-                  imageUrl: 'https://picsum.photos/200/300',
+                  imageUrl: "https://picsum.photos/200/300",
                   users: users,
                 ),
               );
               if (context.mounted) {
                 context.go(
-                  ChatUserStoryRoutes.chatDetailViewPath(chat.id ?? ''),
+                  ChatUserStoryRoutes.chatDetailViewPath(chat.id ?? ""),
                 );
               }
             },
@@ -259,9 +259,9 @@ List<GoRoute> getChatStoryRoutes(
       GoRoute(
         path: ChatUserStoryRoutes.chatProfileScreen,
         pageBuilder: (context, state) {
-          var chatId = state.pathParameters['id'];
-          var userId = state.pathParameters['userId'];
-          var id = userId == 'null' ? null : userId;
+          var chatId = state.pathParameters["id"];
+          var userId = state.pathParameters["userId"];
+          var id = userId == "null" ? null : userId;
           var service = configuration.chatServiceBuilder?.call(context) ??
               configuration.chatService;
           var theme = Theme.of(context);

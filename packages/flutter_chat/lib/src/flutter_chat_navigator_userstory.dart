@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter/material.dart';
-import 'package:flutter_chat/flutter_chat.dart';
+import "package:flutter/material.dart";
+import "package:flutter_chat/flutter_chat.dart";
 
 /// Navigates to the chat user story screen.
 ///
@@ -218,7 +218,7 @@ Widget _newChatScreenRoute(
         if (configuration.onPressCreateChat != null) return;
         var chat = await configuration.chatService.chatOverviewService
             .getChatByUser(user);
-        debugPrint('Chat is ${chat.id}');
+        debugPrint("Chat is ${chat.id}");
         if (chat.id == null) {
           chat = await configuration.chatService.chatOverviewService
               .storeChatIfNot(
@@ -230,10 +230,13 @@ Widget _newChatScreenRoute(
         if (context.mounted) {
           await Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => _chatDetailScreenRoute(
-                configuration,
-                context,
-                chat.id!,
+              builder: (context) => PopScope(
+                canPop: false,
+                child: _chatDetailScreenRoute(
+                  configuration,
+                  context,
+                  chat.id!,
+                ),
               ),
             ),
           );
@@ -279,17 +282,20 @@ Widget _newGroupChatOverviewScreenRoute(
           GroupChatModel(
             canBeDeleted: true,
             title: groupChatName,
-            imageUrl: 'https://picsum.photos/200/300',
+            imageUrl: "https://picsum.photos/200/300",
             users: users,
           ),
         );
         if (context.mounted) {
           await Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => _chatDetailScreenRoute(
-                configuration,
-                context,
-                chat.id!,
+              builder: (context) => PopScope(
+                canPop: false,
+                child: _chatDetailScreenRoute(
+                  configuration,
+                  context,
+                  chat.id!,
+                ),
               ),
             ),
           );
