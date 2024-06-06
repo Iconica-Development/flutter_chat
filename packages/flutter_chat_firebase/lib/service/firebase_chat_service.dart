@@ -1,7 +1,7 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_chat_firebase/config/firebase_chat_options.dart';
-import 'package:flutter_chat_firebase/flutter_chat_firebase.dart';
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
+import "package:firebase_core/firebase_core.dart";
+import "package:flutter_chat_firebase/config/firebase_chat_options.dart";
+import "package:flutter_chat_firebase/flutter_chat_firebase.dart";
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
 
 /// Service class for managing chat services using Firebase.
 class FirebaseChatService implements ChatService {

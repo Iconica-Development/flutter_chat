@@ -1,8 +1,8 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
-import 'package:flutter_chat_local/local_chat_service.dart';
+import "package:flutter/foundation.dart";
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
+import "package:flutter_chat_local/local_chat_service.dart";
 
 /// A class providing local chat detail service implementation.
 class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
@@ -69,13 +69,13 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
         .firstWhere((element) => element.id == chatId);
     var message = ChatImageMessageModel(
       sender: const ChatUserModel(
-        id: '3',
-        firstName: 'ico',
-        lastName: 'nica',
-        imageUrl: 'https://picsum.photos/100/200',
+        id: "3",
+        firstName: "ico",
+        lastName: "nica",
+        imageUrl: "https://picsum.photos/100/200",
       ),
       timestamp: DateTime.now(),
-      imageUrl: 'https://picsum.photos/200/300',
+      imageUrl: "https://picsum.photos/200/300",
     );
 
     await (chatOverviewService as LocalChatOverviewService).updateChat(
@@ -102,10 +102,10 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
         .firstWhere((element) => element.id == chatId);
     var message = ChatTextMessageModel(
       sender: const ChatUserModel(
-        id: '3',
-        firstName: 'ico',
-        lastName: 'nica',
-        imageUrl: 'https://picsum.photos/100/200',
+        id: "3",
+        firstName: "ico",
+        lastName: "nica",
+        imageUrl: "https://picsum.photos/100/200",
       ),
       timestamp: DateTime.now(),
       text: text,

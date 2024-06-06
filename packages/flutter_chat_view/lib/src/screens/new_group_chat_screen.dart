@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter/material.dart';
-import 'package:flutter_chat_view/flutter_chat_view.dart';
+import "package:flutter/material.dart";
+import "package:flutter_chat_view/flutter_chat_view.dart";
 
 class NewGroupChatScreen extends StatefulWidget {
   const NewGroupChatScreen({
@@ -26,7 +26,7 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
   List<ChatUserModel> selectedUserList = [];
 
   bool _isSearching = false;
-  String query = '';
+  String query = "";
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
+            return Text("Error: ${snapshot.error}");
           } else if (snapshot.hasData) {
             return _buildUserList(snapshot.data!);
           }
@@ -103,7 +103,7 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
       onPressed: () {
         setState(() {
           _isSearching = !_isSearching;
-          query = '';
+          query = "";
         });
 
         if (_isSearching) {
@@ -174,7 +174,7 @@ class _UserListState extends State<UserList> {
           var isSelected = widget.selectedUserList
               .any((selectedUser) => selectedUser == user);
           var theme = Theme.of(context);
-          return Container(
+          return DecoratedBox(
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
@@ -196,7 +196,7 @@ class _UserListState extends State<UserList> {
               child: Padding(
                 padding: widget.options.paddingAroundChatList ??
                     const EdgeInsets.fromLTRB(28, 8, 28, 8),
-                child: Container(
+                child: ColoredBox(
                   color: Colors.transparent,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(

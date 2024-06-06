@@ -2,19 +2,19 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 /// Options for Firebase chat configuration.
 @immutable
 class FirebaseChatOptions {
   /// Creates a new instance of `FirebaseChatOptions`.
   const FirebaseChatOptions({
-    this.groupChatsCollectionName = 'group_chats',
-    this.chatsCollectionName = 'chats',
-    this.messagesCollectionName = 'messages',
-    this.usersCollectionName = 'users',
-    this.chatsMetaDataCollectionName = 'chat_metadata',
-    this.userChatsCollectionName = 'chats',
+    this.groupChatsCollectionName = "group_chats",
+    this.chatsCollectionName = "chats",
+    this.messagesCollectionName = "messages",
+    this.usersCollectionName = "users",
+    this.chatsMetaDataCollectionName = "chat_metadata",
+    this.userChatsCollectionName = "chats",
   });
 
   /// The collection name for group chats.

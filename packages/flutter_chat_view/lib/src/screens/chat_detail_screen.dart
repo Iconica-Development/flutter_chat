@@ -2,14 +2,14 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'dart:async';
-import 'dart:typed_data';
+import "dart:async";
+import "dart:typed_data";
 
-import 'package:flutter/material.dart';
-import 'package:flutter_chat_view/flutter_chat_view.dart';
-import 'package:flutter_chat_view/src/components/chat_bottom.dart';
-import 'package:flutter_chat_view/src/components/chat_detail_row.dart';
-import 'package:flutter_chat_view/src/components/image_loading_snackbar.dart';
+import "package:flutter/material.dart";
+import "package:flutter_chat_view/flutter_chat_view.dart";
+import "package:flutter_chat_view/src/components/chat_bottom.dart";
+import "package:flutter_chat_view/src/components/chat_detail_row.dart";
+import "package:flutter_chat_view/src/components/image_loading_snackbar.dart";
 
 class ChatDetailScreen extends StatefulWidget {
   const ChatDetailScreen({
@@ -200,7 +200,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                       : (chatModel is PersonalChatModel)
                                           ? chatModel.user.firstName ??
                                               widget.translations.anonymousUser
-                                          : '',
+                                          : "",
                                 )
                               : Text(
                                   (chatModel is GroupChatModel)
@@ -208,7 +208,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                       : (chatModel is PersonalChatModel)
                                           ? chatModel.user.firstName ??
                                               widget.translations.anonymousUser
-                                          : '',
+                                          : "",
                                   style: theme.appBarTheme.titleTextStyle,
                                 ),
                         ),
@@ -251,7 +251,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         reverse: detailRows.isNotEmpty,
                         padding: const EdgeInsets.only(top: 24.0),
                         children: [
-                          if (detailRows.isEmpty)
+                          if (detailRows.isEmpty && !showIndicator)
                             Center(
                               child: Text(
                                 (chatModel is GroupChatModel)

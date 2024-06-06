@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_chat_view/flutter_chat_view.dart';
-import 'package:flutter_chat_view/src/components/chat_image.dart';
-import 'package:flutter_chat_view/src/services/date_formatter.dart';
+import "package:cached_network_image/cached_network_image.dart";
+import "package:flutter/material.dart";
+import "package:flutter_chat_view/flutter_chat_view.dart";
+import "package:flutter_chat_view/src/components/chat_image.dart";
+import "package:flutter_chat_view/src/services/date_formatter.dart";
 
 class ChatDetailRow extends StatefulWidget {
   const ChatDetailRow({
@@ -98,7 +98,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                       children: [
                         if (widget.usernameBuilder != null)
                           widget.usernameBuilder!(
-                            widget.message.sender.fullName ?? '',
+                            widget.message.sender.fullName ?? "",
                           )
                         else
                           Text(
@@ -158,7 +158,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                                         date: widget.message.timestamp,
                                         showFullDate: true,
                                       )
-                                      .split(' ')
+                                      .split(" ")
                                       .last,
                                   style: theme.textTheme.bodySmall,
                                   textAlign: TextAlign.end,

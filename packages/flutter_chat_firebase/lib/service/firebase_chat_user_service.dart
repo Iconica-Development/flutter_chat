@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_chat_firebase/config/firebase_chat_options.dart';
-import 'package:flutter_chat_firebase/dto/firebase_user_document.dart';
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:firebase_core/firebase_core.dart";
+import "package:flutter_chat_firebase/config/firebase_chat_options.dart";
+import "package:flutter_chat_firebase/dto/firebase_user_document.dart";
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
 
 /// Service class for managing chat users using Firebase.
 class FirebaseChatUserService implements ChatUserService {

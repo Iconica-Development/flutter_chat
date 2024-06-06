@@ -1,7 +1,7 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
+import "package:flutter/foundation.dart";
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
 
 /// A class providing local chat overview service implementation.
 class LocalChatOverviewService
@@ -22,7 +22,7 @@ class LocalChatOverviewService
     _chats[index] = chat;
     _chatsController.addStream(Stream.value(_chats));
     notifyListeners();
-    debugPrint('Chat updated: $chat');
+    debugPrint("Chat updated: $chat");
     return Future.value();
   }
 
@@ -31,15 +31,15 @@ class LocalChatOverviewService
     _chats.removeWhere((element) => element.id == chat.id);
     _chatsController.add(_chats);
     notifyListeners();
-    debugPrint('Chat deleted: $chat');
+    debugPrint("Chat deleted: $chat");
     return Future.value();
   }
 
   @override
   Future<ChatModel> getChatById(String id) {
     var chat = _chats.firstWhere((element) => element.id == id);
-    debugPrint('Retrieved chat by ID: $chat');
-    debugPrint('Messages are: ${chat.messages?.length}');
+    debugPrint("Retrieved chat by ID: $chat");
+    debugPrint("Messages are: ${chat.messages?.length}");
     return Future.value(chat);
   }
 
@@ -55,11 +55,11 @@ class LocalChatOverviewService
       chat = PersonalChatModel(
         user: user,
         messages: [],
-        id: '',
+        id: "",
       );
       chat.id = chat.hashCode.toString();
       _chats.add(chat);
-      debugPrint('New chat created: $chat');
+      debugPrint("New chat created: $chat");
     }
 
     _chatsController.add([..._chats]);
@@ -85,9 +85,9 @@ class LocalChatOverviewService
       _chats.add(chat);
       _chatsController.add([..._chats]);
       notifyListeners();
-      debugPrint('Chat stored: $chat');
+      debugPrint("Chat stored: $chat");
     } else {
-      debugPrint('Chat already exists: $chat');
+      debugPrint("Chat already exists: $chat");
     }
 
     return Future.value(chat);

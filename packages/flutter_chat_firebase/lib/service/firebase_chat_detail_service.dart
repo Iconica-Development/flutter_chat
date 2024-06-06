@@ -2,16 +2,16 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'dart:async';
-import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_chat_firebase/config/firebase_chat_options.dart';
-import 'package:flutter_chat_firebase/dto/firebase_message_document.dart';
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
-import 'package:uuid/uuid.dart';
+import "dart:async";
+import "dart:typed_data";
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:firebase_core/firebase_core.dart";
+import "package:firebase_storage/firebase_storage.dart";
+import "package:flutter/material.dart";
+import "package:flutter_chat_firebase/config/firebase_chat_options.dart";
+import "package:flutter_chat_firebase/dto/firebase_message_document.dart";
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
+import "package:uuid/uuid.dart";
 
 /// Service class for managing chat details using Firebase.
 class FirebaseChatDetailService
@@ -56,8 +56,8 @@ class FirebaseChatDetailService
     }
 
     var message = {
-      'sender': currentUser.id,
-      'timestamp': DateTime.now(),
+      "sender": currentUser.id,
+      "timestamp": DateTime.now(),
       ...data,
     };
 
@@ -89,8 +89,8 @@ class FirebaseChatDetailService
         .doc(chatId);
 
     await metadataReference.update({
-      'last_used': DateTime.now(),
-      'last_message': message,
+      "last_used": DateTime.now(),
+      "last_message": message,
     });
 
     // update the chat counter for the other users
@@ -98,7 +98,7 @@ class FirebaseChatDetailService
     // there is a field in the chat document called users that has a
     // list of user ids
     var fetchedChat = await metadataReference.get();
-    var chatUsers = fetchedChat.data()?['users'] as List<dynamic>;
+    var chatUsers = fetchedChat.data()?["users"] as List<dynamic>;
     // for all users except the message sender update the unread counter
     for (var userId in chatUsers) {
       if (userId != currentUser.id) {
@@ -113,15 +113,15 @@ class FirebaseChatDetailService
         // it should be created when the chat is create
         if ((await userReference.get())
                 .data()
-                ?.containsKey('amount_unread_messages') ??
+                ?.containsKey("amount_unread_messages") ??
             false) {
           await userReference.update({
-            'amount_unread_messages': FieldValue.increment(1),
+            "amount_unread_messages": FieldValue.increment(1),
           });
         } else {
           await userReference.set(
             {
-              'amount_unread_messages': 1,
+              "amount_unread_messages": 1,
             },
             SetOptions(merge: true),
           );
@@ -142,7 +142,7 @@ class FirebaseChatDetailService
       _sendMessage(
         chatId,
         {
-          'text': text,
+          "text": text,
         },
       );
 
@@ -156,7 +156,7 @@ class FirebaseChatDetailService
     required Uint8List image,
   }) async {
     var ref = _storage
-        .ref('${_options.chatsCollectionName}/$chatId/${const Uuid().v4()}');
+        .ref("${_options.chatsCollectionName}/$chatId/${const Uuid().v4()}");
 
     return ref.putData(image).then(
           (_) => ref.getDownloadURL().then(
@@ -164,7 +164,7 @@ class FirebaseChatDetailService
               _sendMessage(
                 chatId,
                 {
-                  'image_url': url,
+                  "image_url": url,
                 },
               );
             },
@@ -186,7 +186,7 @@ class FirebaseChatDetailService
             .doc(chatId)
             .collection(_options.messagesCollectionName)
             .where(
-              'timestamp',
+              "timestamp",
               isGreaterThan: timestampToFilter,
             )
             .withConverter<FirebaseMessageDocument>(
@@ -241,7 +241,7 @@ class FirebaseChatDetailService
         _cumulativeMessages = [];
         lastChat = chatId;
         lastMessage = null;
-        debugPrint('Canceling messages stream');
+        debugPrint("Canceling messages stream");
       },
     );
 
@@ -280,7 +280,7 @@ class FirebaseChatDetailService
         .collection(_options.chatsCollectionName)
         .doc(chatId)
         .collection(_options.messagesCollectionName)
-        .orderBy('timestamp', descending: true)
+        .orderBy("timestamp", descending: true)
         .limit(pageSize);
     if (lastMessage == null) {
       messagesQuerySnapshot = await query

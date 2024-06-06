@@ -3,14 +3,14 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'dart:async';
+import "dart:async";
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_chat_firebase/config/firebase_chat_options.dart';
-import 'package:flutter_chat_firebase/dto/firebase_chat_document.dart';
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:firebase_core/firebase_core.dart";
+import "package:firebase_storage/firebase_storage.dart";
+import "package:flutter_chat_firebase/config/firebase_chat_options.dart";
+import "package:flutter_chat_firebase/dto/firebase_chat_document.dart";
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
 
 /// Service class for managing chat overviews using Firebase.
 class FirebaseChatOverviewService implements ChatOverviewService {
@@ -49,7 +49,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
         .doc(chatId)
         .get();
 
-    return snapshots.data()?['amount_unread_messages'];
+    return snapshots.data()?["amount_unread_messages"];
   }
 
   /// Retrieves a stream of chat overviews.
@@ -144,8 +144,8 @@ class FirebaseChatOverviewService implements ChatOverviewService {
                 }
                 chatModel = GroupChatModel(
                   id: chat.id,
-                  title: chat.title ?? '',
-                  imageUrl: chat.imageUrl ?? '',
+                  title: chat.title ?? "",
+                  imageUrl: chat.imageUrl ?? "",
                   unreadMessages: unread,
                   users: users,
                   lastMessage: chat.lastMessage != null && otherUser != null
@@ -226,7 +226,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
         .collection(_options.usersCollectionName)
         .doc(currentUser?.id)
         .collection(_options.userChatsCollectionName)
-        .where('users', arrayContains: user.id)
+        .where("users", arrayContains: user.id)
         .get();
 
     var doc = collection.docs.isNotEmpty ? collection.docs.first : null;
@@ -250,16 +250,16 @@ class FirebaseChatOverviewService implements ChatOverviewService {
         .doc(chatId)
         .get();
 
-    if (chatCollection.exists && chatCollection.data()?['users'] != null) {
+    if (chatCollection.exists && chatCollection.data()?["users"] != null) {
       // ignore: avoid_dynamic_calls
-      var otherUser = chatCollection.data()?['users'].firstWhere(
+      var otherUser = chatCollection.data()?["users"].firstWhere(
             (element) => element != currentUser?.id,
           );
       var user = await _userService.getUser(otherUser);
       return PersonalChatModel(
         id: chatId,
         user: user!,
-        canBeDeleted: chatCollection.data()?['can_be_deleted'] ?? true,
+        canBeDeleted: chatCollection.data()?["can_be_deleted"] ?? true,
       );
     } else {
       var groupChatCollection = await _db
@@ -281,8 +281,8 @@ class FirebaseChatOverviewService implements ChatOverviewService {
       }
       return GroupChatModel(
         id: chat?.id ?? chatId,
-        title: chat?.title ?? '',
-        imageUrl: chat?.imageUrl ?? '',
+        title: chat?.title ?? "",
+        imageUrl: chat?.imageUrl ?? "",
         users: users,
         canBeDeleted: chat?.canBeDeleted ?? true,
       );
@@ -373,7 +373,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
               .doc(userId)
               .collection(_options.userChatsCollectionName)
               .doc(reference.id)
-              .set({'users': userIds}, SetOptions(merge: true));
+              .set({"users": userIds}, SetOptions(merge: true));
         }
 
         chat.id = reference.id;
@@ -411,11 +411,11 @@ class FirebaseChatOverviewService implements ChatOverviewService {
               .doc(userId)
               .collection(_options.groupChatsCollectionName)
               .doc(reference.id)
-              .set({'users': userIds}, SetOptions(merge: true));
+              .set({"users": userIds}, SetOptions(merge: true));
         }
         chat.id = reference.id;
       } else {
-        throw Exception('Chat type not supported for firebase');
+        throw Exception("Chat type not supported for firebase");
       }
     }
 
@@ -443,7 +443,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
           // every chat has a field called amount_unread_messages, combine all
           // of these fields to get the total amount of unread messages
           var unreadChats = event.docs
-              .map((chat) => chat.data()['amount_unread_messages'] ?? 0)
+              .map((chat) => chat.data()["amount_unread_messages"] ?? 0)
               .toList();
           var totalUnreadChats = unreadChats.fold<int>(
             0,
@@ -476,6 +476,6 @@ class FirebaseChatOverviewService implements ChatOverviewService {
         .doc(currentUser!.id)
         .collection(_options.userChatsCollectionName)
         .doc(chat.id)
-        .set({'amount_unread_messages': 0}, SetOptions(merge: true));
+        .set({"amount_unread_messages": 0}, SetOptions(merge: true));
   }
 }

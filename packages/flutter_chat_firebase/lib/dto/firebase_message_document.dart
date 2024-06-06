@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:flutter/material.dart";
 
 /// Represents a message document in Firebase.
 @immutable
@@ -19,10 +19,10 @@ class FirebaseMessageDocument {
 
   /// Constructs a FirebaseMessageDocument from JSON.
   FirebaseMessageDocument.fromJson(Map<String, dynamic> json, this.id)
-      : sender = json['sender'],
-        text = json['text'],
-        imageUrl = json['image_url'],
-        timestamp = json['timestamp'];
+      : sender = json["sender"],
+        text = json["text"],
+        imageUrl = json["image_url"],
+        timestamp = json["timestamp"];
 
   /// The unique identifier of the message document.
   final String? id;
@@ -41,9 +41,9 @@ class FirebaseMessageDocument {
 
   /// Converts the FirebaseMessageDocument to JSON format.
   Map<String, dynamic> toJson() => {
-        'sender': sender,
-        'text': text,
-        'image_url': imageUrl,
-        'timestamp': timestamp,
+        "sender": sender,
+        "text": text,
+        "image_url": imageUrl,
+        "timestamp": timestamp,
       };
 }

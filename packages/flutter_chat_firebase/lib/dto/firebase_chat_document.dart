@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_chat_firebase/dto/firebase_message_document.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:flutter/material.dart";
+import "package:flutter_chat_firebase/dto/firebase_message_document.dart";
 
 /// Represents a chat document in Firebase.
 @immutable
@@ -23,16 +23,16 @@ class FirebaseChatDocument {
 
   /// Constructs a FirebaseChatDocument from JSON.
   FirebaseChatDocument.fromJson(Map<String, dynamic> json, this.id)
-      : title = json['title'],
-        imageUrl = json['image_url'],
-        personal = json['personal'],
-        canBeDeleted = json['can_be_deleted'] ?? true,
-        lastUsed = json['last_used'],
-        users = json['users'] != null ? List<String>.from(json['users']) : [],
-        lastMessage = json['last_message'] == null
+      : title = json["title"],
+        imageUrl = json["image_url"],
+        personal = json["personal"],
+        canBeDeleted = json["can_be_deleted"] ?? true,
+        lastUsed = json["last_used"],
+        users = json["users"] != null ? List<String>.from(json["users"]) : [],
+        lastMessage = json["last_message"] == null
             ? null
             : FirebaseMessageDocument.fromJson(
-                json['last_message'],
+                json["last_message"],
                 null,
               );
 
@@ -62,11 +62,11 @@ class FirebaseChatDocument {
 
   /// Converts the FirebaseChatDocument to JSON format.
   Map<String, dynamic> toJson() => {
-        'title': title,
-        'image_url': imageUrl,
-        'personal': personal,
-        'last_used': lastUsed,
-        'can_be_deleted': canBeDeleted,
-        'users': users,
+        "title": title,
+        "image_url": imageUrl,
+        "personal": personal,
+        "last_used": lastUsed,
+        "can_be_deleted": canBeDeleted,
+        "users": users,
       };
 }

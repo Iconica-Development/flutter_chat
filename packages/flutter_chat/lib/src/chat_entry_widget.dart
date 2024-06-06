@@ -1,7 +1,7 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:flutter_chat/flutter_chat.dart';
+import "package:flutter/material.dart";
+import "package:flutter_chat/flutter_chat.dart";
 
 /// A widget representing an entry point for a chat UI.
 class ChatEntryWidget extends StatefulWidget {
@@ -104,7 +104,7 @@ class _ChatEntryWidgetState extends State<ChatEntryWidget> {
                   ),
                   child: Center(
                     child: Text(
-                      '${snapshot.data ?? 0}',
+                      "${snapshot.data ?? 0}",
                       style: widget.textStyle,
                     ),
                   ),

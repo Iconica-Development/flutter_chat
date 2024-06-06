@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:intl/intl.dart';
+import "package:intl/intl.dart";
 
 class DateFormatter {
   final _now = DateTime.now();
@@ -28,6 +28,6 @@ class DateFormatter {
     bool showFullDate = false,
   }) =>
       DateFormat(
-        _isToday(date) ? 'HH:mm' : 'dd-MM-yyyy${showFullDate ? ' HH:mm' : ''}',
+        _isToday(date) ? "HH:mm" : 'dd-MM-yyyy${showFullDate ? ' HH:mm' : ''}',
       ).format(date);
 }

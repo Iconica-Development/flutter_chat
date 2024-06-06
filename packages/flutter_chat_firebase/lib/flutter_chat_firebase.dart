@@ -4,4 +4,4 @@
 ///
 library flutter_chat_firebase;
 
-export 'package:flutter_chat_firebase/service/service.dart';
+export "package:flutter_chat_firebase/service/service.dart";

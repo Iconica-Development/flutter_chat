@@ -4,11 +4,11 @@
 
 // ignore_for_file: lines_longer_than_80_chars
 
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:flutter_chat_view/flutter_chat_view.dart';
-import 'package:flutter_chat_view/src/services/date_formatter.dart';
+import "package:flutter/material.dart";
+import "package:flutter_chat_view/flutter_chat_view.dart";
+import "package:flutter_chat_view/src/services/date_formatter.dart";
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({
@@ -94,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 22.0),
                   child: Text(
-                    '${snapshot.data ?? 0} ${translations.chatsUnread}',
+                    "${snapshot.data ?? 0} ${translations.chatsUnread}",
                     style: widget.unreadMessageTextStyle ??
                         const TextStyle(
                           color: Colors.white,
@@ -143,7 +143,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         for (ChatModel chat in (snapshot.data ?? []).where(
                           (chat) => !deletedChats.contains(chat.id),
                         )) ...[
-                          Container(
+                          DecoratedBox(
                             decoration: BoxDecoration(
                               border: Border(
                                 bottom: BorderSide(
@@ -269,7 +269,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                         });
                                         widget.onDeleteChat(chat);
                                       },
-                                      background: Container(
+                                      background: ColoredBox(
                                         color: Colors.red,
                                         child: Align(
                                           alignment: Alignment.centerRight,
@@ -354,9 +354,9 @@ class ChatListItem extends StatelessWidget {
                   subTitle: chat.lastMessage != null
                       ? chat.lastMessage is ChatTextMessageModel
                           ? (chat.lastMessage! as ChatTextMessageModel).text
-                          : '📷 '
-                              '${translations.image}'
-                      : '',
+                          : "📷 "
+                              "${translations.image}"
+                      : "",
                   lastUsed: chat.lastUsed != null
                       ? _dateFormatter.format(
                           date: chat.lastUsed!,
@@ -369,9 +369,9 @@ class ChatListItem extends StatelessWidget {
                   subTitle: chat.lastMessage != null
                       ? chat.lastMessage is ChatTextMessageModel
                           ? (chat.lastMessage! as ChatTextMessageModel).text
-                          : '📷 '
-                              '${translations.image}'
-                      : '',
+                          : "📷 "
+                              "${translations.image}"
+                      : "",
                   avatar: widget.options.groupAvatarBuilder(
                     (chat as GroupChatModel).title,
                     (chat as GroupChatModel).imageUrl,
