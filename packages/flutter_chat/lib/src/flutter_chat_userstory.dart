@@ -43,14 +43,19 @@ List<GoRoute> getChatStoryRoutes(
           return buildScreenWithoutTransition(
             context: context,
             state: state,
-            child: configuration.chatPageBuilder?.call(
-                  context,
-                  chatScreen,
-                ) ??
-                Scaffold(
-                  backgroundColor: theme.colorScheme.surface,
-                  body: chatScreen,
-                ),
+            child: PopScope(
+              canPop: configuration.onPopInvoked == null,
+              onPopInvoked: (didPop) =>
+                  configuration.onPopInvoked?.call(didPop, context),
+              child: configuration.chatPageBuilder?.call(
+                    context,
+                    chatScreen,
+                  ) ??
+                  Scaffold(
+                    backgroundColor: theme.colorScheme.surface,
+                    body: chatScreen,
+                  ),
+            ),
           );
         },
       ),

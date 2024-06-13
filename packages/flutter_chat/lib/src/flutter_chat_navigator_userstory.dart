@@ -30,48 +30,53 @@ Widget _chatScreenRoute(
   ChatUserStoryConfiguration configuration,
   BuildContext context,
 ) =>
-    ChatScreen(
-      unreadMessageTextStyle: configuration.unreadMessageTextStyle,
-      service: configuration.chatService,
-      options: configuration.chatOptionsBuilder(context),
-      onNoChats: () async => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => _newChatScreenRoute(
-            configuration,
-            context,
-          ),
-        ),
-      ),
-      onPressStartChat: () async {
-        if (configuration.onPressStartChat != null) {
-          return await configuration.onPressStartChat?.call();
-        }
-
-        return Navigator.of(context).push(
+    PopScope(
+      canPop: configuration.onPopInvoked == null,
+      onPopInvoked: (didPop) =>
+          configuration.onPopInvoked?.call(didPop, context),
+      child: ChatScreen(
+        unreadMessageTextStyle: configuration.unreadMessageTextStyle,
+        service: configuration.chatService,
+        options: configuration.chatOptionsBuilder(context),
+        onNoChats: () async => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => _newChatScreenRoute(
               configuration,
               context,
             ),
           ),
-        );
-      },
-      onPressChat: (chat) async =>
-          configuration.onPressChat?.call(context, chat) ??
-          await Navigator.of(context).push(
+        ),
+        onPressStartChat: () async {
+          if (configuration.onPressStartChat != null) {
+            return await configuration.onPressStartChat?.call();
+          }
+
+          return Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => _chatDetailScreenRoute(
+              builder: (context) => _newChatScreenRoute(
                 configuration,
                 context,
-                chat.id!,
               ),
             ),
-          ),
-      onDeleteChat: (chat) async =>
-          configuration.onDeleteChat?.call(context, chat) ??
-          configuration.chatService.chatOverviewService.deleteChat(chat),
-      deleteChatDialog: configuration.deleteChatDialog,
-      translations: configuration.translations,
+          );
+        },
+        onPressChat: (chat) async =>
+            configuration.onPressChat?.call(context, chat) ??
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => _chatDetailScreenRoute(
+                  configuration,
+                  context,
+                  chat.id!,
+                ),
+              ),
+            ),
+        onDeleteChat: (chat) async =>
+            configuration.onDeleteChat?.call(context, chat) ??
+            configuration.chatService.chatOverviewService.deleteChat(chat),
+        deleteChatDialog: configuration.deleteChatDialog,
+        translations: configuration.translations,
+      ),
     );
 
 /// Constructs the chat detail screen route widget.

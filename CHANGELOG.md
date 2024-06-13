@@ -2,6 +2,7 @@
 
 - fix bug where you could make multiple groups quickly by routing back to the previous screen
 - fix bug where you would route back to the user selection screen insterad of routing back to the chat overview screen
+- Add onPopInvoked callback to the userstory to add custom behaviour for the back button on the chatscreen
 
 ## 3.0.0
 
