@@ -147,9 +147,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             decoration: BoxDecoration(
                               border: Border(
                                 bottom: BorderSide(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .secondary
+                                  color: theme.colorScheme.secondary
                                       .withOpacity(0.3),
                                   width: 0.5,
                                 ),

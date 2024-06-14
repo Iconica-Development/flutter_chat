@@ -14,7 +14,6 @@ List<GoRoute> getChatStoryRoutes(
       GoRoute(
         path: ChatUserStoryRoutes.chatScreen,
         pageBuilder: (context, state) {
-          var theme = Theme.of(context);
           var service = configuration.chatServiceBuilder?.call(context) ??
               configuration.chatService;
           var chatScreen = ChatScreen(
@@ -52,7 +51,6 @@ List<GoRoute> getChatStoryRoutes(
                     chatScreen,
                   ) ??
                   Scaffold(
-                    backgroundColor: theme.colorScheme.surface,
                     body: chatScreen,
                   ),
             ),
@@ -65,7 +63,6 @@ List<GoRoute> getChatStoryRoutes(
           var chatId = state.pathParameters["id"];
           var service = configuration.chatServiceBuilder?.call(context) ??
               configuration.chatService;
-          var theme = Theme.of(context);
 
           var chatDetailScreen = ChatDetailScreen(
             chatTitleBuilder: configuration.chatTitleBuilder,
@@ -127,7 +124,6 @@ List<GoRoute> getChatStoryRoutes(
                   chatDetailScreen,
                 ) ??
                 Scaffold(
-                  backgroundColor: theme.colorScheme.surface,
                   body: chatDetailScreen,
                 ),
           );
@@ -138,7 +134,6 @@ List<GoRoute> getChatStoryRoutes(
         pageBuilder: (context, state) {
           var service = configuration.chatServiceBuilder?.call(context) ??
               configuration.chatService;
-          var theme = Theme.of(context);
 
           var newChatScreen = NewChatScreen(
             options: configuration.chatOptionsBuilder(context),
@@ -177,7 +172,6 @@ List<GoRoute> getChatStoryRoutes(
                   newChatScreen,
                 ) ??
                 Scaffold(
-                  backgroundColor: theme.colorScheme.surface,
                   body: newChatScreen,
                 ),
           );
@@ -188,7 +182,6 @@ List<GoRoute> getChatStoryRoutes(
         pageBuilder: (context, state) {
           var service = configuration.chatServiceBuilder?.call(context) ??
               configuration.chatService;
-          var theme = Theme.of(context);
 
           var newGroupChatScreen = NewGroupChatScreen(
             options: configuration.chatOptionsBuilder(context),
@@ -208,7 +201,6 @@ List<GoRoute> getChatStoryRoutes(
                   newGroupChatScreen,
                 ) ??
                 Scaffold(
-                  backgroundColor: theme.colorScheme.surface,
                   body: newGroupChatScreen,
                 ),
           );
@@ -220,7 +212,6 @@ List<GoRoute> getChatStoryRoutes(
           var service = configuration.chatServiceBuilder?.call(context) ??
               configuration.chatService;
           var users = state.extra! as List<ChatUserModel>;
-          var theme = Theme.of(context);
 
           var newGroupChatOverviewScreen = NewGroupChatOverviewScreen(
             options: configuration.chatOptionsBuilder(context),
@@ -255,7 +246,6 @@ List<GoRoute> getChatStoryRoutes(
                   newGroupChatOverviewScreen,
                 ) ??
                 Scaffold(
-                  backgroundColor: theme.colorScheme.surface,
                   body: newGroupChatOverviewScreen,
                 ),
           );
@@ -269,7 +259,6 @@ List<GoRoute> getChatStoryRoutes(
           var id = userId == "null" ? null : userId;
           var service = configuration.chatServiceBuilder?.call(context) ??
               configuration.chatService;
-          var theme = Theme.of(context);
 
           var profileScreen = ChatProfileScreen(
             translations: configuration.translationsBuilder?.call(context) ??
@@ -295,7 +284,6 @@ List<GoRoute> getChatStoryRoutes(
                   profileScreen,
                 ) ??
                 Scaffold(
-                  backgroundColor: theme.colorScheme.surface,
                   body: profileScreen,
                 ),
           );

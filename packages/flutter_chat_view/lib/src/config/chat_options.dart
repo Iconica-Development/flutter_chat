@@ -177,6 +177,7 @@ Scaffold _createScaffold(
     Scaffold(
       appBar: appbar,
       body: body,
+      backgroundColor: backgroundColor,
     );
 
 Widget _createUserAvatar(

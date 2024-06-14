@@ -66,7 +66,6 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
           );
         }
         return Scaffold(
-          backgroundColor: theme.colorScheme.surface,
           appBar: AppBar(
             backgroundColor: theme.appBarTheme.backgroundColor,
             iconTheme: theme.appBarTheme.iconTheme ??
