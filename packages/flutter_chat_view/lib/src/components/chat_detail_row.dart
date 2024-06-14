@@ -46,6 +46,8 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     var isNewDate = widget.previousMessage != null &&
         widget.message.timestamp.day != widget.previousMessage?.timestamp.day;
     var isSameSender = widget.previousMessage == null ||
@@ -54,7 +56,6 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
         widget.message.timestamp.minute ==
             widget.previousMessage?.timestamp.minute;
     var hasHeader = isNewDate || isSameSender;
-    var theme = Theme.of(context);
     return Padding(
       padding: EdgeInsets.only(
         top: isNewDate || isSameSender ? 25.0 : 0,
@@ -69,8 +70,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
               ),
               child: Padding(
                 padding: const EdgeInsets.only(left: 10.0),
-                child: widget.message.sender.imageUrl != null &&
-                        widget.message.sender.imageUrl!.isNotEmpty
+                child: widget.message.sender.imageUrl?.isNotEmpty ?? false
                     ? ChatImage(
                         image: widget.message.sender.imageUrl!,
                       )
@@ -92,27 +92,24 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  if (isNewDate || isSameSender)
+                  if (isNewDate || isSameSender) ...[
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        if (widget.usernameBuilder != null)
-                          widget.usernameBuilder!(
-                            widget.message.sender.fullName ?? "",
-                          )
-                        else
-                          Text(
-                            widget.message.sender.fullName ??
-                                widget.translations.anonymousUser,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .labelMedium
-                                  ?.color,
-                            ),
-                          ),
+                        Expanded(
+                          child: widget.usernameBuilder?.call(
+                                widget.message.sender.fullName ?? "",
+                              ) ??
+                              Text(
+                                widget.message.sender.fullName ??
+                                    widget.translations.anonymousUser,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                  color: theme.textTheme.labelMedium?.color,
+                                ),
+                              ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.only(top: 5.0),
                           child: Text(
@@ -129,6 +126,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                         ),
                       ],
                     ),
+                  ],
                   Padding(
                     padding: const EdgeInsets.only(top: 3.0),
                     child: widget.message is ChatTextMessageModel
@@ -141,10 +139,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                                   (widget.message as ChatTextMessageModel).text,
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .labelMedium
-                                        ?.color,
+                                    color: theme.textTheme.labelMedium?.color,
                                   ),
                                 ),
                               ),

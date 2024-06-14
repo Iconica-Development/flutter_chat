@@ -167,6 +167,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       future: widget.service.chatOverviewService.getChatById(widget.chatId),
       builder: (context, AsyncSnapshot<ChatModel> snapshot) {
         var chatModel = snapshot.data;
+        var chatTitle = (chatModel is GroupChatModel)
+            ? chatModel.title
+            : (chatModel is PersonalChatModel)
+                ? chatModel.user.firstName ?? widget.translations.anonymousUser
+                : "";
+
         return Scaffold(
           backgroundColor: theme.colorScheme.surface,
           appBar: AppBar(
@@ -184,36 +190,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             ),
             title: GestureDetector(
               onTap: () => widget.onPressChatTitle.call(context, chatModel!),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: chat == null
-                    ? []
-                    : [
-                        Padding(
-                          padding: (chatModel is GroupChatModel)
-                              ? const EdgeInsets.only(left: 15.5)
-                              : EdgeInsets.zero,
-                          child: widget.chatTitleBuilder != null
-                              ? widget.chatTitleBuilder!.call(
-                                  (chatModel is GroupChatModel)
-                                      ? chatModel.title
-                                      : (chatModel is PersonalChatModel)
-                                          ? chatModel.user.firstName ??
-                                              widget.translations.anonymousUser
-                                          : "",
-                                )
-                              : Text(
-                                  (chatModel is GroupChatModel)
-                                      ? chatModel.title
-                                      : (chatModel is PersonalChatModel)
-                                          ? chatModel.user.firstName ??
-                                              widget.translations.anonymousUser
-                                          : "",
-                                  style: theme.appBarTheme.titleTextStyle,
-                                ),
-                        ),
-                      ],
-              ),
+              child: widget.chatTitleBuilder?.call(chatTitle) ??
+                  Text(
+                    chatTitle,
+                    style: theme.appBarTheme.titleTextStyle,
+                    overflow: TextOverflow.ellipsis,
+                  ),
             ),
           ),
           body: Stack(
@@ -251,7 +233,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         reverse: detailRows.isNotEmpty,
                         padding: const EdgeInsets.only(top: 24.0),
                         children: [
-                          if (detailRows.isEmpty && !showIndicator)
+                          if (detailRows.isEmpty && !showIndicator) ...[
                             Center(
                               child: Text(
                                 (chatModel is GroupChatModel)
@@ -262,12 +244,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                 style: theme.textTheme.bodySmall,
                               ),
                             ),
+                          ],
                           ...detailRows,
                         ],
                       ),
                     ),
                   ),
-                  if (chatModel != null)
+                  if (chatModel != null) ...[
                     ChatBottom(
                       chat: chatModel,
                       messageInputBuilder: widget.options.messageInputBuilder,
@@ -277,12 +260,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       iconColor: widget.iconColor,
                       iconDisabledColor: widget.iconDisabledColor,
                     ),
+                  ],
                   SizedBox(
                     height: widget.textfieldBottomPadding,
                   ),
                 ],
               ),
-              if (showIndicator)
+              if (showIndicator) ...[
                 widget.loadingWidgetBuilder?.call(context) ??
                     const Column(
                       children: [
@@ -295,6 +279,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         ),
                       ],
                     ),
+              ],
             ],
           ),
         );
