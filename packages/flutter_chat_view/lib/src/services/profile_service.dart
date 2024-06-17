@@ -1,7 +1,7 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:flutter_profile/flutter_profile.dart';
+import "package:flutter/material.dart";
+import "package:flutter_profile/flutter_profile.dart";
 
 class ChatProfileService extends ProfileService {
   @override

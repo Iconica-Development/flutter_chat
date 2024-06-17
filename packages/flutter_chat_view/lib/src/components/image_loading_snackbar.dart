@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_chat_view/flutter_chat_view.dart';
+import "package:flutter/material.dart";
+import "package:flutter_chat_view/flutter_chat_view.dart";
 
 SnackBar getImageLoadingSnackbar(ChatTranslations translations) => SnackBar(
       duration: const Duration(minutes: 1),

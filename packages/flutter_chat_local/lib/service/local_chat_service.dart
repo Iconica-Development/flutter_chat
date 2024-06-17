@@ -1,7 +1,7 @@
-import 'package:flutter_chat_interface/flutter_chat_interface.dart';
-import 'package:flutter_chat_local/service/local_chat_detail_service.dart';
-import 'package:flutter_chat_local/service/local_chat_overview_service.dart';
-import 'package:flutter_chat_local/service/local_chat_user_service.dart';
+import "package:flutter_chat_interface/flutter_chat_interface.dart";
+import "package:flutter_chat_local/service/local_chat_detail_service.dart";
+import "package:flutter_chat_local/service/local_chat_overview_service.dart";
+import "package:flutter_chat_local/service/local_chat_user_service.dart";
 
 /// Service class for managing local chat services.
 class LocalChatService implements ChatService {

@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_chat_view/flutter_chat_view.dart';
-import 'package:flutter_profile/flutter_profile.dart';
+import "package:flutter/material.dart";
+import "package:flutter_chat_view/flutter_chat_view.dart";
+import "package:flutter_profile/flutter_profile.dart";
 
 class ChatProfileScreen extends StatefulWidget {
   const ChatProfileScreen({
@@ -66,7 +66,6 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
           );
         }
         return Scaffold(
-          backgroundColor: theme.colorScheme.surface,
           appBar: AppBar(
             backgroundColor: theme.appBarTheme.backgroundColor,
             iconTheme: theme.appBarTheme.iconTheme ??
@@ -75,10 +74,10 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
               (data is ChatUserModel)
                   ? '${data.firstName ?? ''} ${data.lastName ?? ''}'
                   : (data is PersonalChatModel)
-                      ? data.user.fullName ?? ''
+                      ? data.user.fullName ?? ""
                       : (data is GroupChatModel)
                           ? data.title
-                          : '',
+                          : "",
               style: theme.appBarTheme.titleTextStyle,
             ),
           ),
@@ -111,8 +110,8 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
                       ),
                       ...data.users.map((e) {
                         var user = User(
-                          firstName: e.firstName ?? '',
-                          lastName: e.lastName ?? '',
+                          firstName: e.firstName ?? "",
+                          lastName: e.lastName ?? "",
                           imageUrl: e.imageUrl,
                         );
                         return Padding(

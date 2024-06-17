@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import 'package:flutter_test/flutter_test.dart';
+import "package:flutter_test/flutter_test.dart";
 
 void main() {
-  test('test', () {
+  test("test", () {
     expect(true, true);
   });
 }

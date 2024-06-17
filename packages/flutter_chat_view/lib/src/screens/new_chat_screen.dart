@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter/material.dart';
-import 'package:flutter_chat_view/flutter_chat_view.dart';
+import "package:flutter/material.dart";
+import "package:flutter_chat_view/flutter_chat_view.dart";
 
 class NewChatScreen extends StatefulWidget {
   const NewChatScreen({
@@ -41,13 +41,12 @@ class NewChatScreen extends StatefulWidget {
 class _NewChatScreenState extends State<NewChatScreen> {
   final FocusNode _textFieldFocusNode = FocusNode();
   bool _isSearching = false;
-  String query = '';
+  String query = "";
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         iconTheme: theme.appBarTheme.iconTheme ??
             const IconThemeData(color: Colors.white),
@@ -111,7 +110,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
+                  return Text("Error: ${snapshot.error}");
                 } else if (snapshot.hasData) {
                   return _buildUserList(snapshot.data!);
                 } else {
@@ -162,7 +161,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
       onPressed: () {
         setState(() {
           _isSearching = !_isSearching;
-          query = '';
+          query = "";
         });
 
         if (_isSearching) {
@@ -207,7 +206,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
       itemCount: filteredUsers.length,
       itemBuilder: (context, index) {
         var user = filteredUsers[index];
-        return Container(
+        return DecoratedBox(
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
@@ -221,7 +220,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
               Padding(
                 padding: widget.options.paddingAroundChatList ??
                     const EdgeInsets.symmetric(vertical: 8, horizontal: 28),
-                child: Container(
+                child: ColoredBox(
                   color: Colors.transparent,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),

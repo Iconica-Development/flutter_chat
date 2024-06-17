@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 /// Represents a user document in Firebase.
 @immutable
@@ -22,11 +22,11 @@ class FirebaseUserDocument {
   ) : this(
           id: id,
           firstName:
-              json['first_name'] == null ? '' : json['first_name']! as String,
+              json["first_name"] == null ? "" : json["first_name"]! as String,
           lastName:
-              json['last_name'] == null ? '' : json['last_name']! as String,
+              json["last_name"] == null ? "" : json["last_name"]! as String,
           imageUrl:
-              json['image_url'] == null ? null : json['image_url']! as String,
+              json["image_url"] == null ? null : json["image_url"]! as String,
         );
 
   /// The first name of the user.
@@ -43,8 +43,8 @@ class FirebaseUserDocument {
 
   /// Converts the FirebaseUserDocument to JSON format.
   Map<String, Object?> toJson() => {
-        'first_name': firstName,
-        'last_name': lastName,
-        'image_url': imageUrl,
+        "first_name": firstName,
+        "last_name": lastName,
+        "image_url": imageUrl,
       };
 }

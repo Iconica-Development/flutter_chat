@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter/material.dart';
-import 'package:flutter_chat/flutter_chat.dart';
+import "package:flutter/material.dart";
+import "package:flutter_chat/flutter_chat.dart";
 
 /// Navigates to the chat user story screen.
 ///
@@ -30,48 +30,53 @@ Widget _chatScreenRoute(
   ChatUserStoryConfiguration configuration,
   BuildContext context,
 ) =>
-    ChatScreen(
-      unreadMessageTextStyle: configuration.unreadMessageTextStyle,
-      service: configuration.chatService,
-      options: configuration.chatOptionsBuilder(context),
-      onNoChats: () async => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => _newChatScreenRoute(
-            configuration,
-            context,
-          ),
-        ),
-      ),
-      onPressStartChat: () async {
-        if (configuration.onPressStartChat != null) {
-          return await configuration.onPressStartChat?.call();
-        }
-
-        return Navigator.of(context).push(
+    PopScope(
+      canPop: configuration.onPopInvoked == null,
+      onPopInvoked: (didPop) =>
+          configuration.onPopInvoked?.call(didPop, context),
+      child: ChatScreen(
+        unreadMessageTextStyle: configuration.unreadMessageTextStyle,
+        service: configuration.chatService,
+        options: configuration.chatOptionsBuilder(context),
+        onNoChats: () async => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => _newChatScreenRoute(
               configuration,
               context,
             ),
           ),
-        );
-      },
-      onPressChat: (chat) async =>
-          configuration.onPressChat?.call(context, chat) ??
-          await Navigator.of(context).push(
+        ),
+        onPressStartChat: () async {
+          if (configuration.onPressStartChat != null) {
+            return await configuration.onPressStartChat?.call();
+          }
+
+          return Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => _chatDetailScreenRoute(
+              builder: (context) => _newChatScreenRoute(
                 configuration,
                 context,
-                chat.id!,
               ),
             ),
-          ),
-      onDeleteChat: (chat) async =>
-          configuration.onDeleteChat?.call(context, chat) ??
-          configuration.chatService.chatOverviewService.deleteChat(chat),
-      deleteChatDialog: configuration.deleteChatDialog,
-      translations: configuration.translations,
+          );
+        },
+        onPressChat: (chat) async =>
+            configuration.onPressChat?.call(context, chat) ??
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => _chatDetailScreenRoute(
+                  configuration,
+                  context,
+                  chat.id!,
+                ),
+              ),
+            ),
+        onDeleteChat: (chat) async =>
+            configuration.onDeleteChat?.call(context, chat) ??
+            configuration.chatService.chatOverviewService.deleteChat(chat),
+        deleteChatDialog: configuration.deleteChatDialog,
+        translations: configuration.translations,
+      ),
     );
 
 /// Constructs the chat detail screen route widget.
@@ -218,7 +223,7 @@ Widget _newChatScreenRoute(
         if (configuration.onPressCreateChat != null) return;
         var chat = await configuration.chatService.chatOverviewService
             .getChatByUser(user);
-        debugPrint('Chat is ${chat.id}');
+        debugPrint("Chat is ${chat.id}");
         if (chat.id == null) {
           chat = await configuration.chatService.chatOverviewService
               .storeChatIfNot(
@@ -230,10 +235,13 @@ Widget _newChatScreenRoute(
         if (context.mounted) {
           await Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => _chatDetailScreenRoute(
-                configuration,
-                context,
-                chat.id!,
+              builder: (context) => PopScope(
+                canPop: false,
+                child: _chatDetailScreenRoute(
+                  configuration,
+                  context,
+                  chat.id!,
+                ),
               ),
             ),
           );
@@ -279,17 +287,20 @@ Widget _newGroupChatOverviewScreenRoute(
           GroupChatModel(
             canBeDeleted: true,
             title: groupChatName,
-            imageUrl: 'https://picsum.photos/200/300',
+            imageUrl: "https://picsum.photos/200/300",
             users: users,
           ),
         );
         if (context.mounted) {
           await Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => _chatDetailScreenRoute(
-                configuration,
-                context,
-                chat.id!,
+              builder: (context) => PopScope(
+                canPop: false,
+                child: _chatDetailScreenRoute(
+                  configuration,
+                  context,
+                  chat.id!,
+                ),
               ),
             ),
           );

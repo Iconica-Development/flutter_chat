@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import "package:flutter/material.dart";
+import "package:go_router/go_router.dart";
 
 /// Builds a screen with a fade transition.
 ///
