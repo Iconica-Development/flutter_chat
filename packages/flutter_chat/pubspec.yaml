@@ -4,7 +4,7 @@
 
 name: flutter_chat
 description: A new Flutter package project.
-version: 3.0.1
+version: 3.1.0
 
 publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub
 
@@ -18,13 +18,13 @@ dependencies:
   go_router: ^14.2.1
   flutter_chat_view:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
-    version: ^3.0.1
+    version: ^3.1.0
   flutter_chat_interface:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
-    version: ^3.0.1
+    version: ^3.1.0
   flutter_chat_local:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
-    version: ^3.0.1
+    version: ^3.1.0
   uuid: ^4.3.3
 
 dev_dependencies:

@@ -1,3 +1,7 @@
+## 3.1.0
+- Fix center the texts for no users found with search and type first message
+
+
 ## 3.0.1
 
 - fix bug where you could make multiple groups quickly by routing back to the previous screen
