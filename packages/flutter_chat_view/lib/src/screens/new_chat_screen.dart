@@ -190,9 +190,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
     if (_textFieldFocusNode.hasFocus && query.isEmpty) {
       return Padding(
         padding: const EdgeInsets.only(top: 20.0),
-        child: Text(
-          widget.translations.startTyping,
-          style: theme.textTheme.bodySmall,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Text(
+            widget.translations.startTyping,
+            style: theme.textTheme.bodySmall,
+          ),
         ),
       );
     }

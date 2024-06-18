@@ -223,10 +223,13 @@ Widget _createNoUsersPlaceholder(
   var theme = Theme.of(context);
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 20),
-    child: Text(
-      translations.noUsersFound,
-      textAlign: TextAlign.center,
-      style: theme.textTheme.bodySmall,
+    child: Align(
+      alignment: Alignment.topCenter,
+      child: Text(
+        translations.noUsersFound,
+        textAlign: TextAlign.center,
+        style: theme.textTheme.bodySmall,
+      ),
     ),
   );
 }
