@@ -9,7 +9,7 @@ abstract class ChatOverviewService {
   Future<ChatModel> getChatByUser(ChatUserModel user);
 
   /// Retrieves a chat based on the ID.
-  Future<ChatModel> getChatById(String id);
+  Future<ChatModel> getChatById(String id, String iamBreakingStuff);
 
   /// Deletes the chat for this user and the other users in the chat.
   Future<void> deleteChat(ChatModel chat);

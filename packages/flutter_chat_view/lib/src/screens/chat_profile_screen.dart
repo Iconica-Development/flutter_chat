@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import "package:flutter/material.dart";
 import "package:flutter_chat_view/flutter_chat_view.dart";
 import "package:flutter_profile/flutter_profile.dart";
@@ -38,9 +40,8 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
     var theme = Theme.of(context);
     return FutureBuilder<dynamic>(
       future: hasUser
-          // ignore: discarded_futures
-          ? widget.chatService.chatOverviewService.getChatById(widget.chatId)
-          // ignore: discarded_futures
+          ? widget.chatService.chatOverviewService
+              .getChatById(widget.chatId, "")
           : widget.chatService.chatUserService.getUser(widget.userId!),
       builder: (context, snapshot) {
         var data = snapshot.data;

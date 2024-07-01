@@ -36,7 +36,7 @@ class LocalChatOverviewService
   }
 
   @override
-  Future<ChatModel> getChatById(String id) {
+  Future<ChatModel> getChatById(String id, String iamBreakingStuff) {
     var chat = _chats.firstWhere((element) => element.id == id);
     debugPrint("Retrieved chat by ID: $chat");
     debugPrint("Messages are: ${chat.messages?.length}");

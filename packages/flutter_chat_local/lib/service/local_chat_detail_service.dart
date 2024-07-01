@@ -29,7 +29,7 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
     int pageSize,
     String chatId,
   ) async {
-    var value = await chatOverviewService.getChatById(chatId);
+    var value = await chatOverviewService.getChatById(chatId, "test");
     _cumulativeMessages.clear();
     if (value.messages != null) {
       _cumulativeMessages.addAll(value.messages!);
@@ -46,8 +46,10 @@ class LocalChatDetailService with ChangeNotifier implements ChatDetailService {
     String chatId,
   ) {
     _controller.onListen = () async {
-      _subscription =
-          chatOverviewService.getChatById(chatId).asStream().listen((event) {
+      _subscription = chatOverviewService
+          .getChatById(chatId, "test")
+          .asStream()
+          .listen((event) {
         if (event.messages != null) {
           _cumulativeMessages.clear();
           _cumulativeMessages.addAll(event.messages!);

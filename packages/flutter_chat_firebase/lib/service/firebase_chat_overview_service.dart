@@ -241,7 +241,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
   ///
   /// [chatId]: The ID of the chat.
   @override
-  Future<ChatModel> getChatById(String chatId) async {
+  Future<ChatModel> getChatById(String chatId, String iamBreakingStuff) async {
     var currentUser = await _userService.getCurrentUser();
     var chatCollection = await _db
         .collection(_options.usersCollectionName)

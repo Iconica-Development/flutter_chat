@@ -80,8 +80,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     messageSubscription = widget.service.chatDetailService;
     messageSubscription.addListener(onListen);
     Future.delayed(Duration.zero, () async {
-      chat =
-          await widget.service.chatOverviewService.getChatById(widget.chatId);
+      chat = await widget.service.chatOverviewService
+          .getChatById(widget.chatId, "");
 
       if (detailRows.isEmpty && context.mounted) {
         await widget.service.chatDetailService.fetchMoreMessage(
@@ -164,7 +164,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
     return FutureBuilder<ChatModel>(
       // ignore: discarded_futures
-      future: widget.service.chatOverviewService.getChatById(widget.chatId),
+      future: widget.service.chatOverviewService.getChatById(widget.chatId, ""),
       builder: (context, AsyncSnapshot<ChatModel> snapshot) {
         var chatModel = snapshot.data;
         var chatTitle = (chatModel is GroupChatModel)
