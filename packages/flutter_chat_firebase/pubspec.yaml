@@ -4,7 +4,7 @@
 
 name: flutter_chat_firebase
 description: A new Flutter package project.
-version: 3.0.1
+version: 4.0.0
 publish_to: none
 
 environment:
