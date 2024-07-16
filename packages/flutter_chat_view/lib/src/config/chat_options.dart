@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
+import "package:emoji_picker_flutter/emoji_picker_flutter.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat_view/flutter_chat_view.dart";
 import "package:flutter_chat_view/src/components/chat_image.dart";
@@ -85,12 +86,14 @@ Widget _createNewChatButton(
 
 Widget _createMessageInput(
   TextEditingController textEditingController,
+  FocusNode focusNode,
   Widget suffixIcon,
   ChatTranslations translations,
   BuildContext context,
 ) {
   var theme = Theme.of(context);
   return TextField(
+    focusNode: focusNode,
     textCapitalization: TextCapitalization.sentences,
     controller: textEditingController,
     decoration: InputDecoration(
@@ -235,7 +238,8 @@ typedef ButtonBuilder = Widget Function(
 );
 
 typedef TextInputBuilder = Widget Function(
-  TextEditingController textEditingController,
+  EmojiTextEditingController textEditingController,
+  FocusNode focusNode,
   Widget suffixIcon,
   ChatTranslations translations,
   BuildContext context,

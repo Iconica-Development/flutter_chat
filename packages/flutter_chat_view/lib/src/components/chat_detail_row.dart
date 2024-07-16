@@ -3,10 +3,13 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import "package:cached_network_image/cached_network_image.dart";
+import "package:emoji_picker_flutter/emoji_picker_flutter.dart";
+import "package:flutter/foundation.dart" as foundation;
 import "package:flutter/material.dart";
 import "package:flutter_chat_view/flutter_chat_view.dart";
 import "package:flutter_chat_view/src/components/chat_image.dart";
 import "package:flutter_chat_view/src/services/date_formatter.dart";
+import "package:google_fonts/google_fonts.dart";
 
 class ChatDetailRow extends StatefulWidget {
   const ChatDetailRow({
@@ -43,10 +46,19 @@ class ChatDetailRow extends StatefulWidget {
 
 class _ChatDetailRowState extends State<ChatDetailRow> {
   final DateFormatter _dateFormatter = DateFormatter();
+  final _emojiUtils = EmojiPickerUtils();
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+    var isApple = [TargetPlatform.iOS, TargetPlatform.macOS]
+        .contains(foundation.defaultTargetPlatform);
+    var fontSize = 24 * (isApple ? 1.2 : 1.0);
+
+    var emojiTextStyle = DefaultEmojiTextStyle.copyWith(
+      fontFamily: GoogleFonts.notoColorEmoji().fontFamily,
+      fontSize: fontSize,
+    );
 
     var isNewDate = widget.previousMessage != null &&
         widget.message.timestamp.day != widget.previousMessage?.timestamp.day;
@@ -135,11 +147,16 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Flexible(
-                                child: Text(
-                                  (widget.message as ChatTextMessageModel).text,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: theme.textTheme.labelMedium?.color,
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: _emojiUtils.setEmojiTextStyle(
+                                        (widget.message as ChatTextMessageModel)
+                                            .text,
+                                        emojiStyle: emojiTextStyle,),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: theme.textTheme.labelMedium?.color,
+                                    ),
                                   ),
                                 ),
                               ),
