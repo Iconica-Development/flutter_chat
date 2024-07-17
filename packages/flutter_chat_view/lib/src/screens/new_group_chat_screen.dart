@@ -23,7 +23,6 @@ class NewGroupChatScreen extends StatefulWidget {
 
 class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
   final FocusNode _textFieldFocusNode = FocusNode();
-  List<ChatUserModel> selectedUserList = [];
 
   bool _isSearching = false;
   String query = "";
@@ -51,19 +50,19 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
           } else if (snapshot.hasError) {
             return Text("Error: ${snapshot.error}");
           } else if (snapshot.hasData) {
-            return _buildUserList(snapshot.data!);
+            return Stack(
+              children: [
+                _buildUserList(snapshot.data!),
+                NextButton(
+                  service: widget.service,
+                  onPressGroupChatOverview: widget.onPressGroupChatOverview,
+                ),
+              ],
+            );
           }
           return const SizedBox.shrink();
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).primaryColor,
-        onPressed: () async {
-          await widget.onPressGroupChatOverview(selectedUserList);
-        },
-        child: const Icon(Icons.arrow_forward_ios),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -80,14 +79,15 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
             },
             decoration: InputDecoration(
               hintText: widget.translations.searchPlaceholder,
-              hintStyle: theme.inputDecorationTheme.hintStyle,
+              hintStyle:
+                  theme.textTheme.bodyMedium!.copyWith(color: Colors.white),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
                   color: theme.colorScheme.primary,
                 ),
               ),
             ),
-            style: theme.inputDecorationTheme.hintStyle,
+            style: theme.textTheme.bodySmall!.copyWith(color: Colors.white),
             cursorColor: theme.textSelectionTheme.cursorColor ?? Colors.white,
           )
         : Text(
@@ -140,9 +140,74 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
 
     return UserList(
       filteredUsers: filteredUsers,
-      selectedUserList: selectedUserList,
       options: widget.options,
       translations: widget.translations,
+      service: widget.service,
+    );
+  }
+}
+
+class NextButton extends StatefulWidget {
+  const NextButton({
+    required this.service,
+    required this.onPressGroupChatOverview,
+    super.key,
+  });
+
+  final ChatService service;
+  final Function(List<ChatUserModel>) onPressGroupChatOverview;
+
+  @override
+  State<NextButton> createState() => _NextButtonState();
+}
+
+class _NextButtonState extends State<NextButton> {
+  @override
+  void initState() {
+    widget.service.chatOverviewService.addListener(_listen);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.service.chatOverviewService.removeListener(_listen);
+    super.dispose();
+  }
+
+  void _listen() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 24,
+          horizontal: 80,
+        ),
+        child: FilledButton(
+          onPressed: widget
+                  .service.chatOverviewService.currentlySelectedUsers.isNotEmpty
+              ? () async {
+                  await widget.onPressGroupChatOverview(
+                    widget.service.chatOverviewService.currentlySelectedUsers,
+                  );
+                }
+              : null,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Next",
+                style: theme.textTheme.displayLarge,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -150,16 +215,16 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
 class UserList extends StatefulWidget {
   const UserList({
     required this.filteredUsers,
-    required this.selectedUserList,
     required this.options,
     required this.translations,
+    required this.service,
     super.key,
   });
 
   final List<ChatUserModel> filteredUsers;
-  final List<ChatUserModel> selectedUserList;
   final ChatOptions options;
   final ChatTranslations translations;
+  final ChatService service;
 
   @override
   State<UserList> createState() => _UserListState();
@@ -167,75 +232,70 @@ class UserList extends StatefulWidget {
 
 class _UserListState extends State<UserList> {
   @override
-  Widget build(BuildContext context) => ListView.builder(
-        itemCount: widget.filteredUsers.length,
-        itemBuilder: (context, index) {
-          var user = widget.filteredUsers[index];
-          var isSelected = widget.selectedUserList
-              .any((selectedUser) => selectedUser == user);
-          var theme = Theme.of(context);
-          return DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: theme.colorScheme.secondary.withOpacity(0.3),
-                  width: 0.5,
-                ),
-              ),
-            ),
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  if (widget.selectedUserList.contains(user)) {
-                    widget.selectedUserList.remove(user);
-                  } else {
-                    widget.selectedUserList.add(user);
-                  }
-                });
-              },
-              child: Padding(
-                padding: widget.options.paddingAroundChatList ??
-                    const EdgeInsets.fromLTRB(28, 8, 28, 8),
-                child: ColoredBox(
-                  color: Colors.transparent,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12.0,
-                      horizontal: 30,
-                    ),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: widget.options.userAvatarBuilder(user, 40.0),
-                        ),
-                        Expanded(
-                          child: Container(
-                            height: 40,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              user.fullName ??
-                                  widget.translations.anonymousUser,
-                              style: theme.textTheme.bodyLarge,
-                            ),
-                          ),
-                        ),
-                        if (isSelected) ...[
-                          Padding(
-                            padding: const EdgeInsets.only(right: 16.0),
-                            child: Icon(
-                              Icons.check_circle,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
+  void initState() {
+    widget.service.chatOverviewService.addListener(_listen);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.service.chatOverviewService.removeListener(_listen);
+    super.dispose();
+  }
+
+  void _listen() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: widget.options.paddingAroundChatList ??
+            const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        child: ListView.builder(
+          itemCount: widget.filteredUsers.length,
+          itemBuilder: (context, index) {
+            var user = widget.filteredUsers[index];
+            var isSelected = widget
+                .service.chatOverviewService.currentlySelectedUsers
+                .any((selectedUser) => selectedUser == user);
+            var theme = Theme.of(context);
+            return widget.options.chatRowContainerBuilder(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      widget.options.userAvatarBuilder(user, 44),
+                      const SizedBox(
+                        width: 12,
+                      ),
+                      Text(
+                        user.fullName ?? widget.translations.anonymousUser,
+                        style: theme.textTheme.titleMedium,
+                      ),
+                    ],
                   ),
-                ),
+                  Checkbox(
+                    value: isSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        if (widget
+                            .service.chatOverviewService.currentlySelectedUsers
+                            .contains(user)) {
+                          widget.service.chatOverviewService
+                              .removeCurrentlySelectedUser(user);
+                        } else {
+                          widget.service.chatOverviewService
+                              .addCurrentlySelectedUser(user);
+                        }
+                      });
+                    },
+                  ),
+                ],
               ),
-            ),
-          );
-        },
+              context,
+            );
+          },
+        ),
       );
 }

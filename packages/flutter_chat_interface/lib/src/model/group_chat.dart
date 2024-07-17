@@ -16,8 +16,9 @@ abstract class GroupChatModelInterface extends ChatModel {
   });
 
   String get title;
-  String get imageUrl;
+  String? get imageUrl;
   List<ChatUserModel> get users;
+  String? get bio;
 
   @override
   GroupChatModelInterface copyWith({
@@ -30,6 +31,7 @@ abstract class GroupChatModelInterface extends ChatModel {
     String? imageUrl,
     List<ChatUserModel>? users,
     bool? canBeDeleted,
+    String? bio,
   });
 }
 
@@ -56,13 +58,14 @@ class GroupChatModel implements GroupChatModelInterface {
   GroupChatModel({
     required this.canBeDeleted,
     required this.title,
-    required this.imageUrl,
     required this.users,
+    this.imageUrl,
     this.id,
     this.messages,
     this.unreadMessages,
     this.lastUsed,
     this.lastMessage,
+    this.bio,
   });
 
   @override
@@ -80,9 +83,11 @@ class GroupChatModel implements GroupChatModelInterface {
   @override
   final String title;
   @override
-  final String imageUrl;
+  final String? imageUrl;
   @override
   final List<ChatUserModel> users;
+  @override
+  final String? bio;
 
   @override
   GroupChatModel copyWith({
@@ -95,6 +100,7 @@ class GroupChatModel implements GroupChatModelInterface {
     String? title,
     String? imageUrl,
     List<ChatUserModel>? users,
+    String? bio,
   }) =>
       GroupChatModel(
         id: id ?? this.id,
@@ -106,5 +112,6 @@ class GroupChatModel implements GroupChatModelInterface {
         title: title ?? this.title,
         imageUrl: imageUrl ?? this.imageUrl,
         users: users ?? this.users,
+        bio: bio ?? this.bio,
       );
 }

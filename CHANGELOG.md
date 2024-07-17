@@ -1,5 +1,8 @@
 ## 3.1.0
 - Fix center the texts for no users found with search and type first message
+- Fix styling for the whole userstory
+- Add groupchat profile picture, and bio to the groupchat creation screen
+- Updated profile of users and groups
 
 
 ## 3.0.1

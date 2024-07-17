@@ -104,16 +104,21 @@ Widget _chatDetailScreenRoute(
         if (configuration.onPressUserProfile != null) {
           return configuration.onPressUserProfile?.call(context, user);
         }
-        return Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => _chatProfileScreenRoute(
-              configuration,
-              context,
-              chatId,
-              user.id,
+        var currentUser =
+            await configuration.chatService.chatUserService.getCurrentUser();
+        var currentUserId = currentUser!.id!;
+        if (context.mounted)
+          return Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => _chatProfileScreenRoute(
+                configuration,
+                context,
+                chatId,
+                user.id,
+                currentUserId,
+              ),
             ),
-          ),
-        );
+          );
       },
       onMessageSubmit: (message) async {
         if (configuration.onMessageSubmit != null) {
@@ -142,17 +147,21 @@ Widget _chatDetailScreenRoute(
         if (configuration.onPressChatTitle?.call(context, chat) != null) {
           return configuration.onPressChatTitle?.call(context, chat);
         }
-
-        return Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => _chatProfileScreenRoute(
-              configuration,
-              context,
-              chatId,
-              null,
+        var currentUser =
+            await configuration.chatService.chatUserService.getCurrentUser();
+        var currentUserId = currentUser!.id!;
+        if (context.mounted)
+          return Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => _chatProfileScreenRoute(
+                configuration,
+                context,
+                chatId,
+                null,
+                currentUserId,
+              ),
             ),
-          ),
-        );
+          );
       },
       iconColor: configuration.iconColor,
     );
@@ -168,27 +177,63 @@ Widget _chatProfileScreenRoute(
   BuildContext context,
   String chatId,
   String? userId,
+  String currentUserId,
 ) =>
     ChatProfileScreen(
+      options: configuration.chatOptionsBuilder(context),
       translations: configuration.translations,
       chatService: configuration.chatService,
       chatId: chatId,
       userId: userId,
+      currentUserId: currentUserId,
       onTapUser: (user) async {
         if (configuration.onPressUserProfile != null) {
           return configuration.onPressUserProfile!.call(context, user);
         }
-
-        return Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => _chatProfileScreenRoute(
-              configuration,
-              context,
-              chatId,
-              user.id,
+        var currentUser =
+            await configuration.chatService.chatUserService.getCurrentUser();
+        var currentUserId = currentUser!.id!;
+        if (context.mounted)
+          return Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => _chatProfileScreenRoute(
+                configuration,
+                context,
+                chatId,
+                user.id,
+                currentUserId,
+              ),
             ),
-          ),
-        );
+          );
+      },
+      onPressStartChat: (user) async {
+        configuration.onPressCreateChat?.call(user);
+        if (configuration.onPressCreateChat != null) return;
+        var chat = await configuration.chatService.chatOverviewService
+            .getChatByUser(user);
+        if (chat.id == null) {
+          chat = await configuration.chatService.chatOverviewService
+              .storeChatIfNot(
+            PersonalChatModel(
+              user: user,
+            ),
+            null,
+          );
+        }
+        if (context.mounted) {
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PopScope(
+                canPop: false,
+                child: _chatDetailScreenRoute(
+                  configuration,
+                  context,
+                  chat.id!,
+                ),
+              ),
+            ),
+          );
+        }
       },
     );
 
@@ -207,6 +252,8 @@ Widget _newChatScreenRoute(
       showGroupChatButton: configuration.enableGroupChatCreation,
       onPressCreateGroupChat: () async {
         configuration.onPressCreateGroupChat?.call();
+        configuration.chatService.chatOverviewService
+            .clearCurrentlySelectedUsers();
         if (context.mounted) {
           await Navigator.of(context).push(
             MaterialPageRoute(
@@ -223,13 +270,13 @@ Widget _newChatScreenRoute(
         if (configuration.onPressCreateChat != null) return;
         var chat = await configuration.chatService.chatOverviewService
             .getChatByUser(user);
-        debugPrint("Chat is ${chat.id}");
         if (chat.id == null) {
           chat = await configuration.chatService.chatOverviewService
               .storeChatIfNot(
             PersonalChatModel(
               user: user,
             ),
+            null,
           );
         }
         if (context.mounted) {
@@ -277,19 +324,20 @@ Widget _newGroupChatOverviewScreenRoute(
       options: configuration.chatOptionsBuilder(context),
       translations: configuration.translations,
       service: configuration.chatService,
-      users: users,
-      onPressCompleteGroupChatCreation: (users, groupChatName) async {
+      onPressCompleteGroupChatCreation:
+          (users, groupChatName, groupBio, image) async {
         configuration.onPressCompleteGroupChatCreation
-            ?.call(users, groupChatName);
+            ?.call(users, groupChatName, image);
         if (configuration.onPressCreateGroupChat != null) return;
         var chat =
             await configuration.chatService.chatOverviewService.storeChatIfNot(
           GroupChatModel(
             canBeDeleted: true,
             title: groupChatName,
-            imageUrl: "https://picsum.photos/200/300",
             users: users,
+            bio: groupBio,
           ),
+          image,
         );
         if (context.mounted) {
           await Navigator.of(context).pushReplacement(

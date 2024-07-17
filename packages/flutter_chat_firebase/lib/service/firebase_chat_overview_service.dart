@@ -4,16 +4,20 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import "dart:async";
+import "dart:typed_data";
 
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_core/firebase_core.dart";
 import "package:firebase_storage/firebase_storage.dart";
+import "package:flutter/material.dart";
 import "package:flutter_chat_firebase/config/firebase_chat_options.dart";
 import "package:flutter_chat_firebase/dto/firebase_chat_document.dart";
 import "package:flutter_chat_interface/flutter_chat_interface.dart";
 
 /// Service class for managing chat overviews using Firebase.
-class FirebaseChatOverviewService implements ChatOverviewService {
+class FirebaseChatOverviewService
+    with ChangeNotifier
+    implements ChatOverviewService {
   late FirebaseFirestore _db;
   late FirebaseStorage _storage;
   late ChatUserService _userService;
@@ -37,6 +41,8 @@ class FirebaseChatOverviewService implements ChatOverviewService {
     _userService = userService;
     _options = options ?? const FirebaseChatOptions();
   }
+
+  final List<ChatUserModel> _currentlySelectedUsers = [];
 
   Future<int?> _addUnreadChatSubscription(
     String chatId,
@@ -285,6 +291,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
         imageUrl: chat?.imageUrl ?? "",
         users: users,
         canBeDeleted: chat?.canBeDeleted ?? true,
+        bio: chat?.bio,
       );
     }
   }
@@ -338,7 +345,7 @@ class FirebaseChatOverviewService implements ChatOverviewService {
   ///
   /// [chat]: The chat to be stored.
   @override
-  Future<ChatModel> storeChatIfNot(ChatModel chat) async {
+  Future<ChatModel> storeChatIfNot(ChatModel chat, Uint8List? image) async {
     if (chat.id == null) {
       var currentUser = await _userService.getCurrentUser();
       if (chat is PersonalChatModel) {
@@ -398,22 +405,41 @@ class FirebaseChatOverviewService implements ChatOverviewService {
               FirebaseChatDocument(
                 personal: false,
                 title: chat.title,
-                imageUrl: chat.imageUrl,
                 canBeDeleted: chat.canBeDeleted,
                 users: userIds,
                 lastUsed: Timestamp.now(),
+                bio: chat.bio,
               ),
             );
+
+        if (image != null) {
+          var imageUrl = await uploadGroupChatImage(image, reference.id);
+          chat.copyWith(imageUrl: imageUrl);
+          await _db
+              .collection(_options.chatsMetaDataCollectionName)
+              .doc(reference.id)
+              .set({"image_url": imageUrl}, SetOptions(merge: true));
+        }
+        var currentChat = await _db
+            .collection(_options.chatsMetaDataCollectionName)
+            .doc(reference.id)
+            .withConverter(
+              fromFirestore: (snapshot, _) =>
+                  FirebaseChatDocument.fromJson(snapshot.data()!, snapshot.id),
+              toFirestore: (chat, _) => chat.toJson(),
+            )
+            .get();
 
         for (var userId in userIds) {
           await _db
               .collection(_options.usersCollectionName)
               .doc(userId)
               .collection(_options.groupChatsCollectionName)
-              .doc(reference.id)
+              .doc(currentChat.id)
               .set({"users": userIds}, SetOptions(merge: true));
         }
         chat.id = reference.id;
+        currentlySelectedUsers.clear();
       } else {
         throw Exception("Chat type not supported for firebase");
       }
@@ -477,5 +503,35 @@ class FirebaseChatOverviewService implements ChatOverviewService {
         .collection(_options.userChatsCollectionName)
         .doc(chat.id)
         .set({"amount_unread_messages": 0}, SetOptions(merge: true));
+  }
+
+  @override
+  List<ChatUserModel> get currentlySelectedUsers => _currentlySelectedUsers;
+
+  @override
+  void addCurrentlySelectedUser(ChatUserModel user) {
+    _currentlySelectedUsers.add(user);
+    notifyListeners();
+  }
+
+  @override
+  void removeCurrentlySelectedUser(ChatUserModel user) {
+    _currentlySelectedUsers.remove(user);
+    notifyListeners();
+  }
+
+  @override
+  Future<String> uploadGroupChatImage(Uint8List image, String chatId) async {
+    await _storage.ref("groupchatImages/$chatId").putData(image);
+    var imageUrl =
+        await _storage.ref("groupchatImages/$chatId").getDownloadURL();
+
+    return imageUrl;
+  }
+
+  @override
+  void clearCurrentlySelectedUsers() {
+    _currentlySelectedUsers.clear();
+    notifyListeners();
   }
 }

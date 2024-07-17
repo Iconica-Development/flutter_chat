@@ -83,7 +83,11 @@ class ChatUserStoryConfiguration {
   final Function(ChatUserModel)? onPressCreateChat;
 
   /// Builder for chat options based on context.
-  final Function(List<ChatUserModel>, String)? onPressCompleteGroupChatCreation;
+  final Function(
+    List<ChatUserModel> users,
+    String groupchatName,
+    Uint8List? image,
+  )? onPressCompleteGroupChatCreation;
 
   final Function()? onPressCreateGroupChat;
 
