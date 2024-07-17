@@ -30,7 +30,7 @@ class LocalChatUserService implements ChatUserService {
 
   @override
   Future<ChatUserModel?> getCurrentUser() =>
-      Future.value(const ChatUserModel());
+      Future.value(users.where((element) => element.id == "3").first);
 
   @override
   Future<ChatUserModel?> getUser(String id) {

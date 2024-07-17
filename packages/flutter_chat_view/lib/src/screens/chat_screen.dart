@@ -77,10 +77,9 @@ class _ChatScreenState extends State<ChatScreen> {
     var theme = Theme.of(context);
     return widget.options.scaffoldBuilder(
       AppBar(
-        backgroundColor: theme.appBarTheme.backgroundColor,
         title: Text(
           translations.chatsTitle,
-          style: theme.appBarTheme.titleTextStyle,
+          style: theme.textTheme.headlineLarge,
         ),
         centerTitle: true,
         actions: [
@@ -96,9 +95,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Text(
                     "${snapshot.data ?? 0} ${translations.chatsUnread}",
                     style: widget.unreadMessageTextStyle ??
-                        const TextStyle(
+                        theme.textTheme.bodySmall!.copyWith(
                           color: Colors.white,
-                          fontSize: 14,
                         ),
                   ),
                 ),
@@ -147,154 +145,72 @@ class _ChatScreenState extends State<ChatScreen> {
                             decoration: BoxDecoration(
                               border: Border(
                                 bottom: BorderSide(
-                                  color: theme.colorScheme.secondary
-                                      .withOpacity(0.3),
+                                  color: theme.dividerColor,
                                   width: 0.5,
                                 ),
                               ),
                             ),
                             child: Builder(
-                              builder: (context) => !(widget
-                                          .disableDismissForPermanentChats &&
-                                      !chat.canBeDeleted)
-                                  ? Dismissible(
-                                      confirmDismiss: (_) async =>
-                                          widget.deleteChatDialog
-                                              ?.call(context, chat) ??
-                                          showModalBottomSheet(
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                Container(
-                                              padding:
-                                                  const EdgeInsets.all(16.0),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.stretch,
-                                                children: [
-                                                  Text(
-                                                    chat.canBeDeleted
-                                                        ? translations
-                                                            .deleteChatModalTitle
-                                                        : translations
-                                                            .chatCantBeDeleted,
-                                                    textAlign: TextAlign.center,
-                                                    style: const TextStyle(
-                                                      fontSize: 24,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 24),
-                                                  if (chat.canBeDeleted)
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                        horizontal: 16,
-                                                      ),
-                                                      child: Text(
-                                                        translations
-                                                            .deleteChatModalDescription,
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: const TextStyle(
-                                                          fontSize: 18,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  const SizedBox(
-                                                    height: 24,
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      ElevatedButton(
-                                                        onPressed: () =>
-                                                            Navigator.of(
-                                                          context,
-                                                        ).pop(false),
-                                                        child: Text(
-                                                          translations
-                                                              .deleteChatModalCancel,
-                                                          style:
-                                                              const TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 18,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      if (chat.canBeDeleted)
-                                                        const SizedBox(
-                                                          width: 16,
-                                                        ),
-                                                      if (chat.canBeDeleted)
-                                                        ElevatedButton(
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                            backgroundColor:
-                                                                Theme.of(
-                                                              context,
-                                                            ).primaryColor,
-                                                          ),
-                                                          onPressed: () =>
-                                                              Navigator.of(
-                                                            context,
-                                                          ).pop(
-                                                            true,
-                                                          ),
-                                                          child: Text(
-                                                            translations
-                                                                .deleteChatModalConfirm,
-                                                            style:
-                                                                const TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontSize: 18,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ],
+                              builder: (context) =>
+                                  !(widget.disableDismissForPermanentChats &&
+                                          !chat.canBeDeleted)
+                                      ? Dismissible(
+                                          confirmDismiss: (_) async =>
+                                              widget.deleteChatDialog
+                                                  ?.call(context, chat) ??
+                                              _deleteDialog(
+                                                chat,
+                                                translations,
+                                                context,
+                                              ),
+                                          onDismissed: (_) {
+                                            setState(() {
+                                              deletedChats.add(chat.id!);
+                                            });
+                                            widget.onDeleteChat(chat);
+                                          },
+                                          secondaryBackground: const ColoredBox(
+                                            color: Colors.red,
+                                            child: Align(
+                                              alignment: Alignment.centerRight,
+                                              child: Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Icon(
+                                                  Icons.delete,
+                                                  color: Colors.white,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                      onDismissed: (_) {
-                                        setState(() {
-                                          deletedChats.add(chat.id!);
-                                        });
-                                        widget.onDeleteChat(chat);
-                                      },
-                                      background: ColoredBox(
-                                        color: Colors.red,
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              translations.deleteChatButton,
+                                          background: const ColoredBox(
+                                            color: Colors.red,
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Icon(
+                                                  Icons.delete,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
                                             ),
                                           ),
+                                          key: ValueKey(
+                                            chat.id.toString(),
+                                          ),
+                                          child: ChatListItem(
+                                            widget: widget,
+                                            chat: chat,
+                                            translations: translations,
+                                            dateFormatter: _dateFormatter,
+                                          ),
+                                        )
+                                      : ChatListItem(
+                                          widget: widget,
+                                          chat: chat,
+                                          translations: translations,
+                                          dateFormatter: _dateFormatter,
                                         ),
-                                      ),
-                                      key: ValueKey(
-                                        chat.id.toString(),
-                                      ),
-                                      child: ChatListItem(
-                                        widget: widget,
-                                        chat: chat,
-                                        translations: translations,
-                                        dateFormatter: _dateFormatter,
-                                      ),
-                                    )
-                                  : ChatListItem(
-                                      widget: widget,
-                                      chat: chat,
-                                      translations: translations,
-                                      dateFormatter: _dateFormatter,
-                                    ),
                             ),
                           ),
                         ],
@@ -316,6 +232,79 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
       theme.colorScheme.surface,
+    );
+  }
+
+  Future<bool?> _deleteDialog(
+    ChatModel chat,
+    ChatTranslations translations,
+    BuildContext context,
+  ) async {
+    var theme = Theme.of(context);
+    var title = chat.canBeDeleted
+        ? translations.deleteChatModalTitle
+        : translations.chatCantBeDeleted;
+    return showModalBottomSheet<bool>(
+      context: context,
+      builder: (BuildContext context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            if (chat.canBeDeleted) ...[
+              Text(
+                translations.deleteChatModalDescription,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 60),
+                child: FilledButton(
+                  onPressed: () {
+                    Navigator.of(
+                      context,
+                    ).pop(true);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.translations.deleteChatModalConfirm,
+                        style: theme.textTheme.displayLarge,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            TextButton(
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).pop(false);
+              },
+              child: Text(
+                widget.translations.deleteChatModalCancel,
+                style: theme.textTheme.bodyMedium!.copyWith(
+                  color: theme.textTheme.bodyMedium!.color?.withOpacity(0.5),
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -381,6 +370,7 @@ class ChatListItem extends StatelessWidget {
                         )
                       : null,
                 ),
+          context,
         ),
       );
 }

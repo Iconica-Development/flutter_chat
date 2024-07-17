@@ -4,7 +4,7 @@
 
 name: flutter_chat_view
 description: A standard flutter package.
-version: 3.0.1
+version: 3.1.0
 
 publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub
 
@@ -25,7 +25,7 @@ dependencies:
     version: ^1.0.5
   flutter_profile:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
-    version: ^1.3.0
+    version: ^1.5.0
 
 dev_dependencies:
   flutter_test:

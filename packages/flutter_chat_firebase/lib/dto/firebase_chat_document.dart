@@ -19,6 +19,7 @@ class FirebaseChatDocument {
     this.title,
     this.imageUrl,
     this.lastMessage,
+    this.bio,
   });
 
   /// Constructs a FirebaseChatDocument from JSON.
@@ -34,7 +35,8 @@ class FirebaseChatDocument {
             : FirebaseMessageDocument.fromJson(
                 json["last_message"],
                 null,
-              );
+              ),
+        bio = json["bio"];
 
   /// The unique identifier of the chat document.
   final String? id;
@@ -60,6 +62,8 @@ class FirebaseChatDocument {
   /// The last message in the chat.
   final FirebaseMessageDocument? lastMessage;
 
+  final String? bio;
+
   /// Converts the FirebaseChatDocument to JSON format.
   Map<String, dynamic> toJson() => {
         "title": title,
@@ -68,5 +72,6 @@ class FirebaseChatDocument {
         "last_used": lastUsed,
         "can_be_deleted": canBeDeleted,
         "users": users,
+        "bio": bio,
       };
 }

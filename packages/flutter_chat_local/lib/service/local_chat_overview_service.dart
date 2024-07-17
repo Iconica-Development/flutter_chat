@@ -7,6 +7,9 @@ import "package:flutter_chat_interface/flutter_chat_interface.dart";
 class LocalChatOverviewService
     with ChangeNotifier
     implements ChatOverviewService {
+  /// The list of currently selected users.
+  final List<ChatUserModel> _currentlySelectedUsers = [];
+
   /// The list of personal chat models.
   final List<ChatModel> _chats = [];
 
@@ -22,7 +25,6 @@ class LocalChatOverviewService
     _chats[index] = chat;
     _chatsController.addStream(Stream.value(_chats));
     notifyListeners();
-    debugPrint("Chat updated: $chat");
     return Future.value();
   }
 
@@ -31,15 +33,12 @@ class LocalChatOverviewService
     _chats.removeWhere((element) => element.id == chat.id);
     _chatsController.add(_chats);
     notifyListeners();
-    debugPrint("Chat deleted: $chat");
     return Future.value();
   }
 
   @override
   Future<ChatModel> getChatById(String id) {
     var chat = _chats.firstWhere((element) => element.id == id);
-    debugPrint("Retrieved chat by ID: $chat");
-    debugPrint("Messages are: ${chat.messages?.length}");
     return Future.value(chat);
   }
 
@@ -59,7 +58,6 @@ class LocalChatOverviewService
       );
       chat.id = chat.hashCode.toString();
       _chats.add(chat);
-      debugPrint("New chat created: $chat");
     }
 
     _chatsController.add([..._chats]);
@@ -77,19 +75,42 @@ class LocalChatOverviewService
   Future<void> readChat(ChatModel chat) async => Future.value();
 
   @override
-  Future<ChatModel> storeChatIfNot(ChatModel chat) {
+  Future<ChatModel> storeChatIfNot(ChatModel chat, Uint8List? image) {
     var chatExists = _chats.any((element) => element.id == chat.id);
 
     if (!chatExists) {
       chat.id = chat.hashCode.toString();
       _chats.add(chat);
       _chatsController.add([..._chats]);
+      currentlySelectedUsers.clear();
       notifyListeners();
-      debugPrint("Chat stored: $chat");
-    } else {
-      debugPrint("Chat already exists: $chat");
     }
 
     return Future.value(chat);
+  }
+
+  @override
+  List<ChatUserModel> get currentlySelectedUsers => _currentlySelectedUsers;
+
+  @override
+  void addCurrentlySelectedUser(ChatUserModel user) {
+    _currentlySelectedUsers.add(user);
+    notifyListeners();
+  }
+
+  @override
+  void removeCurrentlySelectedUser(ChatUserModel user) {
+    _currentlySelectedUsers.remove(user);
+    notifyListeners();
+  }
+
+  @override
+  Future<String> uploadGroupChatImage(Uint8List image, String chatId) =>
+      Future.value("https://picsum.photos/200/300");
+
+  @override
+  void clearCurrentlySelectedUsers() {
+    _currentlySelectedUsers.clear();
+    notifyListeners();
   }
 }

@@ -4,7 +4,6 @@
 
 import "package:flutter/material.dart";
 import "package:flutter_chat_view/flutter_chat_view.dart";
-import "package:flutter_chat_view/src/components/chat_image.dart";
 import "package:flutter_image_picker/flutter_image_picker.dart";
 import "package:flutter_profile/flutter_profile.dart";
 
@@ -57,31 +56,29 @@ Widget _createNewChatButton(
   BuildContext context,
   VoidCallback onPressed,
   ChatTranslations translations,
-) =>
-    Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 24,
-        horizontal: 5,
-      ),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).primaryColor,
-          fixedSize: const Size(254, 44),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(56),
-          ),
-        ),
-        onPressed: onPressed,
-        child: Text(
-          translations.newChatButton,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w800,
-            fontSize: 20,
-          ),
+) {
+  var theme = Theme.of(context);
+  return Padding(
+    padding: const EdgeInsets.symmetric(
+      vertical: 24,
+      horizontal: 4,
+    ),
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: theme.colorScheme.primary,
+        fixedSize: const Size(254, 44),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(56),
         ),
       ),
-    );
+      onPressed: onPressed,
+      child: Text(
+        translations.newChatButton,
+        style: theme.textTheme.displayLarge,
+      ),
+    ),
+  );
+}
 
 Widget _createMessageInput(
   TextEditingController textEditingController,
@@ -91,6 +88,7 @@ Widget _createMessageInput(
 ) {
   var theme = Theme.of(context);
   return TextField(
+    style: theme.textTheme.bodySmall,
     textCapitalization: TextCapitalization.sentences,
     controller: textEditingController,
     decoration: InputDecoration(
@@ -111,7 +109,9 @@ Widget _createMessageInput(
         horizontal: 30,
       ),
       hintText: translations.messagePlaceholder,
-      hintStyle: theme.inputDecorationTheme.hintStyle,
+      hintStyle: theme.textTheme.bodyMedium!.copyWith(
+        color: theme.textTheme.bodyMedium!.color!.withOpacity(0.5),
+      ),
       fillColor: Colors.white,
       filled: true,
       border: const OutlineInputBorder(
@@ -127,47 +127,60 @@ Widget _createMessageInput(
 
 Widget _createChatRowContainer(
   Widget chatRow,
-) =>
-    Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 12.0,
-        horizontal: 10.0,
+  BuildContext context,
+) {
+  var theme = Theme.of(context);
+  return DecoratedBox(
+    decoration: BoxDecoration(
+      color: Colors.transparent,
+      border: Border(
+        bottom: BorderSide(
+          color: theme.dividerColor,
+          width: 0.5,
+        ),
       ),
-      child: ColoredBox(
-        color: Colors.transparent,
-        child: chatRow,
-      ),
-    );
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: chatRow,
+    ),
+  );
+}
 
 Widget _createImagePickerContainer(
   VoidCallback onClose,
   ChatTranslations translations,
   BuildContext context,
-) =>
-    Container(
-      padding: const EdgeInsets.all(8.0),
-      color: Colors.white,
-      child: ImagePicker(
-        imagePickerTheme: ImagePickerTheme(
-          title: translations.imagePickerTitle,
-          titleTextSize: 16,
-          titleAlignment: TextAlign.center,
-          iconSize: 60.0,
-          makePhotoText: translations.takePicture,
-          selectImageText: translations.uploadFile,
+) {
+  var theme = Theme.of(context);
+  return Container(
+    padding: const EdgeInsets.all(8.0),
+    color: Colors.white,
+    child: ImagePicker(
+      imagePickerTheme: ImagePickerTheme(
+        title: translations.imagePickerTitle,
+        titleTextSize: 16,
+        titleAlignment: TextAlign.center,
+        iconSize: 60.0,
+        makePhotoText: translations.takePicture,
+        selectImageText: translations.uploadFile,
+        selectImageIcon: const Icon(
+          Icons.insert_drive_file_rounded,
+          size: 60,
         ),
-        customButton: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
-          onPressed: onClose,
-          child: Text(
-            translations.cancelImagePickerBtn,
-            style: const TextStyle(color: Colors.white),
+      ),
+      customButton: TextButton(
+        onPressed: onClose,
+        child: Text(
+          translations.cancelImagePickerBtn,
+          style: theme.textTheme.bodyMedium!.copyWith(
+            decoration: TextDecoration.underline,
           ),
         ),
       ),
-    );
+    ),
+  );
+}
 
 Scaffold _createScaffold(
   AppBar appbar,
@@ -185,20 +198,27 @@ Widget _createUserAvatar(
   double size,
 ) =>
     Avatar(
+      boxfit: BoxFit.cover,
       user: User(
         firstName: user.firstName,
         lastName: user.lastName,
-        imageUrl: user.imageUrl,
+        imageUrl: user.imageUrl != "" ? user.imageUrl : null,
       ),
       size: size,
     );
+
 Widget _createGroupAvatar(
   String groupName,
-  String imageUrl,
+  String? imageUrl,
   double size,
 ) =>
-    ChatImage(
-      image: imageUrl,
+    Avatar(
+      boxfit: BoxFit.cover,
+      user: User(
+        firstName: groupName,
+        lastName: null,
+        imageUrl: imageUrl != "" ? imageUrl : null,
+      ),
       size: size,
     );
 
@@ -249,6 +269,7 @@ typedef TextInputBuilder = Widget Function(
 
 typedef ContainerBuilder = Widget Function(
   Widget child,
+  BuildContext context,
 );
 
 typedef ImagePickerContainerBuilder = Widget Function(
@@ -270,7 +291,7 @@ typedef UserAvatarBuilder = Widget Function(
 
 typedef GroupAvatarBuilder = Widget Function(
   String groupName,
-  String imageUrl,
+  String? imageUrl,
   double size,
 );
 

@@ -241,7 +241,6 @@ class FirebaseChatDetailService
         _cumulativeMessages = [];
         lastChat = chatId;
         lastMessage = null;
-        debugPrint("Canceling messages stream");
       },
     );
 
