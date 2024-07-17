@@ -15,7 +15,6 @@ class ChatTranslations {
     required this.newChatButton,
     required this.newGroupChatButton,
     required this.newChatTitle,
-    required this.deleteChatButton,
     required this.image,
     required this.searchPlaceholder,
     required this.startTyping,
@@ -40,6 +39,13 @@ class ChatTranslations {
     required this.groupNameValidatorTooLong,
     required this.groupNameHintText,
     required this.newGroupChatTitle,
+    required this.groupBioHintText,
+    required this.groupProfileBioHeader,
+    required this.groupBioValidatorEmpty,
+    required this.groupChatNameFieldHeader,
+    required this.groupBioFieldHeader,
+    required this.selectedMembersHeader,
+    required this.createGroupChatButton,
   });
 
   /// Default translations for the chat component view
@@ -47,7 +53,7 @@ class ChatTranslations {
     this.chatsTitle = "Chats",
     this.chatsUnread = "unread",
     this.newChatButton = "Start chat",
-    this.newGroupChatButton = "Create a group chat",
+    this.newGroupChatButton = "Create a groupchat",
     this.newChatTitle = "Start a chat",
     this.image = "Image",
     this.searchPlaceholder = "Search...",
@@ -58,25 +64,31 @@ class ChatTranslations {
     this.writeFirstMessageInGroupChat =
         "Write the first message in this group chat",
     this.imageUploading = "Image is uploading...",
-    this.deleteChatButton = "Delete",
     this.deleteChatModalTitle = "Delete chat",
     this.deleteChatModalDescription =
         "Are you sure you want to delete this chat?",
     this.deleteChatModalCancel = "Cancel",
-    this.deleteChatModalConfirm = "Delete",
+    this.deleteChatModalConfirm = "Confirm",
     this.noUsersFound = "No users were found to start a chat with",
     this.noChatsFound = "Click on 'Start a chat' to create a new chat",
     this.anonymousUser = "Anonymous user",
     this.chatCantBeDeleted = "This chat can't be deleted",
-    this.chatProfileUsers = "Users:",
+    this.chatProfileUsers = "Members:",
     this.imagePickerTitle = "Do you want to upload a file or take a picture?",
     this.uploadFile = "UPLOAD FILE",
     this.takePicture = "TAKE PICTURE",
-    this.groupNameHintText = "Group chat name",
+    this.groupNameHintText = "Groupchat name",
     this.groupNameValidatorEmpty = "Please enter a group chat name",
     this.groupNameValidatorTooLong =
         "Group name is too long, max 15 characters",
-    this.newGroupChatTitle = "New Group Chat",
+    this.newGroupChatTitle = "start a groupchat",
+    this.groupBioHintText = "Bio",
+    this.groupProfileBioHeader = "Bio",
+    this.groupBioValidatorEmpty = "Please enter a bio",
+    this.groupChatNameFieldHeader = "Chat name",
+    this.groupBioFieldHeader = "Additional information for members",
+    this.selectedMembersHeader = "Members: ",
+    this.createGroupChatButton = "Create groupchat",
   });
 
   final String chatsTitle;
@@ -84,7 +96,6 @@ class ChatTranslations {
   final String newChatButton;
   final String newGroupChatButton;
   final String newChatTitle;
-  final String deleteChatButton;
   final String image;
   final String searchPlaceholder;
   final String startTyping;
@@ -104,6 +115,10 @@ class ChatTranslations {
   final String imagePickerTitle;
   final String uploadFile;
   final String takePicture;
+  final String groupChatNameFieldHeader;
+  final String groupBioFieldHeader;
+  final String selectedMembersHeader;
+  final String createGroupChatButton;
 
   /// Shown when the user has no name
   final String anonymousUser;
@@ -111,6 +126,9 @@ class ChatTranslations {
   final String groupNameValidatorTooLong;
   final String groupNameHintText;
   final String newGroupChatTitle;
+  final String groupBioHintText;
+  final String groupProfileBioHeader;
+  final String groupBioValidatorEmpty;
 
   // copyWith method to override the default values
   ChatTranslations copyWith({
@@ -119,7 +137,6 @@ class ChatTranslations {
     String? newChatButton,
     String? newGroupChatButton,
     String? newChatTitle,
-    String? deleteChatButton,
     String? image,
     String? searchPlaceholder,
     String? startTyping,
@@ -144,6 +161,13 @@ class ChatTranslations {
     String? groupNameValidatorTooLong,
     String? groupNameHintText,
     String? newGroupChatTitle,
+    String? groupBioHintText,
+    String? groupProfileBioHeader,
+    String? groupBioValidatorEmpty,
+    String? groupChatNameFieldHeader,
+    String? groupBioFieldHeader,
+    String? selectedMembersHeader,
+    String? createGroupChatButton,
   }) =>
       ChatTranslations(
         chatsTitle: chatsTitle ?? this.chatsTitle,
@@ -151,7 +175,6 @@ class ChatTranslations {
         newChatButton: newChatButton ?? this.newChatButton,
         newGroupChatButton: newGroupChatButton ?? this.newGroupChatButton,
         newChatTitle: newChatTitle ?? this.newChatTitle,
-        deleteChatButton: deleteChatButton ?? this.deleteChatButton,
         image: image ?? this.image,
         searchPlaceholder: searchPlaceholder ?? this.searchPlaceholder,
         startTyping: startTyping ?? this.startTyping,
@@ -177,9 +200,23 @@ class ChatTranslations {
         uploadFile: uploadFile ?? this.uploadFile,
         takePicture: takePicture ?? this.takePicture,
         anonymousUser: anonymousUser ?? this.anonymousUser,
-        groupNameValidatorEmpty: this.groupNameValidatorEmpty,
-        groupNameValidatorTooLong: this.groupNameValidatorTooLong,
-        groupNameHintText: this.groupNameHintText,
-        newGroupChatTitle: this.newGroupChatTitle,
+        groupNameValidatorEmpty:
+            groupNameValidatorEmpty ?? this.groupNameValidatorEmpty,
+        groupNameValidatorTooLong:
+            groupNameValidatorTooLong ?? this.groupNameValidatorTooLong,
+        groupNameHintText: groupNameHintText ?? this.groupNameHintText,
+        newGroupChatTitle: newGroupChatTitle ?? this.newGroupChatTitle,
+        groupBioHintText: groupBioHintText ?? this.groupBioHintText,
+        groupProfileBioHeader:
+            groupProfileBioHeader ?? this.groupProfileBioHeader,
+        groupBioValidatorEmpty:
+            groupBioValidatorEmpty ?? this.groupBioValidatorEmpty,
+        groupChatNameFieldHeader:
+            groupChatNameFieldHeader ?? this.groupChatNameFieldHeader,
+        groupBioFieldHeader: groupBioFieldHeader ?? this.groupBioFieldHeader,
+        selectedMembersHeader:
+            selectedMembersHeader ?? this.selectedMembersHeader,
+        createGroupChatButton:
+            createGroupChatButton ?? this.createGroupChatButton,
       );
 }

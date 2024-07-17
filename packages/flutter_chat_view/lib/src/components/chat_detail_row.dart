@@ -103,11 +103,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                               Text(
                                 widget.message.sender.fullName ??
                                     widget.translations.anonymousUser,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w800,
-                                  color: theme.textTheme.labelMedium?.color,
-                                ),
+                                style: theme.textTheme.titleMedium,
                               ),
                         ),
                         Padding(
@@ -115,13 +111,9 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                           child: Text(
                             _dateFormatter.format(
                               date: widget.message.timestamp,
-                              showFullDate: true,
+                              showFullDate: false,
                             ),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w300,
-                              color: Color(0xFFBBBBBB),
-                            ),
+                            style: theme.textTheme.labelSmall,
                           ),
                         ),
                       ],
@@ -137,10 +129,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                               Flexible(
                                 child: Text(
                                   (widget.message as ChatTextMessageModel).text,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: theme.textTheme.labelMedium?.color,
-                                  ),
+                                  style: theme.textTheme.bodySmall,
                                 ),
                               ),
                               if (widget.showTime &&
@@ -155,7 +144,7 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                                       )
                                       .split(" ")
                                       .last,
-                                  style: theme.textTheme.bodySmall,
+                                  style: theme.textTheme.labelSmall,
                                   textAlign: TextAlign.end,
                                 ),
                             ],

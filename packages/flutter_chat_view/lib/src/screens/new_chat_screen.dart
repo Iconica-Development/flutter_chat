@@ -50,7 +50,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
       appBar: AppBar(
         iconTheme: theme.appBarTheme.iconTheme ??
             const IconThemeData(color: Colors.white),
-        backgroundColor: theme.appBarTheme.backgroundColor,
         title: _buildSearchField(),
         actions: [
           _buildSearchIcon(),
@@ -58,46 +57,31 @@ class _NewChatScreenState extends State<NewChatScreen> {
       ),
       body: Column(
         children: [
-          if (widget.showGroupChatButton) ...[
-            GestureDetector(
-              onTap: () async {
-                await widget.onPressCreateGroupChat();
-              },
-              child: Container(
-                color: Colors.grey[900],
-                child: SizedBox(
-                  height: 60.0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 16.0,
-                            ),
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.group,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                // Handle group chat creation
-                              },
-                            ),
-                          ),
-                          Text(
-                            widget.translations.newGroupChatButton,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+          if (widget.showGroupChatButton && !_isSearching) ...[
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 32,
+                right: 32,
+                top: 20,
+              ),
+              child: FilledButton(
+                onPressed: () async {
+                  await widget.onPressCreateGroupChat();
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.groups,
+                    ),
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    Text(
+                      widget.translations.newGroupChatButton,
+                      style: theme.textTheme.displayLarge,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -138,19 +122,20 @@ class _NewChatScreenState extends State<NewChatScreen> {
             },
             decoration: InputDecoration(
               hintText: widget.translations.searchPlaceholder,
-              hintStyle: theme.inputDecorationTheme.hintStyle,
+              hintStyle:
+                  theme.textTheme.bodyMedium!.copyWith(color: Colors.white),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
                   color: theme.colorScheme.primary,
                 ),
               ),
             ),
-            style: theme.inputDecorationTheme.hintStyle,
+            style: theme.textTheme.bodySmall!.copyWith(color: Colors.white),
             cursorColor: theme.textSelectionTheme.cursorColor ?? Colors.white,
           )
         : Text(
             widget.translations.newChatTitle,
-            style: theme.appBarTheme.titleTextStyle,
+            style: theme.textTheme.headlineLarge,
           );
   }
 
@@ -205,51 +190,14 @@ class _NewChatScreenState extends State<NewChatScreen> {
           .noUsersPlaceholderBuilder(widget.translations, context);
     }
     var isPressed = false;
-    return ListView.builder(
-      itemCount: filteredUsers.length,
-      itemBuilder: (context, index) {
-        var user = filteredUsers[index];
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: theme.colorScheme.secondary.withOpacity(0.3),
-                width: 0.5,
-              ),
-            ),
-          ),
-          child: GestureDetector(
-            child: widget.options.chatRowContainerBuilder(
-              Padding(
-                padding: widget.options.paddingAroundChatList ??
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 28),
-                child: ColoredBox(
-                  color: Colors.transparent,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: widget.options.userAvatarBuilder(user, 40.0),
-                        ),
-                        Expanded(
-                          child: Container(
-                            height: 40.0,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              user.fullName ??
-                                  widget.translations.anonymousUser,
-                              style: theme.textTheme.bodyLarge,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+    return Padding(
+      padding: widget.options.paddingAroundChatList ??
+          const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      child: ListView.builder(
+        itemCount: filteredUsers.length,
+        itemBuilder: (context, index) {
+          var user = filteredUsers[index];
+          return InkWell(
             onTap: () async {
               if (!isPressed) {
                 isPressed = true;
@@ -257,9 +205,24 @@ class _NewChatScreenState extends State<NewChatScreen> {
                 isPressed = false;
               }
             },
-          ),
-        );
-      },
+            child: widget.options.chatRowContainerBuilder(
+              Row(
+                children: [
+                  widget.options.userAvatarBuilder(user, 44),
+                  const SizedBox(
+                    width: 12,
+                  ),
+                  Text(
+                    user.fullName ?? widget.translations.anonymousUser,
+                    style: theme.textTheme.titleMedium,
+                  ),
+                ],
+              ),
+              context,
+            ),
+          );
+        },
+      ),
     );
   }
 }

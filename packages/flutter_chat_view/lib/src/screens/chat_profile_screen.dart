@@ -8,6 +8,9 @@ class ChatProfileScreen extends StatefulWidget {
     required this.chatId,
     required this.translations,
     required this.onTapUser,
+    required this.options,
+    required this.onPressStartChat,
+    required this.currentUserId,
     this.userId,
     super.key,
   });
@@ -26,6 +29,15 @@ class ChatProfileScreen extends StatefulWidget {
 
   /// Callback function for tapping on a user.
   final Function(ChatUserModel user) onTapUser;
+
+  /// Chat options.
+  final ChatOptions options;
+
+  /// Callback function for starting a chat.
+  final Function(ChatUserModel user) onPressStartChat;
+
+  /// The current user.
+  final String currentUserId;
 
   @override
   State<ChatProfileScreen> createState() => _ProfileScreenState();
@@ -65,9 +77,9 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
             imageUrl: data.imageUrl,
           );
         }
+
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: theme.appBarTheme.backgroundColor,
             iconTheme: theme.appBarTheme.iconTheme ??
                 const IconThemeData(color: Colors.white),
             title: Text(
@@ -78,63 +90,123 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
                       : (data is GroupChatModel)
                           ? data.title
                           : "",
-              style: theme.appBarTheme.titleTextStyle,
+              style: theme.textTheme.headlineLarge,
             ),
           ),
           body: snapshot.hasData
-              ? ListView(
+              ? Stack(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: Avatar(
-                        user: user,
-                      ),
-                    ),
-                    const Divider(
-                      color: Colors.white,
-                      thickness: 10,
-                    ),
-                    if (data is GroupChatModel) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 100,
-                          vertical: 20,
-                        ),
-                        child: Text(
-                          widget.translations.chatProfileUsers,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                    ListView(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Column(
+                            children: [
+                              widget.options.userAvatarBuilder(
+                                ChatUserModel(
+                                  firstName: user!.firstName,
+                                  lastName: user.lastName,
+                                  imageUrl: user.imageUrl,
+                                ),
+                                60,
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      ...data.users.map((e) {
-                        var user = User(
-                          firstName: e.firstName ?? "",
-                          lastName: e.lastName ?? "",
-                          imageUrl: e.imageUrl,
-                        );
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              widget.onTapUser.call(e);
-                            },
+                        const Divider(
+                          color: Colors.white,
+                          thickness: 10,
+                        ),
+                        if (data is GroupChatModel) ...[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 24,
+                              horizontal: 20,
+                            ),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Avatar(
-                                  user: user,
+                                Text(
+                                  widget.translations.groupProfileBioHeader,
+                                  style: theme.textTheme.titleMedium,
+                                ),
+                                const SizedBox(
+                                  height: 12,
                                 ),
                                 Text(
-                                  user.firstName!,
+                                  data.bio ?? "",
+                                  style: theme.textTheme.bodyMedium!
+                                      .copyWith(color: Colors.black),
+                                ),
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                                Text(
+                                  widget.translations.chatProfileUsers,
+                                  style: theme.textTheme.titleMedium,
+                                ),
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                                Wrap(
+                                  children: [
+                                    ...data.users.map(
+                                      (user) => Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 8,
+                                          right: 8,
+                                        ),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            widget.onTapUser.call(user);
+                                          },
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              widget.options.userAvatarBuilder(
+                                                user,
+                                                44,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
-                        );
-                      }),
+                        ],
+                      ],
+                    ),
+                    if (data is ChatUserModel &&
+                        widget.currentUserId != data.id) ...[
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 24,
+                            horizontal: 80,
+                          ),
+                          child: FilledButton(
+                            onPressed: () {
+                              widget.onPressStartChat(data);
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  widget.translations.newChatButton,
+                                  style: theme.textTheme.displayLarge,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ],
                 )

@@ -16,15 +16,6 @@ dependencies:
     path: ../
   flutter_chat_firebase:
     path: ../../flutter_chat_firebase
-dependency_overrides:
-  flutter_chat:
-    path: ../../flutter_chat
-  flutter_chat_interface:
-    path: ../../flutter_chat_interface
-  flutter_chat_local:
-    path: ../../flutter_chat_local
-  flutter_chat_view:
-    path: ../../flutter_chat_view
 
 dev_dependencies:
   flutter_test:

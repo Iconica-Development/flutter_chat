@@ -9,7 +9,7 @@ import "package:flutter/material.dart";
 import "package:flutter_chat_view/flutter_chat_view.dart";
 import "package:flutter_chat_view/src/components/chat_bottom.dart";
 import "package:flutter_chat_view/src/components/chat_detail_row.dart";
-import "package:flutter_chat_view/src/components/image_loading_snackbar.dart";
+import "package:flutter_chat_view/src/components/image_picker_popup.dart";
 
 class ChatDetailScreen extends StatefulWidget {
   const ChatDetailScreen({
@@ -139,29 +139,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
 
-    Future<void> onPressSelectImage() async => showModalBottomSheet<Uint8List?>(
-          context: context,
-          builder: (BuildContext context) =>
-              widget.options.imagePickerContainerBuilder(
-            () => Navigator.of(context).pop(),
-            widget.translations,
-            context,
-          ),
-        ).then(
-          (image) async {
-            if (image == null) return;
-            var messenger = ScaffoldMessenger.of(context)
-              ..showSnackBar(
-                getImageLoadingSnackbar(widget.translations),
-              )
-              ..activate();
-            await widget.onUploadImage(image);
-            Future.delayed(const Duration(seconds: 1), () {
-              messenger.hideCurrentSnackBar();
-            });
-          },
-        );
-
     return FutureBuilder<ChatModel>(
       // ignore: discarded_futures
       future: widget.service.chatOverviewService.getChatById(widget.chatId),
@@ -175,7 +152,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: theme.appBarTheme.backgroundColor,
             iconTheme: theme.appBarTheme.iconTheme ??
                 const IconThemeData(color: Colors.white),
             centerTitle: true,
@@ -192,7 +168,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               child: widget.chatTitleBuilder?.call(chatTitle) ??
                   Text(
                     chatTitle,
-                    style: theme.appBarTheme.titleTextStyle,
+                    style: theme.textTheme.headlineLarge,
                     overflow: TextOverflow.ellipsis,
                   ),
             ),
@@ -253,7 +229,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     ChatBottom(
                       chat: chatModel,
                       messageInputBuilder: widget.options.messageInputBuilder,
-                      onPressSelectImage: onPressSelectImage,
+                      onPressSelectImage: () async => onPressSelectImage.call(
+                        context,
+                        widget.translations,
+                        widget.options,
+                        widget.onUploadImage,
+                      ),
                       onMessageSubmit: widget.onMessageSubmit,
                       translations: widget.translations,
                       iconColor: widget.iconColor,

@@ -49,9 +49,7 @@ class ChatRow extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: unreadMessages > 0
-                      ? theme.textTheme.bodyLarge
-                      : theme.textTheme.bodyMedium,
+                  style: theme.textTheme.titleMedium,
                 ),
                 if (subTitle != null) ...[
                   Padding(
@@ -59,8 +57,10 @@ class ChatRow extends StatelessWidget {
                     child: Text(
                       subTitle!,
                       style: unreadMessages > 0
-                          ? theme.textTheme.bodyLarge
-                          : theme.textTheme.bodyMedium,
+                          ? theme.textTheme.bodySmall!.copyWith(
+                              fontWeight: FontWeight.w800,
+                            )
+                          : theme.textTheme.bodySmall,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                     ),
@@ -79,10 +79,7 @@ class ChatRow extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4.0),
                 child: Text(
                   lastUsed!,
-                  style: const TextStyle(
-                    color: Color(0xFFBBBBBB),
-                    fontSize: 14,
-                  ),
+                  style: theme.textTheme.labelSmall,
                 ),
               ),
             ],

@@ -152,6 +152,7 @@ List<GoRoute> getChatStoryRoutes(
                   PersonalChatModel(
                     user: user,
                   ),
+                  null,
                 );
               }
               if (context.mounted) {
@@ -160,9 +161,13 @@ List<GoRoute> getChatStoryRoutes(
                 );
               }
             },
-            onPressCreateGroupChat: () async => context.push(
-              ChatUserStoryRoutes.newGroupChatScreen,
-            ),
+            onPressCreateGroupChat: () async {
+              configuration.chatService.chatOverviewService
+                  .clearCurrentlySelectedUsers();
+              return context.push(
+                ChatUserStoryRoutes.newGroupChatScreen,
+              );
+            },
           );
           return buildScreenWithoutTransition(
             context: context,
@@ -211,25 +216,25 @@ List<GoRoute> getChatStoryRoutes(
         pageBuilder: (context, state) {
           var service = configuration.chatServiceBuilder?.call(context) ??
               configuration.chatService;
-          var users = state.extra! as List<ChatUserModel>;
 
           var newGroupChatOverviewScreen = NewGroupChatOverviewScreen(
             options: configuration.chatOptionsBuilder(context),
             translations: configuration.translationsBuilder?.call(context) ??
                 configuration.translations,
             service: service,
-            users: users,
-            onPressCompleteGroupChatCreation: (users, groupChatName) async {
+            onPressCompleteGroupChatCreation:
+                (users, groupChatName, groupBio, image) async {
               configuration.onPressCompleteGroupChatCreation
-                  ?.call(users, groupChatName);
+                  ?.call(users, groupChatName, image);
               var chat = await configuration.chatService.chatOverviewService
                   .storeChatIfNot(
                 GroupChatModel(
                   canBeDeleted: true,
                   title: groupChatName,
-                  imageUrl: "https://picsum.photos/200/300",
                   users: users,
+                  bio: groupBio,
                 ),
+                image,
               );
               if (context.mounted) {
                 context.go(
@@ -259,13 +264,21 @@ List<GoRoute> getChatStoryRoutes(
           var id = userId == "null" ? null : userId;
           var service = configuration.chatServiceBuilder?.call(context) ??
               configuration.chatService;
+          ChatUserModel? currentUser;
+          String? currentUserId;
+          Future.delayed(Duration.zero, () async {
+            currentUser = await service.chatUserService.getCurrentUser();
+            currentUserId = currentUser!.id;
+          });
 
           var profileScreen = ChatProfileScreen(
+            options: configuration.chatOptionsBuilder(context),
             translations: configuration.translationsBuilder?.call(context) ??
                 configuration.translations,
             chatService: service,
             chatId: chatId!,
             userId: id,
+            currentUserId: currentUserId!,
             onTapUser: (user) async {
               if (configuration.onPressUserProfile != null) {
                 return configuration.onPressUserProfile!.call(context, user);
@@ -274,6 +287,26 @@ List<GoRoute> getChatStoryRoutes(
               return context.push(
                 ChatUserStoryRoutes.chatProfileScreenPath(chatId, user.id),
               );
+            },
+            onPressStartChat: (user) async {
+              configuration.onPressCreateChat?.call(user);
+              if (configuration.onPressCreateChat != null) return;
+              var chat = await configuration.chatService.chatOverviewService
+                  .getChatByUser(user);
+              if (chat.id == null) {
+                chat = await configuration.chatService.chatOverviewService
+                    .storeChatIfNot(
+                  PersonalChatModel(
+                    user: user,
+                  ),
+                  null,
+                );
+              }
+              if (context.mounted) {
+                await context.push(
+                  ChatUserStoryRoutes.chatDetailViewPath(chat.id ?? ""),
+                );
+              }
             },
           );
           return buildScreenWithoutTransition(
