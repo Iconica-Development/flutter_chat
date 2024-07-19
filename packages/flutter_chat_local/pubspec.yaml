@@ -1,7 +1,8 @@
 name: flutter_chat_local
 description: "A new Flutter package project."
 version: 3.0.1
-publish_to: none
+
+publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub
 
 environment:
   sdk: ">=3.2.5 <4.0.0"
@@ -11,10 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_chat_interface:
-    git:
-      url: https://github.com/Iconica-Development/flutter_chat
-      path: packages/flutter_chat_interface
-      ref: 3.0.1
+    hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
+    version: ^3.0.1
 
 dev_dependencies:
   flutter_test:

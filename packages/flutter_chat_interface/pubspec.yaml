@@ -5,7 +5,7 @@
 name: flutter_chat_interface
 description: A new Flutter package project.
 version: 3.0.1
-publish_to: none
+publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub
 
 environment:
   sdk: ">=3.1.0 <4.0.0"
@@ -15,9 +15,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_data_interface:
-    git:
-      url: https://github.com/Iconica-Development/flutter_data_interface.git
-      ref: 1.0.0
+    hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
+    version: ^1.0.0
 
 dev_dependencies:
   flutter_iconica_analysis:
