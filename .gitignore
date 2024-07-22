@@ -44,3 +44,7 @@ packages/flutter_chat_interface/pubspec.lock
 packages/flutter_chat_view/pubspec.lock
 
 pubspec_overrides.yaml
+
+# FVM Version Cache
+.fvm/
+.fvmrc
