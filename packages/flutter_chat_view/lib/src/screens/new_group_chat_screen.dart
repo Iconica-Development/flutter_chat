@@ -30,9 +30,8 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
+    return widget.options.newGroupChatScreenScaffoldBuilder(
+      AppBar(
         iconTheme: theme.appBarTheme.iconTheme ??
             const IconThemeData(color: Colors.white),
         backgroundColor: theme.appBarTheme.backgroundColor,
@@ -41,7 +40,7 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
           _buildSearchIcon(),
         ],
       ),
-      body: FutureBuilder<List<ChatUserModel>>(
+      FutureBuilder<List<ChatUserModel>>(
         // ignore: discarded_futures
         future: widget.service.chatUserService.getAllUsers(),
         builder: (context, snapshot) {
@@ -63,6 +62,7 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
           return const SizedBox.shrink();
         },
       ),
+      theme.scaffoldBackgroundColor,
     );
   }
 
@@ -92,7 +92,6 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
           )
         : Text(
             widget.translations.newGroupChatButton,
-            style: theme.appBarTheme.titleTextStyle,
           );
   }
 

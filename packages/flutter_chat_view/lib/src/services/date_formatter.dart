@@ -2,9 +2,14 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
+import "package:flutter_chat_view/flutter_chat_view.dart";
 import "package:intl/intl.dart";
 
 class DateFormatter {
+  DateFormatter({
+    required this.options,
+  });
+  final ChatOptions options;
   final _now = DateTime.now();
 
   bool _isToday(DateTime date) =>
@@ -45,17 +50,20 @@ class DateFormatter {
     required DateTime date,
     bool showFullDate = false,
   }) {
-    if(showFullDate) {
-      return DateFormat("dd - MM - yyyy HH:mm").format(date);
+    if (options.dateformat != null) {
+      return options.dateformat!(showFullDate, date);
     }
     if (_isToday(date)) {
-      return DateFormat("HH:mm").format(date);
+      return DateFormat(
+        "HH:mm",
+      ).format(date);
     } else if (_isYesterday(date)) {
       return "yesterday";
     } else if (_isThisYear(date)) {
-      return DateFormat("dd MMMM").format(date);
+      return DateFormat("dd-MM${showFullDate ? " HH:mm" : ""}").format(date);
     } else {
-      return DateFormat("dd - MM - yyyy").format(date);
+      return DateFormat("dd-MM-yyyy${showFullDate ? " HH:mm" : ""}")
+          .format(date);
     }
   }
 }

@@ -46,8 +46,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
+    return widget.options.newChatScreenScaffoldBuilder(
+      AppBar(
         iconTheme: theme.appBarTheme.iconTheme ??
             const IconThemeData(color: Colors.white),
         title: _buildSearchField(),
@@ -55,7 +55,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
           _buildSearchIcon(),
         ],
       ),
-      body: Column(
+      Column(
         children: [
           if (widget.showGroupChatButton && !_isSearching) ...[
             Padding(
@@ -106,6 +106,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
           ),
         ],
       ),
+      theme.scaffoldBackgroundColor,
     );
   }
 
@@ -135,7 +136,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
           )
         : Text(
             widget.translations.newChatTitle,
-            style: theme.textTheme.headlineLarge,
           );
   }
 
