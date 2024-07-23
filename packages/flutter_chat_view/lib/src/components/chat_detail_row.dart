@@ -14,6 +14,7 @@ class ChatDetailRow extends StatefulWidget {
     required this.message,
     required this.userAvatarBuilder,
     required this.onPressUserProfile,
+    required this.options,
     this.usernameBuilder,
     this.previousMessage,
     this.showTime = false,
@@ -37,16 +38,17 @@ class ChatDetailRow extends StatefulWidget {
   /// Flag indicating whether to show the time.
   final bool showTime;
 
+  final ChatOptions options;
+
   @override
   State<ChatDetailRow> createState() => _ChatDetailRowState();
 }
 
 class _ChatDetailRowState extends State<ChatDetailRow> {
-  final DateFormatter _dateFormatter = DateFormatter();
-
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+    var dateFormatter = DateFormatter(options: widget.options);
 
     var isNewDate = widget.previousMessage != null &&
         widget.message.timestamp.day != widget.previousMessage?.timestamp.day;
@@ -103,17 +105,20 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                               Text(
                                 widget.message.sender.fullName ??
                                     widget.translations.anonymousUser,
-                                style: theme.textTheme.titleMedium,
+                                style: widget
+                                        .options.textstyles?.senderTextStyle ??
+                                    theme.textTheme.titleMedium,
                               ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 5.0),
                           child: Text(
-                            _dateFormatter.format(
+                            dateFormatter.format(
                               date: widget.message.timestamp,
-                              showFullDate: false,
+                              showFullDate: true,
                             ),
-                            style: theme.textTheme.labelSmall,
+                            style: widget.options.textstyles?.dateTextStyle ??
+                                theme.textTheme.labelSmall,
                           ),
                         ),
                       ],
@@ -129,7 +134,9 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                               Flexible(
                                 child: Text(
                                   (widget.message as ChatTextMessageModel).text,
-                                  style: theme.textTheme.bodySmall,
+                                  style: widget.options.textstyles
+                                          ?.messageTextStyle ??
+                                      theme.textTheme.bodySmall,
                                 ),
                               ),
                               if (widget.showTime &&
@@ -137,14 +144,16 @@ class _ChatDetailRowState extends State<ChatDetailRow> {
                                   !isNewDate &&
                                   !hasHeader)
                                 Text(
-                                  _dateFormatter
+                                  dateFormatter
                                       .format(
                                         date: widget.message.timestamp,
                                         showFullDate: true,
                                       )
                                       .split(" ")
                                       .last,
-                                  style: theme.textTheme.labelSmall,
+                                  style: widget
+                                          .options.textstyles?.dateTextStyle ??
+                                      theme.textTheme.labelSmall,
                                   textAlign: TextAlign.end,
                                 ),
                             ],

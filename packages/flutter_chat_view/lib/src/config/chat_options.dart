@@ -13,12 +13,19 @@ class ChatOptions {
     this.messageInputBuilder = _createMessageInput,
     this.chatRowContainerBuilder = _createChatRowContainer,
     this.imagePickerContainerBuilder = _createImagePickerContainer,
-    this.scaffoldBuilder = _createScaffold,
+    this.chatScreenScaffoldBuilder = _createChatScreenScaffold,
+    this.chatDetailScaffoldBuilder = _createChatScreenScaffold,
+    this.chatProfileScaffoldBuilder = _createChatScreenScaffold,
+    this.newChatScreenScaffoldBuilder = _createChatScreenScaffold,
+    this.newGroupChatScreenScaffoldBuilder = _createChatScreenScaffold,
+    this.newGroupChatOverviewScaffoldBuilder = _createChatScreenScaffold,
     this.userAvatarBuilder = _createUserAvatar,
     this.groupAvatarBuilder = _createGroupAvatar,
     this.noChatsPlaceholderBuilder = _createNoChatsPlaceholder,
     this.noUsersPlaceholderBuilder = _createNoUsersPlaceholder,
     this.paddingAroundChatList,
+    this.textstyles,
+    this.dateformat,
   });
 
   /// Builder function for the new chat button.
@@ -34,7 +41,23 @@ class ChatOptions {
   final ImagePickerContainerBuilder imagePickerContainerBuilder;
 
   /// Builder function for the scaffold containing the chat view.
-  final ScaffoldBuilder scaffoldBuilder;
+  final ScaffoldBuilder chatScreenScaffoldBuilder;
+
+  /// Builder function for the scaffold containing the chat detail view.
+  final ScaffoldBuilder chatDetailScaffoldBuilder;
+
+  /// Builder function for the scaffold containing the chat profile view.
+  final ScaffoldBuilder chatProfileScaffoldBuilder;
+
+  /// Builder function for the scaffold containing the new chat view.
+  final ScaffoldBuilder newChatScreenScaffoldBuilder;
+
+  /// Builder function for the scaffold containing the new groupchat view.
+  final ScaffoldBuilder newGroupChatScreenScaffoldBuilder;
+
+  /// Builder function for the scaffold containing the new
+  /// groupchat overview view.
+  final ScaffoldBuilder newGroupChatOverviewScaffoldBuilder;
 
   /// Builder function for the user avatar.
   final UserAvatarBuilder userAvatarBuilder;
@@ -50,6 +73,11 @@ class ChatOptions {
 
   /// The padding around the chat list.
   final EdgeInsets? paddingAroundChatList;
+
+  final ChatTextStyles? textstyles;
+
+  // ignore: avoid_positional_boolean_parameters
+  final String Function(bool showFullDate, DateTime date)? dateformat;
 }
 
 Widget _createNewChatButton(
@@ -182,7 +210,7 @@ Widget _createImagePickerContainer(
   );
 }
 
-Scaffold _createScaffold(
+Scaffold _createChatScreenScaffold(
   AppBar appbar,
   Widget body,
   Color backgroundColor,

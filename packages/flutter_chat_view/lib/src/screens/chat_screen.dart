@@ -58,7 +58,6 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final DateFormatter _dateFormatter = DateFormatter();
   bool _hasCalledOnNoChats = false;
   ScrollController controller = ScrollController();
   bool showIndicator = false;
@@ -73,13 +72,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var dateFormatter = DateFormatter(options: widget.options);
+
     var translations = widget.translations;
     var theme = Theme.of(context);
-    return widget.options.scaffoldBuilder(
+    return widget.options.chatScreenScaffoldBuilder(
       AppBar(
         title: Text(
           translations.chatsTitle,
-          style: theme.textTheme.headlineLarge,
         ),
         centerTitle: true,
         actions: [
@@ -202,14 +202,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                             widget: widget,
                                             chat: chat,
                                             translations: translations,
-                                            dateFormatter: _dateFormatter,
+                                            dateFormatter: dateFormatter,
                                           ),
                                         )
                                       : ChatListItem(
                                           widget: widget,
                                           chat: chat,
                                           translations: translations,
-                                          dateFormatter: _dateFormatter,
+                                          dateFormatter: dateFormatter,
                                         ),
                             ),
                           ),
@@ -231,7 +231,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
         ],
       ),
-      theme.colorScheme.surface,
+      theme.scaffoldBackgroundColor,
     );
   }
 
@@ -331,6 +331,7 @@ class ChatListItem extends StatelessWidget {
         child: widget.options.chatRowContainerBuilder(
           (chat is PersonalChatModel)
               ? ChatRow(
+                  options: widget.options,
                   unreadMessages: chat.unreadMessages ?? 0,
                   avatar: widget.options.userAvatarBuilder(
                     (chat as PersonalChatModel).user,
@@ -351,6 +352,7 @@ class ChatListItem extends StatelessWidget {
                       : null,
                 )
               : ChatRow(
+                  options: widget.options,
                   title: (chat as GroupChatModel).title,
                   unreadMessages: chat.unreadMessages ?? 0,
                   subTitle: chat.lastMessage != null

@@ -8,6 +8,7 @@ export "package:flutter_chat_interface/flutter_chat_interface.dart";
 
 export "src/components/chat_row.dart";
 export "src/config/chat_options.dart";
+export "src/config/chat_text_styles.dart";
 export "src/config/chat_translations.dart";
 export "src/screens/chat_detail_screen.dart";
 export "src/screens/chat_profile_screen.dart";
