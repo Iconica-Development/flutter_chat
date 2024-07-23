@@ -3,10 +3,12 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import "package:flutter/material.dart";
+import "package:flutter_chat_view/flutter_chat_view.dart";
 
 class ChatRow extends StatelessWidget {
   const ChatRow({
     required this.title,
+    required this.options,
     this.unreadMessages = 0,
     this.lastUsed,
     this.subTitle,
@@ -29,6 +31,8 @@ class ChatRow extends StatelessWidget {
   /// The avatar associated with the chat.
   final Widget? avatar;
 
+  final ChatOptions options;
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
@@ -49,7 +53,8 @@ class ChatRow extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium,
+                  style: options.textstyles?.senderTextStyle ??
+                      theme.textTheme.titleMedium,
                 ),
                 if (subTitle != null) ...[
                   Padding(
@@ -57,10 +62,14 @@ class ChatRow extends StatelessWidget {
                     child: Text(
                       subTitle!,
                       style: unreadMessages > 0
-                          ? theme.textTheme.bodySmall!.copyWith(
-                              fontWeight: FontWeight.w800,
-                            )
-                          : theme.textTheme.bodySmall,
+                          ? options.textstyles?.messageTextStyle!.copyWith(
+                                fontWeight: FontWeight.w800,
+                              ) ??
+                              theme.textTheme.bodySmall!.copyWith(
+                                fontWeight: FontWeight.w800,
+                              )
+                          : options.textstyles?.messageTextStyle ??
+                              theme.textTheme.bodySmall,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                     ),
@@ -79,7 +88,8 @@ class ChatRow extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4.0),
                 child: Text(
                   lastUsed!,
-                  style: theme.textTheme.labelSmall,
+                  style: options.textstyles?.dateTextStyle ??
+                      theme.textTheme.labelSmall,
                 ),
               ),
             ],

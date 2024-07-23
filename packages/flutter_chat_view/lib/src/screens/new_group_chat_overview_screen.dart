@@ -51,17 +51,16 @@ class _NewGroupChatOverviewScreenState
       });
     }
 
-    return Scaffold(
-      appBar: AppBar(
+    return widget.options.newGroupChatOverviewScaffoldBuilder(
+      AppBar(
         iconTheme: theme.appBarTheme.iconTheme ??
             const IconThemeData(color: Colors.white),
         backgroundColor: theme.appBarTheme.backgroundColor,
         title: Text(
           widget.translations.newGroupChatTitle,
-          style: theme.appBarTheme.titleTextStyle,
         ),
       ),
-      body: Stack(
+      Stack(
         children: [
           SingleChildScrollView(
             child: Padding(
@@ -286,7 +285,7 @@ class _NewGroupChatOverviewScreenState
           ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
+      theme.scaffoldBackgroundColor,
     );
   }
 

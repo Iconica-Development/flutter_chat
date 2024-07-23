@@ -77,9 +77,8 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
             imageUrl: data.imageUrl,
           );
         }
-
-        return Scaffold(
-          appBar: AppBar(
+        return widget.options.chatProfileScaffoldBuilder(
+          AppBar(
             iconTheme: theme.appBarTheme.iconTheme ??
                 const IconThemeData(color: Colors.white),
             title: Text(
@@ -90,10 +89,9 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
                       : (data is GroupChatModel)
                           ? data.title
                           : "",
-              style: theme.textTheme.headlineLarge,
             ),
           ),
-          body: snapshot.hasData
+          snapshot.hasData
               ? Stack(
                   children: [
                     ListView(
@@ -210,7 +208,10 @@ class _ProfileScreenState extends State<ChatProfileScreen> {
                     ],
                   ],
                 )
-              : const Center(child: CircularProgressIndicator()),
+              : const Center(
+                  child: CircularProgressIndicator(),
+                ),
+          theme.scaffoldBackgroundColor,
         );
       },
     );

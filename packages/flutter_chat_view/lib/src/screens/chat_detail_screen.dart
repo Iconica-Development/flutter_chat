@@ -106,6 +106,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     for (var message in chatMessages) {
       detailRows.add(
         ChatDetailRow(
+          options: widget.options,
           showTime: true,
           message: message,
           translations: widget.translations,
@@ -149,9 +150,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             : (chatModel is PersonalChatModel)
                 ? chatModel.user.firstName ?? widget.translations.anonymousUser
                 : "";
-
-        return Scaffold(
-          appBar: AppBar(
+        return widget.options.chatDetailScaffoldBuilder(
+          AppBar(
             iconTheme: theme.appBarTheme.iconTheme ??
                 const IconThemeData(color: Colors.white),
             centerTitle: true,
@@ -168,12 +168,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               child: widget.chatTitleBuilder?.call(chatTitle) ??
                   Text(
                     chatTitle,
-                    style: theme.textTheme.headlineLarge,
                     overflow: TextOverflow.ellipsis,
                   ),
             ),
           ),
-          body: Stack(
+          Stack(
             children: [
               Column(
                 children: [
@@ -262,6 +261,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               ],
             ],
           ),
+          theme.scaffoldBackgroundColor,
         );
       },
     );
