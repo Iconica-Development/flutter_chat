@@ -4,354 +4,219 @@
 
 import "package:flutter/material.dart";
 import "package:flutter_chat/flutter_chat.dart";
+import "package:flutter_chat/src/screens/chat_detail_screen.dart";
+import "package:flutter_chat/src/screens/chat_profile_screen.dart";
+import "package:flutter_chat/src/screens/chat_screen.dart";
+import "package:flutter_chat/src/screens/creation/new_chat_screen.dart";
+import "package:flutter_chat/src/screens/creation/new_group_chat_overview.dart";
+import "package:flutter_chat/src/screens/creation/new_group_chat_screen.dart";
 
-/// Navigates to the chat user story screen.
-///
-/// [context]: The build context.
-/// [configuration]: The configuration for the chat user story.
-Widget chatNavigatorUserStory(
-  BuildContext context, {
-  ChatUserStoryConfiguration? configuration,
-}) =>
-    _chatScreenRoute(
-      configuration ??
-          ChatUserStoryConfiguration(
-            chatService: LocalChatService(),
-            chatOptionsBuilder: (ctx) => const ChatOptions(),
-          ),
-      context,
+class FlutterChatNavigatorUserstory extends StatefulWidget {
+  const FlutterChatNavigatorUserstory({
+    super.key,
+    required this.userId,
+    this.chatService,
+    this.chatOptions,
+  });
+
+  final String userId;
+
+  final ChatService? chatService;
+  final ChatOptions? chatOptions;
+
+  @override
+  State<FlutterChatNavigatorUserstory> createState() =>
+      _FlutterChatNavigatorUserstoryState();
+}
+
+class _FlutterChatNavigatorUserstoryState
+    extends State<FlutterChatNavigatorUserstory> {
+  late ChatService chatService;
+  late ChatOptions chatOptions;
+
+  @override
+  void initState() {
+    chatService = widget.chatService ?? ChatService();
+    chatOptions = widget.chatOptions ?? ChatOptions();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) => chatScreen();
+
+  Widget chatScreen() {
+    return ChatScreen(
+      userId: widget.userId,
+      chatService: chatService,
+      chatOptions: chatOptions,
+      onPressChat: (chat) {
+        return route(chatDetailScreen(chat));
+      },
+      onDeleteChat: (chat) {
+        chatService.deleteChat(chatId: chat.id);
+      },
+      onPressStartChat: () {
+        return route(newChatScreen());
+      },
     );
+  }
 
-/// Constructs the chat screen route widget.
-///
-/// [configuration]: The configuration for the chat user story.
-/// [context]: The build context.
-Widget _chatScreenRoute(
-  ChatUserStoryConfiguration configuration,
-  BuildContext context,
-) =>
-    PopScope(
-      canPop: configuration.onPopInvoked == null,
-      onPopInvoked: (didPop) =>
-          configuration.onPopInvoked?.call(didPop, context),
-      child: ChatScreen(
-        unreadMessageTextStyle: configuration.unreadMessageTextStyle,
-        service: configuration.chatService,
-        options: configuration.chatOptionsBuilder(context),
-        onNoChats: () async => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => _newChatScreenRoute(
-              configuration,
-              context,
-            ),
-          ),
+  Widget chatDetailScreen(ChatModel chat) => ChatDetailScreen(
+        userId: widget.userId,
+        chatService: chatService,
+        chatOptions: chatOptions,
+        chat: chat,
+        onReadChat: (chat) => chatService.markAsRead(
+          chatId: chat.id,
         ),
-        onPressStartChat: () async {
-          if (configuration.onPressStartChat != null) {
-            return await configuration.onPressStartChat?.call();
+        onPressChatTitle: (chat) {
+          if (chat.isGroupChat) {
+            return route(chatProfileScreen(null, chat));
           }
 
-          return Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => _newChatScreenRoute(
-                configuration,
-                context,
-              ),
-            ),
+          var otherUser = chat.getOtherUser(widget.userId);
+
+          return route(chatProfileScreen(otherUser, null));
+        },
+        onPressUserProfile: (user) {
+          return route(chatProfileScreen(user, null));
+        },
+        onUploadImage: (data) async {
+          var path = await chatService.uploadImage(path: 'chats', image: data);
+
+          chatService.sendMessage(
+            chatId: chat.id,
+            senderId: widget.userId,
+            imageUrl: path,
           );
         },
-        onPressChat: (chat) async =>
-            configuration.onPressChat?.call(context, chat) ??
-            await Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => _chatDetailScreenRoute(
-                  configuration,
-                  context,
-                  chat.id!,
-                ),
-              ),
-            ),
-        onDeleteChat: (chat) async =>
-            configuration.onDeleteChat?.call(context, chat) ??
-            configuration.chatService.chatOverviewService.deleteChat(chat),
-        deleteChatDialog: configuration.deleteChatDialog,
-        translations: configuration.translations,
-      ),
-    );
+        onMessageSubmit: (text) {
+          chatService.sendMessage(
+            chatId: chat.id,
+            senderId: widget.userId,
+            text: text,
+          );
+        },
+      );
 
-/// Constructs the chat detail screen route widget.
-///
-/// [configuration]: The configuration for the chat user story.
-/// [context]: The build context.
-/// [chatId]: The id of the chat.
-Widget _chatDetailScreenRoute(
-  ChatUserStoryConfiguration configuration,
-  BuildContext context,
-  String chatId,
-) =>
-    ChatDetailScreen(
-      chatTitleBuilder: configuration.chatTitleBuilder,
-      usernameBuilder: configuration.usernameBuilder,
-      loadingWidgetBuilder: configuration.loadingWidgetBuilder,
-      iconDisabledColor: configuration.iconDisabledColor,
-      pageSize: configuration.messagePageSize,
-      options: configuration.chatOptionsBuilder(context),
-      translations: configuration.translations,
-      service: configuration.chatService,
-      chatId: chatId,
-      textfieldBottomPadding: configuration.textfieldBottomPadding ?? 0,
-      onPressUserProfile: (user) async {
-        if (configuration.onPressUserProfile != null) {
-          return configuration.onPressUserProfile?.call(context, user);
-        }
-        var currentUser =
-            await configuration.chatService.chatUserService.getCurrentUser();
-        var currentUserId = currentUser!.id!;
-        if (context.mounted)
-          return Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => _chatProfileScreenRoute(
-                configuration,
-                context,
-                chatId,
-                user.id,
-                currentUserId,
-              ),
-            ),
-          );
-      },
-      onMessageSubmit: (message) async {
-        if (configuration.onMessageSubmit != null) {
-          await configuration.onMessageSubmit?.call(message);
-        } else {
-          await configuration.chatService.chatDetailService
-              .sendTextMessage(chatId: chatId, text: message);
-        }
+  Widget chatProfileScreen(UserModel? user, ChatModel? chat) =>
+      ChatProfileScreen(
+        options: chatOptions,
+        userId: widget.userId,
+        userModel: user,
+        chatModel: chat,
+        onTapUser: (user) {
+          route(chatProfileScreen(user, null));
+        },
+        onPressStartChat: (user) async {
+          var chat = await createChat(user.id);
+          return route(chatDetailScreen(chat));
+        },
+      );
 
-        configuration.afterMessageSent?.call(chatId);
-      },
-      onUploadImage: (image) async {
-        if (configuration.onUploadImage != null) {
-          await configuration.onUploadImage?.call(image);
-        } else {
-          await configuration.chatService.chatDetailService
-              .sendImageMessage(chatId: chatId, image: image);
-        }
+  Widget newChatScreen() => NewChatScreen(
+        userId: widget.userId,
+        chatService: chatService,
+        chatOptions: chatOptions,
+        onPressCreateGroupChat: () {
+          return route(newGroupChatScreen());
+        },
+        onPressCreateChat: (user) async {
+          var chat = await createChat(user.id);
+          return route(chatDetailScreen(chat));
+        },
+      );
 
-        configuration.afterMessageSent?.call(chatId);
-      },
-      onReadChat: (chat) async =>
-          configuration.onReadChat?.call(chat) ??
-          configuration.chatService.chatOverviewService.readChat(chat),
-      onPressChatTitle: (context, chat) async {
-        if (configuration.onPressChatTitle?.call(context, chat) != null) {
-          return configuration.onPressChatTitle?.call(context, chat);
-        }
-        var currentUser =
-            await configuration.chatService.chatUserService.getCurrentUser();
-        var currentUserId = currentUser!.id!;
-        if (context.mounted)
-          return Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => _chatProfileScreenRoute(
-                configuration,
-                context,
-                chatId,
-                null,
-                currentUserId,
-              ),
-            ),
-          );
-      },
-      iconColor: configuration.iconColor,
-    );
+  Widget newGroupChatScreen() => NewGroupChatScreen(
+        userId: widget.userId,
+        chatService: chatService,
+        chatOptions: chatOptions,
+        onContinue: (users) {
+          return route(newGroupChatOverview(users));
+        },
+      );
 
-/// Constructs the chat profile screen route widget.
-///
-/// [configuration]: The configuration for the chat user story.
-/// [context]: The build context.
-/// [chatId]: The id of the chat.
-/// [userId]: The id of the user.
-Widget _chatProfileScreenRoute(
-  ChatUserStoryConfiguration configuration,
-  BuildContext context,
-  String chatId,
-  String? userId,
-  String currentUserId,
-) =>
-    ChatProfileScreen(
-      options: configuration.chatOptionsBuilder(context),
-      translations: configuration.translations,
-      chatService: configuration.chatService,
-      chatId: chatId,
-      userId: userId,
-      currentUserId: currentUserId,
-      onTapUser: (user) async {
-        if (configuration.onPressUserProfile != null) {
-          return configuration.onPressUserProfile!.call(context, user);
-        }
-        var currentUser =
-            await configuration.chatService.chatUserService.getCurrentUser();
-        var currentUserId = currentUser!.id!;
-        if (context.mounted)
-          return Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => _chatProfileScreenRoute(
-                configuration,
-                context,
-                chatId,
-                user.id,
-                currentUserId,
-              ),
-            ),
-          );
-      },
-      onPressStartChat: (user) async {
-        configuration.onPressCreateChat?.call(user);
-        if (configuration.onPressCreateChat != null) return;
-        var chat = await configuration.chatService.chatOverviewService
-            .getChatByUser(user);
-        if (chat.id == null) {
-          chat = await configuration.chatService.chatOverviewService
-              .storeChatIfNot(
-            PersonalChatModel(
-              user: user,
-            ),
-            null,
-          );
-        }
-        if (context.mounted) {
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PopScope(
-                canPop: false,
-                child: _chatDetailScreenRoute(
-                  configuration,
-                  context,
-                  chat.id!,
-                ),
-              ),
-            ),
-          );
-        }
-      },
-    );
-
-/// Constructs the new chat screen route widget.
-///
-/// [configuration]: The configuration for the chat user story.
-/// [context]: The build context.
-Widget _newChatScreenRoute(
-  ChatUserStoryConfiguration configuration,
-  BuildContext context,
-) =>
-    NewChatScreen(
-      options: configuration.chatOptionsBuilder(context),
-      translations: configuration.translations,
-      service: configuration.chatService,
-      showGroupChatButton: configuration.enableGroupChatCreation,
-      onPressCreateGroupChat: () async {
-        configuration.onPressCreateGroupChat?.call();
-        configuration.chatService.chatOverviewService
-            .clearCurrentlySelectedUsers();
-        if (context.mounted) {
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => _newGroupChatScreenRoute(
-                configuration,
-                context,
-              ),
-            ),
-          );
-        }
-      },
-      onPressCreateChat: (user) async {
-        configuration.onPressCreateChat?.call(user);
-        if (configuration.onPressCreateChat != null) return;
-        var chat = await configuration.chatService.chatOverviewService
-            .getChatByUser(user);
-        if (chat.id == null) {
-          chat = await configuration.chatService.chatOverviewService
-              .storeChatIfNot(
-            PersonalChatModel(
-              user: user,
-            ),
-            null,
-          );
-        }
-        if (context.mounted) {
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PopScope(
-                canPop: false,
-                child: _chatDetailScreenRoute(
-                  configuration,
-                  context,
-                  chat.id!,
-                ),
-              ),
-            ),
-          );
-        }
-      },
-    );
-
-Widget _newGroupChatScreenRoute(
-  ChatUserStoryConfiguration configuration,
-  BuildContext context,
-) =>
-    NewGroupChatScreen(
-      options: configuration.chatOptionsBuilder(context),
-      translations: configuration.translations,
-      service: configuration.chatService,
-      onPressGroupChatOverview: (users) async => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => _newGroupChatOverviewScreenRoute(
-            configuration,
-            context,
+  Widget newGroupChatOverview(List<UserModel> users) => NewGroupChatOverview(
+        options: chatOptions,
+        users: users,
+        onComplete: (users, title, description, image) async {
+          String? path;
+          if (image != null) {
+            path = await chatService.uploadImage(path: 'groups', image: image);
+          }
+          var chat = await createGroupChat(
             users,
-          ),
-        ),
-      ),
-    );
-
-Widget _newGroupChatOverviewScreenRoute(
-  ChatUserStoryConfiguration configuration,
-  BuildContext context,
-  List<ChatUserModel> users,
-) =>
-    NewGroupChatOverviewScreen(
-      options: configuration.chatOptionsBuilder(context),
-      translations: configuration.translations,
-      service: configuration.chatService,
-      onPressCompleteGroupChatCreation:
-          (users, groupChatName, groupBio, image) async {
-        configuration.onPressCompleteGroupChatCreation
-            ?.call(users, groupChatName, image);
-        if (configuration.onPressCreateGroupChat != null) return;
-        var chat =
-            await configuration.chatService.chatOverviewService.storeChatIfNot(
-          GroupChatModel(
-            canBeDeleted: true,
-            title: groupChatName,
-            users: users,
-            bio: groupBio,
-          ),
-          image,
-        );
-        if (context.mounted) {
-          await Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => PopScope(
-                canPop: false,
-                child: _chatDetailScreenRoute(
-                  configuration,
-                  context,
-                  chat.id!,
-                ),
-              ),
-            ),
+            title,
+            description,
+            path,
           );
-        }
-      },
+          return route(chatDetailScreen(chat));
+        },
+      );
+
+  Future<ChatModel> createGroupChat(
+    List<UserModel> userModels,
+    String title,
+    String description,
+    String? imageUrl,
+  ) async {
+    ChatModel? chat;
+
+    try {
+      chat = await chatService.getGroupChatByUser(
+        currentUser: widget.userId,
+        otherUsers: userModels,
+        chatName: title,
+        description: description,
+      );
+    } catch (e) {
+      chat = null;
+    }
+
+    if (chat == null) {
+      var currentUser = await chatService.getUser(userId: widget.userId).first;
+      var otherUsers = await Future.wait(
+        userModels.map((e) => chatService.getUser(userId: e.id).first),
+      );
+
+      chat = await chatService.createChat(
+        users: [currentUser, ...otherUsers],
+        chatName: title,
+        description: description,
+        imageUrl: imageUrl,
+      ).first;
+    }
+
+    return chat;
+  }
+
+  Future<ChatModel> createChat(String otherUserId) async {
+    ChatModel? chat;
+
+    try {
+      chat = await chatService.getChatByUser(
+        currentUser: widget.userId,
+        otherUser: otherUserId,
+      );
+    } catch (e) {
+      chat = null;
+    }
+
+    if (chat == null) {
+      var currentUser = await chatService.getUser(userId: widget.userId).first;
+      var otherUser = await chatService.getUser(userId: otherUserId).first;
+
+      chat = await chatService.createChat(
+        users: [currentUser, otherUser],
+      ).first;
+    }
+
+    return chat;
+  }
+
+  void route(Widget screen) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => screen),
     );
+  }
+}
