@@ -20,13 +20,7 @@ class Home extends StatelessWidget {
   const Home({super.key});
 
   @override
-  Widget build(BuildContext context) => Center(
-        child: chatNavigatorUserStory(
-          context,
-          configuration: ChatUserStoryConfiguration(
-            chatService: LocalChatService(),
-            chatOptionsBuilder: (ctx) => const ChatOptions(),
-          ),
-        ),
+  Widget build(BuildContext context) => const Center(
+        child: FlutterChatEntryWidget(userId: '1'),
       );
 }
