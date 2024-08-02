@@ -39,8 +39,13 @@ build/
 
 pubspec.lock
 packages/flutter_chat/pubspec.lock
-packages/flutter_chat_firebase/pubspec.lock
-packages/flutter_chat_interface/pubspec.lock
-packages/flutter_chat_view/pubspec.lock
+packages/firebase_chat_repository/pubspec.lock
+packages/chat_repository_interface/pubspec.lock
+
+android
+linux
+macos
+web
+windows
 
 pubspec_overrides.yaml
