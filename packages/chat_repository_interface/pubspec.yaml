@@ -1,4 +1,4 @@
-name: flutter_chat
+name: chat_repository_interface
 description: "A new Flutter package project."
 version: 0.0.1
 homepage:
@@ -11,19 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   
-  cached_network_image: ^3.2.2
-  intl: any
-  
-  flutter_image_picker:
-    git:
-      url: https://github.com/Iconica-Development/flutter_image_picker
-      ref: 1.0.5
-  flutter_profile:
-    git:
-      ref: 1.5.0
-      url: https://github.com/Iconica-Development/flutter_profile
-  chat_repository_interface: 
-    path: ../chat_repository_interface
+  rxdart: any
+  collection: any
 
 dev_dependencies:
   flutter_test:

@@ -1,9 +1,0 @@
-include: package:flutter_iconica_analysis/analysis_options.yaml
-
-# Possible to overwrite the rules from the package
-
-analyzer:
-  exclude:
-
-linter:
-  rules:
