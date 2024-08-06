@@ -187,23 +187,24 @@ class _NextButtonState extends State<NextButton> {
           vertical: 24,
           horizontal: 80,
         ),
-        child: FilledButton(
-          onPressed: widget
-                  .service.chatOverviewService.currentlySelectedUsers.isNotEmpty
-              ? () async {
-                  await widget.onPressGroupChatOverview(
-                    widget.service.chatOverviewService.currentlySelectedUsers,
-                  );
-                }
-              : null,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Next",
-                style: theme.textTheme.displayLarge,
-              ),
-            ],
+        child: Visibility(
+          visible: widget
+              .service.chatOverviewService.currentlySelectedUsers.isNotEmpty,
+          child: FilledButton(
+            onPressed: () async {
+              await widget.onPressGroupChatOverview(
+                widget.service.chatOverviewService.currentlySelectedUsers,
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Next",
+                  style: theme.textTheme.displayLarge,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -246,10 +247,26 @@ class _UserListState extends State<UserList> {
     setState(() {});
   }
 
+  void _toggleUserSelection(user) {
+    setState(() {
+      if (widget.service.chatOverviewService.currentlySelectedUsers
+          .contains(user)) {
+        widget.service.chatOverviewService.removeCurrentlySelectedUser(user);
+      } else {
+        widget.service.chatOverviewService.addCurrentlySelectedUser(user);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) => Padding(
         padding: widget.options.paddingAroundChatList ??
-            const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            const EdgeInsets.only(
+              top: 8,
+              left: 12,
+              right: 12,
+              bottom: 80,
+            ),
         child: ListView.builder(
           itemCount: widget.filteredUsers.length,
           itemBuilder: (context, index) {
@@ -259,38 +276,29 @@ class _UserListState extends State<UserList> {
                 .any((selectedUser) => selectedUser == user);
             var theme = Theme.of(context);
             return widget.options.chatRowContainerBuilder(
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      widget.options.userAvatarBuilder(user, 44),
-                      const SizedBox(
-                        width: 12,
-                      ),
-                      Text(
-                        user.fullName ?? widget.translations.anonymousUser,
-                        style: theme.textTheme.titleMedium,
-                      ),
-                    ],
-                  ),
-                  Checkbox(
-                    value: isSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        if (widget
-                            .service.chatOverviewService.currentlySelectedUsers
-                            .contains(user)) {
-                          widget.service.chatOverviewService
-                              .removeCurrentlySelectedUser(user);
-                        } else {
-                          widget.service.chatOverviewService
-                              .addCurrentlySelectedUser(user);
-                        }
-                      });
-                    },
-                  ),
-                ],
+              InkWell(
+                onTap: () => _toggleUserSelection(user),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        widget.options.userAvatarBuilder(user, 44),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Text(
+                          user.fullName ?? widget.translations.anonymousUser,
+                          style: theme.textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                    Checkbox(
+                      value: isSelected,
+                      onChanged: (value) => _toggleUserSelection(user),
+                    ),
+                  ],
+                ),
               ),
               context,
             );

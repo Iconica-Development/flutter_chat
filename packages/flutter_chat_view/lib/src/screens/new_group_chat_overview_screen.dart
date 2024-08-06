@@ -36,7 +36,24 @@ class _NewGroupChatOverviewScreenState
     extends State<NewGroupChatOverviewScreen> {
   final TextEditingController _chatNameController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
+  final ValueNotifier<bool> isButtonEnabled = ValueNotifier<bool>(false);
   Uint8List? image;
+
+  @override
+  void initState() {
+    super.initState();
+    _chatNameController.addListener(() {
+      isButtonEnabled.value = _chatNameController.text.isNotEmpty;
+    });
+  }
+
+  @override
+  void dispose() {
+    _chatNameController.dispose();
+    _bioController.dispose();
+    isButtonEnabled.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -254,31 +271,34 @@ class _NewGroupChatOverviewScreenState
                 vertical: 24,
                 horizontal: 80,
               ),
-              child: FilledButton(
-                onPressed: users.isNotEmpty
-                    ? () async {
-                        if (!isPressed) {
-                          isPressed = true;
-                          if (formKey.currentState!.validate()) {
-                            await widget.onPressCompleteGroupChatCreation(
-                              users,
-                              _chatNameController.text,
-                              _bioController.text,
-                              image,
-                            );
+              child: ValueListenableBuilder(
+                valueListenable: isButtonEnabled,
+                builder: (context, isEnabled, child) => FilledButton(
+                  onPressed: users.isNotEmpty && isEnabled
+                      ? () async {
+                          if (!isPressed) {
+                            isPressed = true;
+                            if (formKey.currentState!.validate()) {
+                              await widget.onPressCompleteGroupChatCreation(
+                                users,
+                                _chatNameController.text,
+                                _bioController.text,
+                                image,
+                              );
+                            }
+                            isPressed = false;
                           }
-                          isPressed = false;
                         }
-                      }
-                    : null,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      widget.translations.createGroupChatButton,
-                      style: theme.textTheme.displayLarge,
-                    ),
-                  ],
+                      : null,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.translations.createGroupChatButton,
+                        style: theme.textTheme.displayLarge,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

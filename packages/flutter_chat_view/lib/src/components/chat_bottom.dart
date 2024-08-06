@@ -68,6 +68,7 @@ class _ChatBottomState extends State<ChatBottom> {
         child: widget.messageInputBuilder(
           _textEditingController,
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(

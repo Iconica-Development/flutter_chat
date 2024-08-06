@@ -116,6 +116,8 @@ Widget _createMessageInput(
 ) {
   var theme = Theme.of(context);
   return TextField(
+    textAlign: TextAlign.start,
+    textAlignVertical: TextAlignVertical.center,
     style: theme.textTheme.bodySmall,
     textCapitalization: TextCapitalization.sentences,
     controller: textEditingController,
@@ -189,12 +191,12 @@ Widget _createImagePickerContainer(
         title: translations.imagePickerTitle,
         titleTextSize: 16,
         titleAlignment: TextAlign.center,
-        iconSize: 60.0,
+        iconSize: 40.0,
         makePhotoText: translations.takePicture,
         selectImageText: translations.uploadFile,
         selectImageIcon: const Icon(
           Icons.insert_drive_file_rounded,
-          size: 60,
+          size: 40,
         ),
       ),
       customButton: TextButton(
@@ -202,6 +204,7 @@ Widget _createImagePickerContainer(
         child: Text(
           translations.cancelImagePickerBtn,
           style: theme.textTheme.bodyMedium!.copyWith(
+            fontSize: 18,
             decoration: TextDecoration.underline,
           ),
         ),

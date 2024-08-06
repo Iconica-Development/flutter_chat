@@ -70,12 +70,13 @@ class _NewChatScreenState extends State<NewChatScreen> {
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Icon(
-                      Icons.groups,
+                      Icons.groups_2,
                     ),
                     const SizedBox(
-                      width: 4,
+                      width: 8,
                     ),
                     Text(
                       widget.translations.newGroupChatButton,
@@ -122,6 +123,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
               });
             },
             decoration: InputDecoration(
+              contentPadding: const EdgeInsets.only(bottom: 8),
               hintText: widget.translations.searchPlaceholder,
               hintStyle:
                   theme.textTheme.bodyMedium!.copyWith(color: Colors.white),
