@@ -274,20 +274,21 @@ class _NextButton extends StatelessWidget {
           vertical: 24,
           horizontal: 80,
         ),
-        child: FilledButton(
-          onPressed: selectedUsers.isNotEmpty
-              ? () {
-                  onPressGroupChatOverview(selectedUsers);
-                }
-              : null,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                chatOptions.translations.next,
-                style: theme.textTheme.displayLarge,
-              ),
-            ],
+        child: Visibility(
+          visible: selectedUsers.isNotEmpty,
+          child: FilledButton(
+            onPressed: () async {
+              await onPressGroupChatOverview(selectedUsers);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  chatOptions.translations.next,
+                  style: theme.textTheme.displayLarge,
+                ),
+              ],
+            ),
           ),
         ),
       ),

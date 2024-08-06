@@ -198,12 +198,13 @@ class _Body extends StatelessWidget {
               onPressed: onPressCreateGroupChat,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Icon(
-                    Icons.groups,
+                    Icons.groups_2,
                   ),
                   const SizedBox(
-                    width: 4,
+                    width: 8,
                   ),
                   Text(
                     translations.newGroupChatButton,

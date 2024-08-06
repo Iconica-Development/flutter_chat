@@ -72,7 +72,7 @@ class _UserListState extends State<UserList> {
         )
         .toList();
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.only(top: 8, left: 12, right: 12, bottom: 80),
       child: ListView.builder(
         itemCount: filteredUsers.length,
         itemBuilder: (context, index) {

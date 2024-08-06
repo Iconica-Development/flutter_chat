@@ -15,6 +15,7 @@ class MessageModel {
     required this.timestamp,
     required this.senderId,
   });
+
   /// The chat id
   final String chatId;
 
