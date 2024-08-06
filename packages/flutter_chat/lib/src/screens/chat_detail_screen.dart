@@ -396,6 +396,7 @@ class _ChatBottomState extends State<_ChatBottom> {
               context,
               _textEditingController,
               Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
@@ -435,6 +436,8 @@ class _ChatBottomState extends State<_ChatBottom> {
               widget.options.translations,
             ) ??
             TextField(
+              textAlign: TextAlign.start,
+              textAlignVertical: TextAlignVertical.center,
               style: theme.textTheme.bodySmall,
               textCapitalization: TextCapitalization.sentences,
               controller: _textEditingController,

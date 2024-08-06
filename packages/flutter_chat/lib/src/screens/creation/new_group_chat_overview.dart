@@ -110,6 +110,7 @@ class _Body extends StatefulWidget {
 class _BodyState extends State<_Body> {
   final TextEditingController _chatNameController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
+  final ValueNotifier<bool> isButtonEnabled = ValueNotifier<bool>(false);
   Uint8List? image;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -121,6 +122,17 @@ class _BodyState extends State<_Body> {
   void initState() {
     users = widget.users;
     super.initState();
+    _chatNameController.addListener(() {
+      isButtonEnabled.value = _chatNameController.text.isNotEmpty;
+    });
+  }
+
+  @override
+  void dispose() {
+    _chatNameController.dispose();
+    _bioController.dispose();
+    isButtonEnabled.dispose();
+    super.dispose();
   }
 
   @override
@@ -325,31 +337,34 @@ class _BodyState extends State<_Body> {
               vertical: 24,
               horizontal: 80,
             ),
-            child: FilledButton(
-              onPressed: users.isNotEmpty
-                  ? () async {
-                      if (!isPressed) {
-                        isPressed = true;
-                        if (formKey.currentState!.validate()) {
-                          await widget.onComplete(
-                            users,
-                            _chatNameController.text,
-                            _bioController.text,
-                            image,
-                          );
+            child: ValueListenableBuilder(
+              valueListenable: isButtonEnabled,
+              builder: (context, isEnabled, child) => FilledButton(
+                onPressed: users.isNotEmpty
+                    ? () async {
+                        if (!isPressed) {
+                          isPressed = true;
+                          if (formKey.currentState!.validate()) {
+                            await widget.onComplete(
+                              users,
+                              _chatNameController.text,
+                              _bioController.text,
+                              image,
+                            );
+                          }
+                          isPressed = false;
                         }
-                        isPressed = false;
                       }
-                    }
-                  : null,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    translations.createGroupChatButton,
-                    style: theme.textTheme.displayLarge,
-                  ),
-                ],
+                    : null,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      translations.createGroupChatButton,
+                      style: theme.textTheme.displayLarge,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
