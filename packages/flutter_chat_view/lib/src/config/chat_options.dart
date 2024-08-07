@@ -184,29 +184,28 @@ Widget _createImagePickerContainer(
 ) {
   var theme = Theme.of(context);
   return Container(
-    padding: const EdgeInsets.all(8.0),
+    padding: const EdgeInsets.all(20),
     color: Colors.white,
     child: ImagePicker(
-      imagePickerTheme: ImagePickerTheme(
+      theme: ImagePickerTheme(
+        closeButtonBuilder: (ontap) => TextButton(
+          onPressed: onClose,
+          child: Text(
+            translations.cancelImagePickerBtn,
+            style: theme.textTheme.bodyMedium!.copyWith(
+              fontSize: 18,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
         title: translations.imagePickerTitle,
-        titleTextSize: 16,
-        titleAlignment: TextAlign.center,
+        titleStyle: theme.textTheme.titleMedium,
         iconSize: 40.0,
         makePhotoText: translations.takePicture,
         selectImageText: translations.uploadFile,
         selectImageIcon: const Icon(
           Icons.insert_drive_file_rounded,
           size: 40,
-        ),
-      ),
-      customButton: TextButton(
-        onPressed: onClose,
-        child: Text(
-          translations.cancelImagePickerBtn,
-          style: theme.textTheme.bodyMedium!.copyWith(
-            fontSize: 18,
-            decoration: TextDecoration.underline,
-          ),
         ),
       ),
     ),

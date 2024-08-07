@@ -23,9 +23,8 @@ dependencies:
       ref: 3.1.0
   cached_network_image: ^3.2.2
   flutter_image_picker:
-    git:
-      url: https://github.com/Iconica-Development/flutter_image_picker
-      ref: 1.0.5
+    hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
+    version: ^4.0.0
   flutter_profile:
     git:
       ref: 1.5.0
