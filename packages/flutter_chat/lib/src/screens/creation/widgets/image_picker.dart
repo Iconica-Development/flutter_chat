@@ -23,10 +23,9 @@ Future<void> onPressSelectImage(
             padding: const EdgeInsets.all(8.0),
             color: Colors.white,
             child: ImagePicker(
-              imagePickerTheme: ImagePickerTheme(
+              theme: ImagePickerTheme(
                 title: options.translations.imagePickerTitle,
-                titleTextSize: 16,
-                titleAlignment: TextAlign.center,
+                titleStyle: Theme.of(context).textTheme.titleMedium,
                 iconSize: 60.0,
                 makePhotoText: options.translations.takePicture,
                 selectImageText: options.translations.uploadFile,
@@ -34,12 +33,15 @@ Future<void> onPressSelectImage(
                   Icons.insert_drive_file_rounded,
                   size: 60,
                 ),
-              ),
-              customButton: TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(
-                  options.translations.cancelImagePickerBtn,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                closeButtonBuilder: (ontap) => TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    options.translations.cancelImagePickerBtn,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 18,
+                          decoration: TextDecoration.underline,
+                        ),
+                  ),
                 ),
               ),
             ),
@@ -47,6 +49,7 @@ Future<void> onPressSelectImage(
     ).then(
       (image) async {
         if (image == null) return;
+        if (!context.mounted) return;
         var messenger = ScaffoldMessenger.of(context)
           ..showSnackBar(
             _getImageLoadingSnackbar(options.translations),
