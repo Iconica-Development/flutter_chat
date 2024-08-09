@@ -1,11 +1,14 @@
-import 'package:chat_repository_interface/chat_repository_interface.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_chat/src/config/chat_options.dart';
-import 'package:flutter_chat/src/screens/creation/widgets/search_field.dart';
-import 'package:flutter_chat/src/screens/creation/widgets/search_icon.dart';
-import 'package:flutter_chat/src/screens/creation/widgets/user_list.dart';
+import "package:chat_repository_interface/chat_repository_interface.dart";
+import "package:flutter/material.dart";
+import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_chat/src/screens/creation/widgets/search_field.dart";
+import "package:flutter_chat/src/screens/creation/widgets/search_icon.dart";
+import "package:flutter_chat/src/screens/creation/widgets/user_list.dart";
 
+/// New chat screen
+/// This screen is used to create a new chat
 class NewChatScreen extends StatefulWidget {
+  /// Constructs a [NewChatScreen]
   const NewChatScreen({
     required this.userId,
     required this.chatService,
@@ -15,10 +18,19 @@ class NewChatScreen extends StatefulWidget {
     super.key,
   });
 
+  /// The user ID of the person currently looking at the chat
   final String userId;
+
+  /// The chat service associated with the widget.
   final ChatService chatService;
+
+  /// The chat options
   final ChatOptions chatOptions;
+
+  /// Callback function triggered when the create group chat button is pressed
   final VoidCallback onPressCreateGroupChat;
+
+  /// Callback function triggered when a user is tapped
   final Function(UserModel) onPressCreateChat;
 
   @override
@@ -35,6 +47,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     var theme = Theme.of(context);
 
     return widget.chatOptions.builders.newChatScreenScaffoldBuilder?.call(
+          context,
           _AppBar(
             chatOptions: widget.chatOptions,
             isSearching: _isSearching,
@@ -55,7 +68,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
               }
             },
             focusNode: _textFieldFocusNode,
-          ) as AppBar,
+          ),
           _Body(
             chatOptions: widget.chatOptions,
             chatService: widget.chatService,
@@ -218,7 +231,7 @@ class _Body extends StatelessWidget {
                 );
               } else {
                 return chatOptions.builders.noUsersPlaceholderBuilder
-                        ?.call(translations) ??
+                        ?.call(context, translations) ??
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       child: Align(

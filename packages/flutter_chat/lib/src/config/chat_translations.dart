@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
+// ignore_for_file: public_member_api_docs
+
 /// Class that holds all the translations for the chat component view and
 ///  the corresponding userstory
 class ChatTranslations {

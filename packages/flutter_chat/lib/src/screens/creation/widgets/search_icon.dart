@@ -1,13 +1,18 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
+/// A widget representing a search icon.
 class SearchIcon extends StatelessWidget {
+  /// Constructs a [SearchIcon].
   const SearchIcon({
-    super.key,
     required this.isSearching,
     required this.onPressed,
+    super.key,
   });
 
+  /// Whether the search icon is currently in use
   final bool isSearching;
+
+  /// Callback function triggered when the search icon is pressed
   final VoidCallback onPressed;
 
   @override
