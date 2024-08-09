@@ -1,11 +1,12 @@
-import 'package:chat_repository_interface/chat_repository_interface.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_chat/src/config/chat_options.dart';
-import 'package:flutter_profile/flutter_profile.dart';
+import "package:chat_repository_interface/chat_repository_interface.dart";
+import "package:flutter/material.dart";
+import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_profile/flutter_profile.dart";
 
+/// The user list widget
 class UserList extends StatefulWidget {
+  /// Constructs a [UserList]
   const UserList({
-    super.key,
     required this.users,
     required this.currentUser,
     required this.query,
@@ -14,15 +15,31 @@ class UserList extends StatefulWidget {
     this.creatingGroup = false,
     this.selectedUsers = const [],
     this.onSelectedUser,
+    super.key,
   });
 
+  /// The list of users
   final List<UserModel> users;
+
+  /// The query to search for
   final String query;
+
+  /// The current user
   final String currentUser;
+
+  /// The chat options
   final ChatOptions options;
+
+  /// Whether the user is creating a group
   final bool creatingGroup;
+
+  /// Callback function triggered when a chat is created
   final Function(UserModel)? onPressCreateChat;
+
+  /// The selected users
   final List<UserModel> selectedUsers;
+
+  /// Callback function triggered when a user is selected
   final Function(UserModel)? onSelectedUser;
 
   @override
@@ -71,10 +88,11 @@ class _UserListState extends State<UserList> {
               }
             },
             child: widget.options.builders.chatRowContainerBuilder?.call(
+                  context,
                   Row(
                     children: [
                       widget.options.builders.userAvatarBuilder
-                              ?.call(user, 44) ??
+                              ?.call(context, user, 44) ??
                           Avatar(
                             boxfit: BoxFit.cover,
                             user: User(
@@ -122,7 +140,7 @@ class _UserListState extends State<UserList> {
                     child: Row(
                       children: [
                         widget.options.builders.userAvatarBuilder
-                                ?.call(user, 44) ??
+                                ?.call(context, user, 44) ??
                             Avatar(
                               boxfit: BoxFit.cover,
                               user: User(
@@ -162,7 +180,7 @@ class _UserListState extends State<UserList> {
     );
   }
 
-  void handlePersonalChatTap(UserModel user) async {
+  Future<void> handlePersonalChatTap(UserModel user) async {
     if (!isPressed) {
       setState(() {
         isPressed = true;

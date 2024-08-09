@@ -61,14 +61,14 @@ class _FlutterChatEntryWidgetState extends State<FlutterChatEntryWidget> {
   }
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
+  Widget build(BuildContext context) => InkWell(
         onTap: () async =>
             widget.onTap?.call() ??
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => FlutterChatNavigatorUserstory(
                   userId: widget.userId,
-                  chatService: chatService!,
+                  chatService: chatService,
                 ),
               ),
             ),
