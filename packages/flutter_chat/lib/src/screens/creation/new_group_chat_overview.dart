@@ -1,32 +1,46 @@
-import 'dart:typed_data';
+import "dart:typed_data";
 
-import 'package:chat_repository_interface/chat_repository_interface.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_chat/src/config/chat_options.dart';
-import 'package:flutter_chat/src/screens/creation/widgets/image_picker.dart';
-import 'package:flutter_profile/flutter_profile.dart';
+import "package:chat_repository_interface/chat_repository_interface.dart";
+import "package:flutter/material.dart";
+import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_chat/src/screens/creation/widgets/image_picker.dart";
+import "package:flutter_profile/flutter_profile.dart";
 
+/// New group chat overview
+/// Seen after the user has selected the users they
+/// want to add to the group chat
 class NewGroupChatOverview extends StatelessWidget {
+  /// Constructs a [NewGroupChatOverview]
   const NewGroupChatOverview({
-    super.key,
     required this.options,
     required this.users,
     required this.onComplete,
+    super.key,
   });
 
+  /// The chat options
   final ChatOptions options;
+
+  /// The users to be added to the group chat
   final List<UserModel> users;
-  final Function(List<UserModel> users, String chatName, String description,
-      Uint8List? image) onComplete;
+
+  /// Callback function triggered when the group chat is created
+  final Function(
+    List<UserModel> users,
+    String chatName,
+    String description,
+    Uint8List? image,
+  ) onComplete;
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
 
     return options.builders.newGroupChatOverviewScaffoldBuilder?.call(
+          context,
           _AppBar(
             options: options,
-          ) as AppBar,
+          ),
           _Body(
             options: options,
             users: users,
@@ -80,8 +94,12 @@ class _Body extends StatefulWidget {
 
   final ChatOptions options;
   final List<UserModel> users;
-  final Function(List<UserModel> users, String chatName, String description,
-      Uint8List? image) onComplete;
+  final Function(
+    List<UserModel> users,
+    String chatName,
+    String description,
+    Uint8List? image,
+  ) onComplete;
 
   @override
   State<_Body> createState() => _BodyState();
@@ -92,10 +110,10 @@ class _BodyState extends State<_Body> {
   final TextEditingController _bioController = TextEditingController();
   Uint8List? image;
 
-  var formKey = GlobalKey<FormState>();
-  var isPressed = false;
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  bool isPressed = false;
 
-  var users = <UserModel>[];
+  List<UserModel> users = <UserModel>[];
 
   @override
   void initState() {
@@ -123,7 +141,7 @@ class _BodyState extends State<_Body> {
                   Center(
                     child: Stack(
                       children: [
-                        GestureDetector(
+                        InkWell(
                           onTap: () async => onPressSelectImage(
                             context,
                             widget.options,
@@ -162,7 +180,7 @@ class _BodyState extends State<_Body> {
                                 borderRadius: BorderRadius.circular(40),
                               ),
                               child: Center(
-                                child: GestureDetector(
+                                child: InkWell(
                                   onTap: () {
                                     setState(() {
                                       image = null;
@@ -198,10 +216,7 @@ class _BodyState extends State<_Body> {
                       fillColor: Colors.white,
                       filled: true,
                       hintText: translations.groupNameHintText,
-                      hintStyle: theme.textTheme.bodyMedium!.copyWith(
-                        color:
-                            theme.textTheme.bodyMedium!.color!.withOpacity(0.5),
-                      ),
+                      hintStyle: theme.textTheme.bodyMedium,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
@@ -245,10 +260,7 @@ class _BodyState extends State<_Body> {
                       fillColor: Colors.white,
                       filled: true,
                       hintText: translations.groupBioHintText,
-                      hintStyle: theme.textTheme.bodyMedium!.copyWith(
-                        color:
-                            theme.textTheme.bodyMedium!.color!.withOpacity(0.5),
-                      ),
+                      hintStyle: theme.textTheme.bodyMedium,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
@@ -357,39 +369,38 @@ class _SelectedUser extends StatelessWidget {
   final Function(UserModel) onRemove;
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        onRemove(user);
-      },
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: options.builders.userAvatarBuilder?.call(
-                  user,
-                  40,
-                ) ??
-                Avatar(
-                  boxfit: BoxFit.cover,
-                  user: User(
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    imageUrl: user.imageUrl != "" ? user.imageUrl : null,
+  Widget build(BuildContext context) => InkWell(
+        onTap: () {
+          onRemove(user);
+        },
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: options.builders.userAvatarBuilder?.call(
+                    context,
+                    user,
+                    40,
+                  ) ??
+                  Avatar(
+                    boxfit: BoxFit.cover,
+                    user: User(
+                      firstName: user.firstName,
+                      lastName: user.lastName,
+                      imageUrl: user.imageUrl != "" ? user.imageUrl : null,
+                    ),
+                    size: 40,
                   ),
-                  size: 40,
-                ),
-          ),
-          Positioned.directional(
-            textDirection: Directionality.of(context),
-            end: 0,
-            child: const Icon(
-              Icons.cancel,
-              size: 20,
             ),
-          ),
-        ],
-      ),
-    );
-  }
+            Positioned.directional(
+              textDirection: Directionality.of(context),
+              end: 0,
+              child: const Icon(
+                Icons.cancel,
+                size: 20,
+              ),
+            ),
+          ],
+        ),
+      );
 }

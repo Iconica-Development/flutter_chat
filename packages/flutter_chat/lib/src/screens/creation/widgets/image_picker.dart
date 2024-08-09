@@ -1,10 +1,11 @@
-import 'dart:typed_data';
+import "dart:typed_data";
 
-import 'package:flutter/material.dart';
-import 'package:flutter_chat/src/config/chat_options.dart';
-import 'package:flutter_chat/src/config/chat_translations.dart';
-import 'package:flutter_image_picker/flutter_image_picker.dart';
+import "package:flutter/material.dart";
+import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_chat/src/config/chat_translations.dart";
+import "package:flutter_image_picker/flutter_image_picker.dart";
 
+/// The function to call when the user selects an image
 Future<void> onPressSelectImage(
   BuildContext context,
   ChatOptions options,
@@ -14,9 +15,9 @@ Future<void> onPressSelectImage(
       context: context,
       builder: (BuildContext context) =>
           options.builders.imagePickerContainerBuilder?.call(
+            context,
             () => Navigator.of(context).pop(),
             options.translations,
-            context,
           ) ??
           Container(
             padding: const EdgeInsets.all(8.0),
@@ -38,9 +39,7 @@ Future<void> onPressSelectImage(
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(
                   options.translations.cancelImagePickerBtn,
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        decoration: TextDecoration.underline,
-                      ),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
             ),

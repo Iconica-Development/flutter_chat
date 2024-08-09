@@ -5,10 +5,14 @@
 import "package:flutter_chat/src/config/chat_options.dart";
 import "package:intl/intl.dart";
 
+/// The date formatter
 class DateFormatter {
+  /// Constructs a [DateFormatter]
   DateFormatter({
     required this.options,
   });
+
+  /// The chat options
   final ChatOptions options;
   final _now = DateTime.now();
 
@@ -46,6 +50,7 @@ class DateFormatter {
 
   bool _isThisYear(DateTime date) => date.year == _now.year;
 
+  /// Formats the date
   String format({
     required DateTime date,
     bool showFullDate = false,

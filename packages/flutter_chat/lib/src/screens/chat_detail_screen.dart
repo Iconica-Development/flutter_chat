@@ -1,16 +1,19 @@
-import 'dart:typed_data';
+import "dart:async";
+import "dart:typed_data";
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_repository_interface/chat_repository_interface.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_chat/src/screens/creation/widgets/image_picker.dart';
-import 'package:flutter_chat/src/config/chat_options.dart';
-import 'package:flutter_chat/src/services/date_formatter.dart';
-import 'package:flutter_profile/flutter_profile.dart';
+import "package:cached_network_image/cached_network_image.dart";
+import "package:chat_repository_interface/chat_repository_interface.dart";
+import "package:flutter/material.dart";
+import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_chat/src/screens/creation/widgets/image_picker.dart";
+import "package:flutter_chat/src/services/date_formatter.dart";
+import "package:flutter_profile/flutter_profile.dart";
 
+/// Chat detail screen
+/// Seen when a user clicks on a chat
 class ChatDetailScreen extends StatefulWidget {
+  /// Constructs a [ChatDetailScreen].
   const ChatDetailScreen({
-    super.key,
     required this.userId,
     required this.chatService,
     required this.chatOptions,
@@ -20,16 +23,34 @@ class ChatDetailScreen extends StatefulWidget {
     required this.onUploadImage,
     required this.onMessageSubmit,
     required this.onReadChat,
+    super.key,
   });
 
+  /// The user ID of the person currently looking at the chat
   final String userId;
+
+  /// The chat service associated with the widget.
   final ChatService chatService;
+
+  /// The chat options
   final ChatOptions chatOptions;
+
+  /// The chat model currently being viewed
   final ChatModel chat;
+
+  /// Callback function triggered when the chat title is pressed.
   final Function(ChatModel) onPressChatTitle;
+
+  /// Callback function triggered when the user profile is pressed.
   final Function(UserModel) onPressUserProfile;
+
+  /// Callback function triggered when an image is uploaded.
   final Function(Uint8List image) onUploadImage;
+
+  /// Callback function triggered when a message is submitted.
   final Function(String text) onMessageSubmit;
+
+  /// Callback function triggered when the chat is read.
   final Function(ChatModel chat) onReadChat;
 
   @override
@@ -37,7 +58,7 @@ class ChatDetailScreen extends StatefulWidget {
 }
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
-  late String chatTitle;
+  String? chatTitle;
 
   @override
   void initState() {
@@ -45,12 +66,21 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       chatTitle = widget.chat.chatName ??
           widget.chatOptions.translations.groupNameEmpty;
     } else {
-      chatTitle = widget.chat.users
-              .firstWhere((element) => element.id != widget.userId)
-              .fullname ??
-          widget.chatOptions.translations.anonymousUser;
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await _getTitle();
+      });
     }
     super.initState();
+  }
+
+  Future<void> _getTitle() async {
+    var userId =
+        widget.chat.users.firstWhere((element) => element != widget.userId);
+    var user = await widget.chatService.getUser(userId: userId).first;
+
+    chatTitle = user.fullname ?? widget.chatOptions.translations.anonymousUser;
+
+    setState(() {});
   }
 
   @override
@@ -58,12 +88,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     var theme = Theme.of(context);
 
     return widget.chatOptions.builders.chatDetailScaffoldBuilder?.call(
+          context,
           _AppBar(
             chatTitle: chatTitle,
             chatOptions: widget.chatOptions,
             onPressChatTitle: widget.onPressChatTitle,
             chatModel: widget.chat,
-          ) as AppBar,
+          ),
           _Body(
             chatService: widget.chatService,
             options: widget.chatOptions,
@@ -105,7 +136,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.chatModel,
   });
 
-  final String chatTitle;
+  final String? chatTitle;
   final ChatOptions chatOptions;
   final Function(ChatModel) onPressChatTitle;
   final ChatModel chatModel;
@@ -128,9 +159,9 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       title: GestureDetector(
         onTap: () => onPressChatTitle.call(chatModel),
-        child: chatOptions.builders.chatTitleBuilder?.call(chatTitle) ??
+        child: chatOptions.builders.chatTitleBuilder?.call(chatTitle ?? "") ??
             Text(
-              chatTitle,
+              chatTitle ?? "",
               overflow: TextOverflow.ellipsis,
             ),
       ),
@@ -167,10 +198,10 @@ class _Body extends StatefulWidget {
 }
 
 class _BodyState extends State<_Body> {
-  ScrollController controller = ScrollController();
+  final ScrollController controller = ScrollController();
   bool showIndicator = false;
   late int pageSize;
-  var page = 0;
+  int page = 0;
 
   @override
   void initState() {
@@ -179,8 +210,36 @@ class _BodyState extends State<_Body> {
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+
+    void handleScroll(PointerMoveEvent event) {
+      if (!showIndicator &&
+          controller.offset >= controller.position.maxScrollExtent &&
+          !controller.position.outOfRange) {
+        setState(() {
+          showIndicator = true;
+        });
+
+        setState(() {
+          page++;
+        });
+
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted) {
+            setState(() {
+              showIndicator = false;
+            });
+          }
+        });
+      }
+    }
 
     return Stack(
       children: [
@@ -188,68 +247,48 @@ class _BodyState extends State<_Body> {
           children: [
             Expanded(
               child: StreamBuilder<List<MessageModel>?>(
-                  stream: widget.chatService.getMessages(
-                    userId: widget.currentUserId,
-                    chatId: widget.chat.id,
-                    pageSize: pageSize,
-                    page: page,
-                  ),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
+                stream: widget.chatService.getMessages(
+                  userId: widget.currentUserId,
+                  chatId: widget.chat.id,
+                  pageSize: pageSize,
+                  page: page,
+                ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
 
-                    var messages = snapshot.data?.reversed.toList() ?? [];
+                  var messages = snapshot.data?.reversed.toList() ?? [];
 
-                    WidgetsBinding.instance.addPostFrameCallback((_) async {
-                      await widget.onReadChat(widget.chat);
-                    });
+                  WidgetsBinding.instance.addPostFrameCallback((_) async {
+                    await widget.onReadChat(widget.chat);
+                  });
 
-                    return Listener(
-                      onPointerMove: (event) {
-                        if (!showIndicator &&
-                            controller.offset >=
-                                controller.position.maxScrollExtent &&
-                            !controller.position.outOfRange) {
-                          setState(() {
-                            showIndicator = true;
-                          });
-
-                          setState(() {
-                            page++;
-                          });
-
-                          Future.delayed(const Duration(seconds: 2), () {
-                            if (mounted) {
-                              setState(() {
-                                showIndicator = false;
-                              });
-                            }
-                          });
-                        }
-                      },
-                      child: ListView(
-                        shrinkWrap: true,
-                        controller: controller,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        reverse: messages.isNotEmpty,
-                        padding: const EdgeInsets.only(top: 24.0),
-                        children: [
-                          if (messages.isEmpty && !showIndicator) ...[
-                            Center(
-                              child: Text(
-                                widget.chat.isGroupChat
-                                    ? widget.options.translations
-                                        .writeFirstMessageInGroupChat
-                                    : widget.options.translations
-                                        .writeMessageToStartChat,
-                                style: theme.textTheme.bodySmall,
-                              ),
+                  return Listener(
+                    onPointerMove: handleScroll,
+                    child: ListView(
+                      shrinkWrap: true,
+                      controller: controller,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      reverse: messages.isNotEmpty,
+                      padding: const EdgeInsets.only(top: 24.0),
+                      children: [
+                        if (messages.isEmpty && !showIndicator) ...[
+                          Center(
+                            child: Text(
+                              widget.chat.isGroupChat
+                                  ? widget.options.translations
+                                      .writeFirstMessageInGroupChat
+                                  : widget.options.translations
+                                      .writeMessageToStartChat,
+                              style: theme.textTheme.bodySmall,
                             ),
-                          ],
-                          for (var i = 0; i < messages.length; i++) ...[
+                          ),
+                        ],
+                        for (var i = 0; i < messages.length; i++) ...[
+                          if (widget.chat.id == messages[i].chatId) ...[
                             _ChatBubble(
                               key: ValueKey(messages[i].id),
                               message: messages[i],
@@ -260,11 +299,13 @@ class _BodyState extends State<_Body> {
                               onPressUserProfile: widget.onPressUserProfile,
                               options: widget.options,
                             ),
-                          ]
+                          ],
                         ],
-                      ),
-                    );
-                  }),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
             _ChatBottom(
               chat: widget.chat,
@@ -350,6 +391,7 @@ class _ChatBottomState extends State<_ChatBottom> {
       child: SizedBox(
         height: 45,
         child: widget.options.builders.messageInputBuilder?.call(
+              context,
               _textEditingController,
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -412,9 +454,7 @@ class _ChatBottomState extends State<_ChatBottom> {
                   horizontal: 30,
                 ),
                 hintText: widget.options.translations.messagePlaceholder,
-                hintStyle: theme.textTheme.bodyMedium!.copyWith(
-                  color: theme.textTheme.bodyMedium!.color!.withOpacity(0.5),
-                ),
+                hintStyle: theme.textTheme.bodyMedium,
                 fillColor: Colors.white,
                 filled: true,
                 border: const OutlineInputBorder(
@@ -502,135 +542,135 @@ class _ChatBubbleState extends State<_ChatBubble> {
             widget.previousMessage?.timestamp.minute;
     var hasHeader = isNewDate || isSameSender;
     return StreamBuilder<UserModel>(
-        stream: widget.chatService.getUser(userId: widget.message.senderId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+      stream: widget.chatService.getUser(userId: widget.message.senderId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
 
-          var user = snapshot.data!;
+        var user = snapshot.data!;
 
-          return Padding(
-            padding: EdgeInsets.only(
-              top: isNewDate || isSameSender ? 25.0 : 0,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (isNewDate || isSameSender) ...[
-                  GestureDetector(
-                    onTap: () => widget.onPressUserProfile(user),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: user.imageUrl?.isNotEmpty ?? false
-                          ? _ChatImage(
-                              image: user.imageUrl!,
-                            )
-                          : widget.options.builders.userAvatarBuilder?.call(
-                                user,
-                                40,
-                              ) ??
-                              Avatar(
-                                key: ValueKey(user.id),
-                                boxfit: BoxFit.cover,
-                                user: User(
-                                  firstName: user.firstName,
-                                  lastName: user.lastName,
-                                  imageUrl: user.imageUrl != ""
-                                      ? user.imageUrl
-                                      : null,
-                                ),
-                                size: 40,
-                              ),
-                    ),
-                  ),
-                ] else ...[
-                  const SizedBox(
-                    width: 50,
-                  ),
-                ],
-                Expanded(
+        return Padding(
+          padding: EdgeInsets.only(
+            top: isNewDate || isSameSender ? 25.0 : 0,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (isNewDate || isSameSender) ...[
+                InkWell(
+                  onTap: () => widget.onPressUserProfile(user),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        if (isNewDate || isSameSender) ...[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: widget.options.builders.usernameBuilder
-                                        ?.call(
-                                      user.fullname ?? "",
-                                    ) ??
-                                    Text(
-                                      user.fullname ??
-                                          translations.anonymousUser,
-                                      style: theme.textTheme.titleMedium,
-                                    ),
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: user.imageUrl?.isNotEmpty ?? false
+                        ? _ChatImage(
+                            image: user.imageUrl!,
+                          )
+                        : widget.options.builders.userAvatarBuilder?.call(
+                              context,
+                              user,
+                              40,
+                            ) ??
+                            Avatar(
+                              key: ValueKey(user.id),
+                              boxfit: BoxFit.cover,
+                              user: User(
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                imageUrl:
+                                    user.imageUrl != "" ? user.imageUrl : null,
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 5.0),
-                                child: Text(
-                                  dateFormatter.format(
-                                    date: widget.message.timestamp,
-                                    showFullDate: true,
-                                  ),
-                                  style: theme.textTheme.labelSmall,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                        Padding(
-                          padding: const EdgeInsets.only(top: 3.0),
-                          child: widget.message.isTextMessage()
-                              ? Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        widget.message.text ?? "",
-                                        style: theme.textTheme.bodySmall,
-                                      ),
-                                    ),
-                                    if (widget.options.showTimes &&
-                                        !isSameMinute &&
-                                        !isNewDate &&
-                                        !hasHeader)
-                                      Text(
-                                        dateFormatter
-                                            .format(
-                                              date: widget.message.timestamp,
-                                              showFullDate: true,
-                                            )
-                                            .split(" ")
-                                            .last,
-                                        style: theme.textTheme.labelSmall,
-                                        textAlign: TextAlign.end,
-                                      ),
-                                  ],
-                                )
-                              : widget.message.isImageMessage()
-                                  ? CachedNetworkImage(
-                                      imageUrl: widget.message.imageUrl ?? "",
-                                    )
-                                  : const SizedBox.shrink(),
-                        ),
-                      ],
-                    ),
+                              size: 40,
+                            ),
                   ),
                 ),
+              ] else ...[
+                const SizedBox(
+                  width: 50,
+                ),
               ],
-            ),
-          );
-        });
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 22.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      if (isNewDate || isSameSender) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: widget.options.builders.usernameBuilder
+                                      ?.call(
+                                    user.fullname ?? "",
+                                  ) ??
+                                  Text(
+                                    user.fullname ?? translations.anonymousUser,
+                                    style: theme.textTheme.titleMedium,
+                                  ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5.0),
+                              child: Text(
+                                dateFormatter.format(
+                                  date: widget.message.timestamp,
+                                  showFullDate: true,
+                                ),
+                                style: theme.textTheme.labelSmall,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      Padding(
+                        padding: const EdgeInsets.only(top: 3.0),
+                        child: widget.message.isTextMessage
+                            ? Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      widget.message.text ?? "",
+                                      style: theme.textTheme.bodySmall,
+                                    ),
+                                  ),
+                                  if (widget.options.showTimes &&
+                                      !isSameMinute &&
+                                      !isNewDate &&
+                                      !hasHeader)
+                                    Text(
+                                      dateFormatter
+                                          .format(
+                                            date: widget.message.timestamp,
+                                            showFullDate: true,
+                                          )
+                                          .split(" ")
+                                          .last,
+                                      style: theme.textTheme.labelSmall,
+                                      textAlign: TextAlign.end,
+                                    ),
+                                ],
+                              )
+                            : widget.message.isImageMessage
+                                ? CachedNetworkImage(
+                                    imageUrl: widget.message.imageUrl ?? "",
+                                  )
+                                : const SizedBox.shrink(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 

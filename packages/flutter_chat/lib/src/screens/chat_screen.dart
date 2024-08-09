@@ -1,23 +1,31 @@
-import 'package:chat_repository_interface/chat_repository_interface.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_chat/src/config/chat_options.dart';
-import 'package:flutter_chat/src/config/chat_translations.dart';
-import 'package:flutter_chat/src/services/date_formatter.dart';
+import "package:chat_repository_interface/chat_repository_interface.dart";
+import "package:flutter/material.dart";
+import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_chat/src/config/chat_translations.dart";
+import "package:flutter_chat/src/services/date_formatter.dart";
 import "package:flutter_profile/flutter_profile.dart";
 
+/// The chat screen
+/// Seen when a user is chatting
 class ChatScreen extends StatelessWidget {
+  /// Constructs a [ChatScreen]
   const ChatScreen({
-    super.key,
     required this.userId,
     required this.chatService,
     required this.chatOptions,
     required this.onPressChat,
     required this.onDeleteChat,
     this.onPressStartChat,
+    super.key,
   });
 
+  /// The user ID of the person currently looking at the chat
   final String userId;
+
+  /// The chat service
   final ChatService chatService;
+
+  /// The chat options
   final ChatOptions chatOptions;
 
   /// Callback function for starting a chat.
@@ -26,17 +34,19 @@ class ChatScreen extends StatelessWidget {
   /// Callback function for pressing on a chat.
   final void Function(ChatModel chat) onPressChat;
 
+  /// Callback function for deleting a chat.
   final void Function(ChatModel chat) onDeleteChat;
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return chatOptions.builders.chatScreenScaffoldBuilder?.call(
+          context,
           _AppBar(
             userId: userId,
             chatOptions: chatOptions,
             chatService: chatService,
-          ) as AppBar,
+          ),
           _Body(
             userId: userId,
             chatOptions: chatOptions,
@@ -134,7 +144,7 @@ class _Body extends StatefulWidget {
 }
 
 class _BodyState extends State<_Body> {
-  ScrollController controller = ScrollController();
+  final ScrollController controller = ScrollController();
   bool _hasCalledOnNoChats = false;
 
   @override
@@ -152,7 +162,6 @@ class _BodyState extends State<_Body> {
               StreamBuilder<List<ChatModel>?>(
                 stream: widget.chatService.getChats(userId: widget.userId),
                 builder: (BuildContext context, snapshot) {
-                  // if the stream is done, empty and noChats is set we should call that
                   if (snapshot.connectionState == ConnectionState.done &&
                           (snapshot.data?.isEmpty ?? true) ||
                       (snapshot.data != null && snapshot.data!.isEmpty)) {
@@ -160,6 +169,7 @@ class _BodyState extends State<_Body> {
                         !_hasCalledOnNoChats) {
                       _hasCalledOnNoChats = true; // Set the flag to true
                       WidgetsBinding.instance.addPostFrameCallback((_) async {
+                        // ignore: avoid_dynamic_calls
                         await widget.chatOptions.onNoChats!.call();
                       });
                     }
@@ -172,7 +182,7 @@ class _BodyState extends State<_Body> {
                   }
                   return Column(
                     children: [
-                      for (ChatModel chat in (snapshot.data ?? [])) ...[
+                      for (ChatModel chat in snapshot.data ?? []) ...[
                         DecoratedBox(
                           decoration: BoxDecoration(
                             border: Border(
@@ -186,17 +196,19 @@ class _BodyState extends State<_Body> {
                             builder: (context) => !chat.canBeDeleted
                                 ? Dismissible(
                                     confirmDismiss: (_) async {
-                                      widget.chatOptions.builders
+                                      await widget.chatOptions.builders
                                               .deleteChatDialogBuilder
                                               ?.call(context, chat) ??
                                           _deleteDialog(
                                             chat,
                                             translations,
+                                            // ignore: use_build_context_synchronously
                                             context,
                                           );
                                       return _deleteDialog(
                                         chat,
                                         translations,
+                                        // ignore: use_build_context_synchronously
                                         context,
                                       );
                                     },
@@ -230,16 +242,18 @@ class _BodyState extends State<_Body> {
                                       ),
                                     ),
                                     key: ValueKey(
-                                      chat.id.toString(),
+                                      chat.id,
                                     ),
-                                    child: ChatListItem(
+                                    child: _ChatItem(
+                                      service: widget.chatService,
                                       chat: chat,
                                       chatOptions: widget.chatOptions,
                                       userId: widget.userId,
                                       onPressChat: widget.onPressChat,
                                     ),
                                   )
-                                : ChatListItem(
+                                : _ChatItem(
+                                    service: widget.chatService,
                                     chat: chat,
                                     chatOptions: widget.chatOptions,
                                     userId: widget.userId,
@@ -274,7 +288,7 @@ class _BodyState extends State<_Body> {
                       borderRadius: BorderRadius.circular(56),
                     ),
                   ),
-                  onPressed: widget.onPressStartChat!,
+                  onPressed: widget.onPressStartChat,
                   child: Text(
                     translations.newChatButton,
                     style: theme.textTheme.displayLarge,
@@ -286,17 +300,18 @@ class _BodyState extends State<_Body> {
   }
 }
 
-class ChatListItem extends StatelessWidget {
-  const ChatListItem({
+class _ChatItem extends StatelessWidget {
+  const _ChatItem({
     required this.chat,
     required this.chatOptions,
+    required this.service,
     required this.userId,
     required this.onPressChat,
-    super.key,
   });
 
   final ChatModel chat;
   final ChatOptions chatOptions;
+  final ChatService service;
   final String userId;
   final Function(ChatModel chat) onPressChat;
 
@@ -306,15 +321,17 @@ class ChatListItem extends StatelessWidget {
       options: chatOptions,
     );
     var theme = Theme.of(context);
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         onPressChat(chat);
       },
       child: chatOptions.builders.chatRowContainerBuilder?.call(
+            context,
             _ChatListItem(
               chat: chat,
               options: chatOptions,
               dateFormatter: dateFormatter,
+              chatService: service,
               currentUserId: userId,
             ),
           ) ??
@@ -334,6 +351,7 @@ class ChatListItem extends StatelessWidget {
                 chat: chat,
                 options: chatOptions,
                 dateFormatter: dateFormatter,
+                chatService: service,
                 currentUserId: userId,
               ),
             ),
@@ -348,82 +366,140 @@ class _ChatListItem extends StatelessWidget {
     required this.options,
     required this.dateFormatter,
     required this.currentUserId,
+    required this.chatService,
   });
 
   final ChatModel chat;
   final ChatOptions options;
   final DateFormatter dateFormatter;
   final String currentUserId;
+  final ChatService chatService;
 
   @override
   Widget build(BuildContext context) {
     var translations = options.translations;
     if (chat.isGroupChat) {
-      return _ChatRow(
-        title: chat.chatName ?? translations.groupNameEmpty,
-        unreadMessages: chat.unreadMessageCount,
-        subTitle: chat.lastMessage != null
-            ? chat.lastMessage!.isTextMessage()
-                ? chat.lastMessage!.text
-                : "📷 "
-                    "${translations.image}"
-            : "",
-        avatar: options.builders.groupAvatarBuilder?.call(
-              chat.chatName ?? translations.groupNameEmpty,
-              chat.imageUrl,
-              40.0,
-            ) ??
-            Avatar(
-              boxfit: BoxFit.cover,
-              user: User(
-                firstName: chat.chatName,
-                lastName: null,
-                imageUrl: chat.imageUrl != null || chat.imageUrl != ""
-                    ? chat.imageUrl
-                    : null,
-              ),
-              size: 40.0,
-            ),
-        lastUsed: chat.lastUsed != null
-            ? dateFormatter.format(
-                date: chat.lastUsed!,
+      return StreamBuilder<MessageModel?>(
+        stream: chat.lastMessage != null
+            ? chatService.getMessage(
+                chatId: chat.id,
+                messageId: chat.lastMessage!,
               )
-            : null,
+            : const Stream.empty(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          var data = snapshot.data;
+
+          return _ChatRow(
+            title: chat.chatName ?? translations.groupNameEmpty,
+            unreadMessages: chat.unreadMessageCount,
+            subTitle: data != null
+                ? data.isTextMessage
+                    ? data.text
+                    : "📷 "
+                        "${translations.image}"
+                : "",
+            avatar: options.builders.groupAvatarBuilder?.call(
+                  context,
+                  chat.chatName ?? translations.groupNameEmpty,
+                  chat.imageUrl,
+                  40.0,
+                ) ??
+                Avatar(
+                  boxfit: BoxFit.cover,
+                  user: User(
+                    firstName: chat.chatName,
+                    lastName: null,
+                    imageUrl: chat.imageUrl != null || chat.imageUrl != ""
+                        ? chat.imageUrl
+                        : null,
+                  ),
+                  size: 40.0,
+                ),
+            lastUsed: chat.lastUsed != null
+                ? dateFormatter.format(
+                    date: chat.lastUsed!,
+                  )
+                : null,
+          );
+        },
       );
     }
     var otherUser = chat.users.firstWhere(
-      (element) => element.id != currentUserId,
+      (element) => element != currentUserId,
     );
 
-    return _ChatRow(
-      unreadMessages: chat.unreadMessageCount,
-      avatar: options.builders.userAvatarBuilder?.call(
-            otherUser,
-            40.0,
-          ) ??
-          Avatar(
-            boxfit: BoxFit.cover,
-            user: User(
-              firstName: otherUser.firstName,
-              lastName: otherUser.lastName,
-              imageUrl: otherUser.imageUrl != null || otherUser.imageUrl != ""
-                  ? otherUser.imageUrl
+    return StreamBuilder<UserModel>(
+      stream: chatService.getUser(userId: otherUser),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        var otherUser = snapshot.data;
+
+        if (otherUser == null) {
+          return const SizedBox();
+        }
+
+        return StreamBuilder<MessageModel?>(
+          stream: chat.lastMessage != null
+              ? chatService.getMessage(
+                  chatId: chat.id,
+                  messageId: chat.lastMessage!,
+                )
+              : const Stream.empty(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            var data = snapshot.data;
+
+            return _ChatRow(
+              unreadMessages: chat.unreadMessageCount,
+              avatar: options.builders.userAvatarBuilder?.call(
+                    context,
+                    otherUser,
+                    40.0,
+                  ) ??
+                  Avatar(
+                    boxfit: BoxFit.cover,
+                    user: User(
+                      firstName: otherUser.firstName,
+                      lastName: otherUser.lastName,
+                      imageUrl:
+                          otherUser.imageUrl != null || otherUser.imageUrl != ""
+                              ? otherUser.imageUrl
+                              : null,
+                    ),
+                    size: 40.0,
+                  ),
+              title: otherUser.fullname ?? translations.anonymousUser,
+              subTitle: data != null
+                  ? data.isTextMessage
+                      ? data.text
+                      : "📷 "
+                          "${translations.image}"
+                  : "",
+              lastUsed: chat.lastUsed != null
+                  ? dateFormatter.format(
+                      date: chat.lastUsed!,
+                    )
                   : null,
-            ),
-            size: 40.0,
-          ),
-      title: otherUser.fullname ?? translations.anonymousUser,
-      subTitle: chat.lastMessage != null
-          ? chat.lastMessage!.isTextMessage()
-              ? chat.lastMessage!.text
-              : "📷 "
-                  "${translations.image}"
-          : "",
-      lastUsed: chat.lastUsed != null
-          ? dateFormatter.format(
-              date: chat.lastUsed!,
-            )
-          : null,
+            );
+          },
+        );
+      },
     );
   }
 }
@@ -490,7 +566,6 @@ class _ChatRow extends StatelessWidget {
     this.lastUsed,
     this.subTitle,
     this.avatar,
-    super.key,
   });
 
   /// The title of the chat.
@@ -535,11 +610,7 @@ class _ChatRow extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 3.0),
                     child: Text(
                       subTitle!,
-                      style: unreadMessages > 0
-                          ? theme.textTheme.bodySmall!.copyWith(
-                              fontWeight: FontWeight.w800,
-                            )
-                          : theme.textTheme.bodySmall,
+                      style: theme.textTheme.bodySmall,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                     ),

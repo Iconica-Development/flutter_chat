@@ -1,5 +1,3 @@
-library firebase_chat_repository;
-
 /// A Calculator.
 class Calculator {
   /// Returns [value] plus 1.

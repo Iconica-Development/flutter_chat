@@ -1,37 +1,57 @@
-import 'package:chat_repository_interface/chat_repository_interface.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_chat/src/config/chat_options.dart';
-import 'package:flutter_profile/flutter_profile.dart';
+import "package:chat_repository_interface/chat_repository_interface.dart";
+import "package:flutter/material.dart";
+import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_profile/flutter_profile.dart";
 
+/// The chat profile screen
+/// Seen when a user taps on a chat profile
+/// Also used for group chats
 class ChatProfileScreen extends StatelessWidget {
+  /// Constructs a [ChatProfileScreen]
   const ChatProfileScreen({
-    super.key,
     required this.options,
     required this.userId,
     required this.userModel,
+    required this.service,
     required this.chatModel,
     required this.onTapUser,
     required this.onPressStartChat,
+    super.key,
   });
 
+  /// The chat options
   final ChatOptions options;
+
+  /// The user ID of the person currently looking at the chat
   final String userId;
+
+  /// The user model of the persons profile to be viewed
   final UserModel? userModel;
+
+  /// The chat model of the chat being viewed
   final ChatModel? chatModel;
-  final Function(UserModel)? onTapUser;
-  final Function(UserModel)? onPressStartChat;
+
+  /// Callback function triggered when a user is tapped
+  final Function(String)? onTapUser;
+
+  final ChatService service;
+
+  /// Callback function triggered when the start chat button is pressed
+  final Function(String)? onPressStartChat;
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
 
     return options.builders.chatProfileScaffoldBuilder?.call(
+          context,
           _AppBar(
             user: userModel,
             chat: chatModel,
             options: options,
-          ) as AppBar,
+          ),
           _Body(
+            service: service,
             currentUser: userId,
             options: options,
             user: userModel,
@@ -50,6 +70,7 @@ class ChatProfileScreen extends StatelessWidget {
           body: _Body(
             currentUser: userId,
             options: options,
+            service: service,
             user: userModel,
             chat: chatModel,
             onTapUser: onTapUser,
@@ -78,7 +99,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
           const IconThemeData(color: Colors.white),
       title: Text(
         user != null
-            ? '${user!.fullname}'
+            ? "${user!.fullname}"
             : chat != null
                 ? chat?.chatName ?? options.translations.groupNameEmpty
                 : "",
@@ -93,6 +114,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
 class _Body extends StatelessWidget {
   const _Body({
     required this.options,
+    required this.service,
     required this.user,
     required this.chat,
     required this.onPressStartChat,
@@ -101,10 +123,11 @@ class _Body extends StatelessWidget {
   });
 
   final ChatOptions options;
+  final ChatService service;
   final UserModel? user;
   final ChatModel? chat;
-  final Function(UserModel)? onTapUser;
-  final Function(UserModel)? onPressStartChat;
+  final Function(String)? onTapUser;
+  final Function(String)? onPressStartChat;
   final String currentUser;
 
   @override
@@ -119,6 +142,7 @@ class _Body extends StatelessWidget {
               child: Column(
                 children: [
                   options.builders.userAvatarBuilder?.call(
+                        context,
                         user ??
                             (
                               chat != null
@@ -185,8 +209,7 @@ class _Body extends StatelessWidget {
                     ),
                     Text(
                       chat!.description ?? "",
-                      style: theme.textTheme.bodyMedium!
-                          .copyWith(color: Colors.black),
+                      style: theme.textTheme.bodyMedium,
                     ),
                     const SizedBox(
                       height: 12,
@@ -206,7 +229,7 @@ class _Body extends StatelessWidget {
                               bottom: 8,
                               right: 8,
                             ),
-                            child: GestureDetector(
+                            child: InkWell(
                               onTap: () {
                                 onTapUser?.call(tappedUser);
                               },
@@ -214,23 +237,42 @@ class _Body extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  options.builders.userAvatarBuilder?.call(
-                                        tappedUser,
-                                        44,
-                                      ) ??
-                                      Avatar(
-                                        boxfit: BoxFit.cover,
-                                        user: User(
-                                          firstName: tappedUser.firstName,
-                                          lastName: tappedUser.lastName,
-                                          imageUrl:
-                                              tappedUser.imageUrl != null ||
-                                                      tappedUser.imageUrl != ""
-                                                  ? tappedUser.imageUrl
+                                  FutureBuilder<UserModel>(
+                                    future: service
+                                        .getUser(userId: tappedUser)
+                                        .first,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const CircularProgressIndicator();
+                                      }
+
+                                      var user = snapshot.data;
+
+                                      if (user == null) {
+                                        return const SizedBox.shrink();
+                                      }
+
+                                      return options.builders.userAvatarBuilder
+                                              ?.call(
+                                            context,
+                                            user,
+                                            44,
+                                          ) ??
+                                          Avatar(
+                                            boxfit: BoxFit.cover,
+                                            user: User(
+                                              firstName: user.firstName,
+                                              lastName: user.lastName,
+                                              imageUrl: user.imageUrl != null ||
+                                                      user.imageUrl != ""
+                                                  ? user.imageUrl
                                                   : null,
-                                        ),
-                                        size: 60,
-                                      ),
+                                            ),
+                                            size: 60,
+                                          );
+                                    },
+                                  ),
                                 ],
                               ),
                             ),
@@ -244,7 +286,7 @@ class _Body extends StatelessWidget {
             ],
           ],
         ),
-        if (user != null && user!.id != currentUser) ...[
+        if (user?.id != currentUser) ...[
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
@@ -254,7 +296,7 @@ class _Body extends StatelessWidget {
               ),
               child: FilledButton(
                 onPressed: () {
-                  onPressStartChat?.call(user!);
+                  onPressStartChat?.call(user!.id);
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

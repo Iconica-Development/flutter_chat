@@ -1,26 +1,41 @@
-import "package:flutter/material.dart";
-import "package:flutter_chat/flutter_chat.dart";
+import 'package:flutter/material.dart';
+import 'package:flutter_chat/flutter_chat.dart';
 
-void main(List<String> args) async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  runApp(const App());
+void main() {
+  runApp(const MyApp());
 }
 
-class App extends StatelessWidget {
-  const App({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) => const MaterialApp(
-        home: Home(),
-      );
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(),
+    );
+  }
 }
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  Widget build(BuildContext context) => const Center(
-        child: FlutterChatEntryWidget(userId: '1'),
-      );
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: const Center(),
+      floatingActionButton: const FlutterChatEntryWidget(
+        userId: '1',
+      ),
+    );
+  }
 }
