@@ -22,7 +22,7 @@ dependencies:
   cached_network_image: ^3.2.2
   flutter_image_picker:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
-    version: ^1.0.5
+    version: ">=1.0.5 <5.0.0"
   flutter_profile:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
     version: ^1.3.0
