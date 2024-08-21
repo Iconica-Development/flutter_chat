@@ -9,6 +9,7 @@ class FlutterChatEntryWidget extends StatefulWidget {
   const FlutterChatEntryWidget({
     required this.userId,
     this.chatService,
+    this.options,
     this.onTap,
     this.widgetSize = 75,
     this.backgroundColor = Colors.grey,
@@ -46,6 +47,9 @@ class FlutterChatEntryWidget extends StatefulWidget {
   /// Text style for the counter.
   final TextStyle? textStyle;
 
+  /// The chat options
+  final ChatOptions? options;
+
   @override
   State<FlutterChatEntryWidget> createState() => _FlutterChatEntryWidgetState();
 }
@@ -69,6 +73,7 @@ class _FlutterChatEntryWidgetState extends State<FlutterChatEntryWidget> {
                 builder: (context) => FlutterChatNavigatorUserstory(
                   userId: widget.userId,
                   chatService: chatService,
+                  chatOptions: widget.options,
                 ),
               ),
             ),

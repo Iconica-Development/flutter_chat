@@ -1,6 +1,7 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/creation/widgets/search_field.dart";
 import "package:flutter_chat/src/screens/creation/widgets/search_icon.dart";
 import "package:flutter_chat/src/screens/creation/widgets/user_list.dart";
@@ -42,76 +43,77 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
+    if (widget.chatOptions.builders.baseScreenBuilder == null) {
+      return Scaffold(
+        appBar: _AppBar(
+          chatOptions: widget.chatOptions,
+          isSearching: _isSearching,
+          onSearch: (query) {
+            setState(() {
+              _isSearching = query.isNotEmpty;
+              this.query = query;
+            });
+          },
+          onPressedSearchIcon: () {
+            setState(() {
+              _isSearching = !_isSearching;
+              query = "";
+            });
 
-    return widget.chatOptions.builders.newGroupChatScreenScaffoldBuilder?.call(
-          context,
-          _AppBar(
-            chatOptions: widget.chatOptions,
-            isSearching: _isSearching,
-            onSearch: (query) {
-              setState(() {
-                _isSearching = query.isNotEmpty;
-                this.query = query;
-              });
-            },
-            onPressedSearchIcon: () {
-              setState(() {
-                _isSearching = !_isSearching;
-                query = "";
-              });
+            if (_isSearching) {
+              _textFieldFocusNode.requestFocus();
+            }
+          },
+          focusNode: _textFieldFocusNode,
+        ),
+        body: _Body(
+          onSelectedUser: handleUserTap,
+          selectedUsers: selectedUsers,
+          onPressGroupChatOverview: widget.onContinue,
+          chatOptions: widget.chatOptions,
+          chatService: widget.chatService,
+          isSearching: _isSearching,
+          userId: widget.userId,
+          query: query,
+        ),
+      );
+    }
 
-              if (_isSearching) {
-                _textFieldFocusNode.requestFocus();
-              }
-            },
-            focusNode: _textFieldFocusNode,
-          ),
-          _Body(
-            onSelectedUser: handleUserTap,
-            selectedUsers: selectedUsers,
-            onPressGroupChatOverview: widget.onContinue,
-            chatOptions: widget.chatOptions,
-            chatService: widget.chatService,
-            isSearching: _isSearching,
-            userId: widget.userId,
-            query: query,
-          ),
-          theme.scaffoldBackgroundColor,
-        ) ??
-        Scaffold(
-          appBar: _AppBar(
-            chatOptions: widget.chatOptions,
-            isSearching: _isSearching,
-            onSearch: (query) {
-              setState(() {
-                _isSearching = query.isNotEmpty;
-                this.query = query;
-              });
-            },
-            onPressedSearchIcon: () {
-              setState(() {
-                _isSearching = !_isSearching;
-                query = "";
-              });
+    return widget.chatOptions.builders.baseScreenBuilder!.call(
+      context,
+      widget.mapScreenType,
+      _AppBar(
+        chatOptions: widget.chatOptions,
+        isSearching: _isSearching,
+        onSearch: (query) {
+          setState(() {
+            _isSearching = query.isNotEmpty;
+            this.query = query;
+          });
+        },
+        onPressedSearchIcon: () {
+          setState(() {
+            _isSearching = !_isSearching;
+            query = "";
+          });
 
-              if (_isSearching) {
-                _textFieldFocusNode.requestFocus();
-              }
-            },
-            focusNode: _textFieldFocusNode,
-          ),
-          body: _Body(
-            onSelectedUser: handleUserTap,
-            selectedUsers: selectedUsers,
-            onPressGroupChatOverview: widget.onContinue,
-            chatOptions: widget.chatOptions,
-            chatService: widget.chatService,
-            isSearching: _isSearching,
-            userId: widget.userId,
-            query: query,
-          ),
-        );
+          if (_isSearching) {
+            _textFieldFocusNode.requestFocus();
+          }
+        },
+        focusNode: _textFieldFocusNode,
+      ),
+      _Body(
+        onSelectedUser: handleUserTap,
+        selectedUsers: selectedUsers,
+        onPressGroupChatOverview: widget.onContinue,
+        chatOptions: widget.chatOptions,
+        chatService: widget.chatService,
+        isSearching: _isSearching,
+        userId: widget.userId,
+        query: query,
+      ),
+    );
   }
 
   void handleUserTap(UserModel user) {
