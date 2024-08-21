@@ -3,6 +3,7 @@ import "dart:typed_data";
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/creation/widgets/image_picker.dart";
 import "package:flutter_profile/flutter_profile.dart";
 
@@ -34,30 +35,31 @@ class NewGroupChatOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
+    if (options.builders.baseScreenBuilder == null) {
+      return Scaffold(
+        appBar: _AppBar(
+          options: options,
+        ),
+        body: _Body(
+          options: options,
+          users: users,
+          onComplete: onComplete,
+        ),
+      );
+    }
 
-    return options.builders.newGroupChatOverviewScaffoldBuilder?.call(
-          context,
-          _AppBar(
-            options: options,
-          ),
-          _Body(
-            options: options,
-            users: users,
-            onComplete: onComplete,
-          ),
-          theme.scaffoldBackgroundColor,
-        ) ??
-        Scaffold(
-          appBar: _AppBar(
-            options: options,
-          ),
-          body: _Body(
-            options: options,
-            users: users,
-            onComplete: onComplete,
-          ),
-        );
+    return options.builders.baseScreenBuilder!.call(
+      context,
+      this.mapScreenType,
+      _AppBar(
+        options: options,
+      ),
+      _Body(
+        options: options,
+        users: users,
+        onComplete: onComplete,
+      ),
+    );
   }
 }
 

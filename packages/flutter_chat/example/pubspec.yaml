@@ -13,6 +13,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_chat:
     path: ../
+  # firebase_chat_repository:
+    # path: ../../firebase_chat_repository
+  # firebase_core: any
+  # firebase_auth: any
 
 dev_dependencies:
   flutter_test:

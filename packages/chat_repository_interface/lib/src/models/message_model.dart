@@ -15,7 +15,7 @@ class MessageModel {
     required this.timestamp,
     required this.senderId,
   });
-
+  /// The chat id
   final String chatId;
 
   /// The message id
@@ -50,6 +50,27 @@ class MessageModel {
         timestamp: timestamp ?? this.timestamp,
         senderId: senderId ?? this.senderId,
       );
+
+  factory MessageModel.fromMap(String id, Map<String, dynamic> map) {
+    return MessageModel(
+      chatId: map['chatId'],
+      id: id,
+      text: map['text'],
+      imageUrl: map['imageUrl'],
+      timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp']),
+      senderId: map['senderId'],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'chatId': chatId,
+      'text': text,
+      'imageUrl': imageUrl,
+      'timestamp': timestamp.millisecondsSinceEpoch,
+      'senderId': senderId,
+    };
+  }
 }
 
 /// Extension on [MessageModel] to check the message type

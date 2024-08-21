@@ -1,18 +1,14 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_translations.dart";
+import "package:flutter_chat/src/config/screen_types.dart";
 
 /// The chat builders
 class ChatBuilders {
   /// The chat builders constructor
   const ChatBuilders({
-    this.chatScreenScaffoldBuilder,
-    this.newChatScreenScaffoldBuilder,
-    this.newGroupChatScreenScaffoldBuilder,
-    this.newGroupChatOverviewScaffoldBuilder,
-    this.chatProfileScaffoldBuilder,
+    this.baseScreenBuilder,
     this.messageInputBuilder,
-    this.chatDetailScaffoldBuilder,
     this.chatRowContainerBuilder,
     this.groupAvatarBuilder,
     this.imagePickerContainerBuilder,
@@ -25,23 +21,21 @@ class ChatBuilders {
     this.loadingWidgetBuilder,
   });
 
-  /// The chat screen scaffold builder
-  final ScaffoldBuilder? chatScreenScaffoldBuilder;
-
-  /// The new chat screen scaffold builder
-  final ScaffoldBuilder? newChatScreenScaffoldBuilder;
-
-  /// The new group chat overview scaffold builder
-  final ScaffoldBuilder? newGroupChatOverviewScaffoldBuilder;
-
-  /// The new group chat screen scaffold builder
-  final ScaffoldBuilder? newGroupChatScreenScaffoldBuilder;
-
-  /// The chat detail scaffold builder
-  final ScaffoldBuilder? chatDetailScaffoldBuilder;
-
-  /// The chat profile scaffold builder
-  final ScaffoldBuilder? chatProfileScaffoldBuilder;
+  /// The base screen builder
+  /// This builder is used to build the base screen for the chat
+  /// You can switch on the [screenType] to build different screens
+  /// ```dart
+  ///   baseScreenBuilder: (context, screenType, appBar, body) {
+  ///     switch (screenType) {
+  ///       case ScreenType.chatScreen:
+  ///         return Scaffold(
+  ///           appBar: appBar,
+  ///           body: body,
+  ///         );
+  ///       case ScreenType.chatDetailScreen:
+  ///       // And so on....
+  /// ```
+  final BaseScreenBuilder? baseScreenBuilder;
 
   /// The message input builder
   final TextInputBuilder? messageInputBuilder;
@@ -100,12 +94,12 @@ typedef TextInputBuilder = Widget Function(
   ChatTranslations translations,
 );
 
-/// The scaffold builder
-typedef ScaffoldBuilder = Scaffold Function(
+/// The base screen builder
+typedef BaseScreenBuilder = Widget Function(
   BuildContext context,
+  ScreenType screenType,
   PreferredSizeWidget appBar,
   Widget body,
-  Color backgroundColor,
 );
 
 /// The container builder

@@ -1,6 +1,7 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_profile/flutter_profile.dart";
 
 /// The chat profile screen
@@ -41,42 +42,43 @@ class ChatProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
+    if (options.builders.baseScreenBuilder == null) {
+      return Scaffold(
+        appBar: _AppBar(
+          user: userModel,
+          chat: chatModel,
+          options: options,
+        ),
+        body: _Body(
+          currentUser: userId,
+          options: options,
+          service: service,
+          user: userModel,
+          chat: chatModel,
+          onTapUser: onTapUser,
+          onPressStartChat: onPressStartChat,
+        ),
+      );
+    }
 
-    return options.builders.chatProfileScaffoldBuilder?.call(
-          context,
-          _AppBar(
-            user: userModel,
-            chat: chatModel,
-            options: options,
-          ),
-          _Body(
-            service: service,
-            currentUser: userId,
-            options: options,
-            user: userModel,
-            chat: chatModel,
-            onTapUser: onTapUser,
-            onPressStartChat: onPressStartChat,
-          ),
-          theme.scaffoldBackgroundColor,
-        ) ??
-        Scaffold(
-          appBar: _AppBar(
-            user: userModel,
-            chat: chatModel,
-            options: options,
-          ),
-          body: _Body(
-            currentUser: userId,
-            options: options,
-            service: service,
-            user: userModel,
-            chat: chatModel,
-            onTapUser: onTapUser,
-            onPressStartChat: onPressStartChat,
-          ),
-        );
+    return options.builders.baseScreenBuilder!.call(
+      context,
+      this.mapScreenType,
+      _AppBar(
+        user: userModel,
+        chat: chatModel,
+        options: options,
+      ),
+      _Body(
+        currentUser: userId,
+        options: options,
+        service: service,
+        user: userModel,
+        chat: chatModel,
+        onTapUser: onTapUser,
+        onPressStartChat: onPressStartChat,
+      ),
+    );
   }
 }
 
