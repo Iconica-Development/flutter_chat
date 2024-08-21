@@ -60,7 +60,7 @@ class ChatScreen extends StatelessWidget {
 
     return chatOptions.builders.baseScreenBuilder!.call(
       context,
-      this.mapScreenType,
+      mapScreenType,
       _AppBar(
         userId: userId,
         chatOptions: chatOptions,

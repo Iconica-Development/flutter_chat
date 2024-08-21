@@ -50,7 +50,7 @@ class NewGroupChatOverview extends StatelessWidget {
 
     return options.builders.baseScreenBuilder!.call(
       context,
-      this.mapScreenType,
+      mapScreenType,
       _AppBar(
         options: options,
       ),

@@ -63,7 +63,7 @@ class ChatProfileScreen extends StatelessWidget {
 
     return options.builders.baseScreenBuilder!.call(
       context,
-      this.mapScreenType,
+      mapScreenType,
       _AppBar(
         user: userModel,
         chat: chatModel,
@@ -288,7 +288,7 @@ class _Body extends StatelessWidget {
             ],
           ],
         ),
-        if (user?.id != currentUser) ...[
+        if (user != null && user?.id != currentUser) ...[
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(

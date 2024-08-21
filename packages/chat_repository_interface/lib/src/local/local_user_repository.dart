@@ -10,25 +10,25 @@ class LocalUserRepository implements UserRepositoryInterface {
       BehaviorSubject<List<UserModel>>();
 
   final List<UserModel> _users = [
-    UserModel(
+    const UserModel(
       id: "1",
       firstName: "John",
       lastName: "Doe",
       imageUrl: "https://picsum.photos/200/300",
     ),
-    UserModel(
+    const UserModel(
       id: "2",
       firstName: "Jane",
       lastName: "Doe",
       imageUrl: "https://picsum.photos/200/300",
     ),
-    UserModel(
+    const UserModel(
       id: "3",
       firstName: "Frans",
       lastName: "Timmermans",
       imageUrl: "https://picsum.photos/200/300",
     ),
-    UserModel(
+    const UserModel(
       id: "4",
       firstName: "Hendrik-Jan",
       lastName: "De derde",
