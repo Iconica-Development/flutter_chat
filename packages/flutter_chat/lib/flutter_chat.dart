@@ -11,6 +11,7 @@ export "package:flutter_chat/src/flutter_chat_navigator_userstory.dart";
 export "src/config/chat_builders.dart";
 export "src/config/chat_options.dart";
 export "src/config/chat_translations.dart";
+export 'src/config/screen_types.dart';
 
 // Screens
 export "src/screens/chat_detail_screen.dart";

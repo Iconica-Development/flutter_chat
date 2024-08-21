@@ -80,6 +80,36 @@ class ChatModel {
         lastMessage: lastMessage ?? this.lastMessage,
         unreadMessageCount: unreadMessageCount ?? this.unreadMessageCount,
       );
+
+  /// The factory chat model that creates a chat model from a map
+  factory ChatModel.fromMap(String id, Map<String, dynamic> data) {
+    return ChatModel(
+      id: id,
+      users: List<String>.from(data['users']),
+      isGroupChat: data['isGroupChat'],
+      chatName: data['chatName'],
+      description: data['description'],
+      imageUrl: data['imageUrl'],
+      canBeDeleted: data['canBeDeleted'] ?? true,
+      lastUsed: data['lastUsed'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(data['lastUsed'])
+          : null,
+      lastMessage: data['lastMessage'],
+      unreadMessageCount: data['unreadMessageCount'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+        'users': users,
+        'isGroupChat': isGroupChat,
+        'chatName': chatName,
+        'description': description,
+        'imageUrl': imageUrl,
+        'canBeDeleted': canBeDeleted,
+        'lastUsed': lastUsed?.millisecondsSinceEpoch,
+        'lastMessage': lastMessage,
+        'unreadMessageCount': unreadMessageCount,
+      };
 }
 
 /// The chat model extension

@@ -2,6 +2,7 @@ import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/chat_translations.dart";
+import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/services/date_formatter.dart";
 import "package:flutter_profile/flutter_profile.dart";
 
@@ -39,39 +40,41 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
-    return chatOptions.builders.chatScreenScaffoldBuilder?.call(
-          context,
-          _AppBar(
-            userId: userId,
-            chatOptions: chatOptions,
-            chatService: chatService,
-          ),
-          _Body(
-            userId: userId,
-            chatOptions: chatOptions,
-            chatService: chatService,
-            onPressChat: onPressChat,
-            onPressStartChat: onPressStartChat,
-            onDeleteChat: onDeleteChat,
-          ),
-          theme.scaffoldBackgroundColor,
-        ) ??
-        Scaffold(
-          appBar: _AppBar(
-            userId: userId,
-            chatOptions: chatOptions,
-            chatService: chatService,
-          ),
-          body: _Body(
-            userId: userId,
-            chatOptions: chatOptions,
-            chatService: chatService,
-            onPressChat: onPressChat,
-            onPressStartChat: onPressStartChat,
-            onDeleteChat: onDeleteChat,
-          ),
-        );
+    if (chatOptions.builders.baseScreenBuilder == null) {
+      return Scaffold(
+        appBar: _AppBar(
+          userId: userId,
+          chatOptions: chatOptions,
+          chatService: chatService,
+        ),
+        body: _Body(
+          userId: userId,
+          chatOptions: chatOptions,
+          chatService: chatService,
+          onPressChat: onPressChat,
+          onPressStartChat: onPressStartChat,
+          onDeleteChat: onDeleteChat,
+        ),
+      );
+    }
+
+    return chatOptions.builders.baseScreenBuilder!.call(
+      context,
+      this.mapScreenType,
+      _AppBar(
+        userId: userId,
+        chatOptions: chatOptions,
+        chatService: chatService,
+      ),
+      _Body(
+        userId: userId,
+        chatOptions: chatOptions,
+        chatService: chatService,
+        onPressChat: onPressChat,
+        onPressStartChat: onPressStartChat,
+        onDeleteChat: onDeleteChat,
+      ),
+    );
   }
 }
 
@@ -395,9 +398,13 @@ class _ChatListItem extends StatelessWidget {
 
           var data = snapshot.data;
 
+          var showUnreadMessageCount =
+              data != null && data.senderId != currentUserId;
+
           return _ChatRow(
             title: chat.chatName ?? translations.groupNameEmpty,
-            unreadMessages: chat.unreadMessageCount,
+            unreadMessages:
+                showUnreadMessageCount ? chat.unreadMessageCount : 0,
             subTitle: data != null
                 ? data.isTextMessage
                     ? data.text
@@ -465,8 +472,12 @@ class _ChatListItem extends StatelessWidget {
 
             var data = snapshot.data;
 
+            var showUnreadMessageCount =
+                data != null && data.senderId != currentUserId;
+
             return _ChatRow(
-              unreadMessages: chat.unreadMessageCount,
+              unreadMessages:
+                  showUnreadMessageCount ? chat.unreadMessageCount : 0,
               avatar: options.builders.userAvatarBuilder?.call(
                     context,
                     otherUser,

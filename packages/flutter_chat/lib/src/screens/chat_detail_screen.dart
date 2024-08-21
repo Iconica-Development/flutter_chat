@@ -5,6 +5,7 @@ import "package:cached_network_image/cached_network_image.dart";
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/creation/widgets/image_picker.dart";
 import "package:flutter_chat/src/services/date_formatter.dart";
 import "package:flutter_profile/flutter_profile.dart";
@@ -85,46 +86,47 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
+    if (widget.chatOptions.builders.baseScreenBuilder == null) {
+      return Scaffold(
+        appBar: _AppBar(
+          chatTitle: chatTitle,
+          chatOptions: widget.chatOptions,
+          onPressChatTitle: widget.onPressChatTitle,
+          chatModel: widget.chat,
+        ),
+        body: _Body(
+          chatService: widget.chatService,
+          options: widget.chatOptions,
+          chat: widget.chat,
+          currentUserId: widget.userId,
+          onPressUserProfile: widget.onPressUserProfile,
+          onUploadImage: widget.onUploadImage,
+          onMessageSubmit: widget.onMessageSubmit,
+          onReadChat: widget.onReadChat,
+        ),
+      );
+    }
 
-    return widget.chatOptions.builders.chatDetailScaffoldBuilder?.call(
-          context,
-          _AppBar(
-            chatTitle: chatTitle,
-            chatOptions: widget.chatOptions,
-            onPressChatTitle: widget.onPressChatTitle,
-            chatModel: widget.chat,
-          ),
-          _Body(
-            chatService: widget.chatService,
-            options: widget.chatOptions,
-            chat: widget.chat,
-            currentUserId: widget.userId,
-            onPressUserProfile: widget.onPressUserProfile,
-            onUploadImage: widget.onUploadImage,
-            onMessageSubmit: widget.onMessageSubmit,
-            onReadChat: widget.onReadChat,
-          ),
-          theme.scaffoldBackgroundColor,
-        ) ??
-        Scaffold(
-          appBar: _AppBar(
-            chatTitle: chatTitle,
-            chatOptions: widget.chatOptions,
-            onPressChatTitle: widget.onPressChatTitle,
-            chatModel: widget.chat,
-          ),
-          body: _Body(
-            chatService: widget.chatService,
-            options: widget.chatOptions,
-            chat: widget.chat,
-            currentUserId: widget.userId,
-            onPressUserProfile: widget.onPressUserProfile,
-            onUploadImage: widget.onUploadImage,
-            onMessageSubmit: widget.onMessageSubmit,
-            onReadChat: widget.onReadChat,
-          ),
-        );
+    return widget.chatOptions.builders.baseScreenBuilder!.call(
+      context,
+      widget.mapScreenType,
+      _AppBar(
+        chatTitle: chatTitle,
+        chatOptions: widget.chatOptions,
+        onPressChatTitle: widget.onPressChatTitle,
+        chatModel: widget.chat,
+      ),
+      _Body(
+        chatService: widget.chatService,
+        options: widget.chatOptions,
+        chat: widget.chat,
+        currentUserId: widget.userId,
+        onPressUserProfile: widget.onPressUserProfile,
+        onUploadImage: widget.onUploadImage,
+        onMessageSubmit: widget.onMessageSubmit,
+        onReadChat: widget.onReadChat,
+      ),
+    );
   }
 }
 

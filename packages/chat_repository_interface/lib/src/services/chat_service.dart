@@ -188,16 +188,8 @@ class ChatService {
   /// Returns a [Stream] of [int].
   Stream<int> getUnreadMessagesCount({
     required String userId,
-    String? chatId,
   }) {
-    if (chatId == null) {
-      return chatRepository.getUnreadMessagesCount(userId: userId);
-    }
-
-    return chatRepository.getUnreadMessagesCount(
-      userId: userId,
-      chatId: chatId,
-    );
+    return chatRepository.getUnreadMessagesCount(userId: userId);
   }
 
   /// Upload an image with the given parameters.
@@ -218,8 +210,17 @@ class ChatService {
   /// Returns a [Future] of [void].
   Future<void> markAsRead({
     required String chatId,
+    required String userId,
   }) async {
     var chat = await chatRepository.getChat(chatId: chatId).first;
+
+    if (chat.lastMessage == null) return;
+
+    var lastMessage = await chatRepository
+        .getMessage(chatId: chatId, messageId: chat.lastMessage!)
+        .first;
+
+    if (lastMessage != null && lastMessage.senderId == userId) return;
 
     var newChat = chat.copyWith(
       lastUsed: DateTime.now(),
