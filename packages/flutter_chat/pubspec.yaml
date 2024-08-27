@@ -1,29 +1,27 @@
 name: flutter_chat
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
-publish_to: 'none'
+publish_to: "none"
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
+  sdk: ">=3.4.3 <4.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  
+
   cached_network_image: ^3.2.2
   intl: any
-  
+
   flutter_image_picker:
-    git:
-      url: https://github.com/Iconica-Development/flutter_image_picker
-      ref: 1.0.5
+    hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
+    version: ^4.0.0
   flutter_profile:
     git:
       ref: 1.6.0
       url: https://github.com/Iconica-Development/flutter_profile
-  chat_repository_interface: 
+  chat_repository_interface:
     path: ../chat_repository_interface
 
 dev_dependencies:
@@ -33,5 +31,3 @@ dev_dependencies:
     git:
       url: https://github.com/Iconica-Development/flutter_iconica_analysis
       ref: 7.0.0
-
-flutter:

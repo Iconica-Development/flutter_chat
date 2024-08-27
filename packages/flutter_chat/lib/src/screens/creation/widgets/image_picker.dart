@@ -10,54 +10,58 @@ Future<void> onPressSelectImage(
   BuildContext context,
   ChatOptions options,
   Function(Uint8List image) onUploadImage,
-) async =>
-    showModalBottomSheet<Uint8List?>(
-      context: context,
-      builder: (BuildContext context) =>
-          options.builders.imagePickerContainerBuilder?.call(
-            context,
-            () => Navigator.of(context).pop(),
-            options.translations,
-          ) ??
-          Container(
-            padding: const EdgeInsets.all(8.0),
-            color: Colors.white,
-            child: ImagePicker(
-              imagePickerTheme: ImagePickerTheme(
-                title: options.translations.imagePickerTitle,
-                titleTextSize: 16,
-                titleAlignment: TextAlign.center,
-                iconSize: 60.0,
-                makePhotoText: options.translations.takePicture,
-                selectImageText: options.translations.uploadFile,
-                selectImageIcon: const Icon(
-                  Icons.insert_drive_file_rounded,
-                  size: 60,
-                ),
+) async {
+  var theme = Theme.of(context);
+  return showModalBottomSheet<Uint8List?>(
+    context: context,
+    builder: (BuildContext context) =>
+        options.builders.imagePickerContainerBuilder?.call(
+          context,
+          () => Navigator.of(context).pop(),
+          options.translations,
+        ) ??
+        Container(
+          padding: const EdgeInsets.all(8.0),
+          color: Colors.white,
+          child: ImagePicker(
+            theme: ImagePickerTheme(
+              titleStyle: theme.textTheme.titleMedium,
+              iconSize: 40,
+              selectImageText: "UPLOAD FILE",
+              makePhotoText: "TAKE PICTURE",
+              selectImageIcon: const Icon(
+                size: 40,
+                Icons.insert_drive_file,
               ),
-              customButton: TextButton(
-                onPressed: () => Navigator.of(context).pop(),
+              closeButtonBuilder: (onTap) => TextButton(
+                onPressed: () {
+                  onTap();
+                },
                 child: Text(
-                  options.translations.cancelImagePickerBtn,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  "Cancel",
+                  style: theme.textTheme.bodyMedium!.copyWith(
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
             ),
           ),
-    ).then(
-      (image) async {
-        if (image == null) return;
-        var messenger = ScaffoldMessenger.of(context)
-          ..showSnackBar(
-            _getImageLoadingSnackbar(options.translations),
-          )
-          ..activate();
-        await onUploadImage(image);
-        Future.delayed(const Duration(seconds: 1), () {
-          messenger.hideCurrentSnackBar();
-        });
-      },
-    );
+        ),
+  ).then(
+    (image) async {
+      if (image == null) return;
+      var messenger = ScaffoldMessenger.of(context)
+        ..showSnackBar(
+          _getImageLoadingSnackbar(options.translations),
+        )
+        ..activate();
+      await onUploadImage(image);
+      Future.delayed(const Duration(seconds: 1), () {
+        messenger.hideCurrentSnackBar();
+      });
+    },
+  );
+}
 
 SnackBar _getImageLoadingSnackbar(ChatTranslations translations) => SnackBar(
       duration: const Duration(minutes: 1),
