@@ -1,8 +1,7 @@
 name: flutter_chat
 description: "A new Flutter package project."
 version: 0.0.1
-homepage: https://www.iconica.app
-publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub
+publish_to: "none"
 
 environment:
   sdk: ">=3.4.3 <4.0.0"
@@ -32,5 +31,3 @@ dev_dependencies:
     git:
       url: https://github.com/Iconica-Development/flutter_iconica_analysis
       ref: 7.0.0
-
-flutter:
