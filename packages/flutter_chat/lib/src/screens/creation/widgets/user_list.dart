@@ -62,15 +62,17 @@ class _UserListState extends State<UserList> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var translations = widget.options.translations;
-    filteredUsers = users
-        .where(
-          (user) =>
-              user.fullname?.toLowerCase().contains(
-                    widget.query.toLowerCase(),
-                  ) ??
-              false,
-        )
-        .toList();
+    filteredUsers = widget.query.isNotEmpty
+        ? users
+            .where(
+              (user) =>
+                  user.fullname?.toLowerCase().contains(
+                        widget.query.toLowerCase(),
+                      ) ??
+                  false,
+            )
+            .toList()
+        : users;
     return Padding(
       padding: const EdgeInsets.only(top: 8, left: 12, right: 12, bottom: 80),
       child: ListView.builder(
@@ -78,7 +80,6 @@ class _UserListState extends State<UserList> {
         itemBuilder: (context, index) {
           var user = filteredUsers[index];
           var isSelected = widget.selectedUsers.any((u) => u.id == user.id);
-
           return InkWell(
             onTap: () async {
               if (widget.creatingGroup) {
