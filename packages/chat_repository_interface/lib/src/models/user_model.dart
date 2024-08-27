@@ -16,9 +16,9 @@ class UserModel {
 
   factory UserModel.fromMap(String id, Map<String, dynamic> data) => UserModel(
         id: id,
-        firstName: data["firstName"],
-        lastName: data["lastName"],
-        imageUrl: data["imageUrl"],
+        firstName: data["first_name"],
+        lastName: data["last_name"],
+        imageUrl: data["image_url"],
       );
 
   /// The user id
