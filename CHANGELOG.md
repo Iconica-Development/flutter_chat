@@ -1,3 +1,6 @@
+## 4.0.0
+- Move to the new user story architecture
+
 ## 3.1.0
 - Fix center the texts for no users found with search and type first message
 - Fix styling for the whole userstory
