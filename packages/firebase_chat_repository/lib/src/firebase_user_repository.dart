@@ -1,41 +1,36 @@
-import 'package:chat_repository_interface/chat_repository_interface.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import "package:chat_repository_interface/chat_repository_interface.dart";
+import "package:cloud_firestore/cloud_firestore.dart";
 
+/// Firebase implementation of a user respository for chats.
 class FirebaseUserRepository implements UserRepositoryInterface {
-  final FirebaseFirestore _firestore;
-  final String userCollection;
-
+  /// Creates a firebase implementation of a user respository for chats.
   FirebaseUserRepository({
     FirebaseFirestore? firestore,
-    this.userCollection = 'users',
-  }) : _firestore = firestore ?? FirebaseFirestore.instance;
+    String userCollection = "users",
+  })  : _userCollection = userCollection,
+        _firestore = firestore ?? FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  final String _userCollection;
 
   @override
-  Stream<List<UserModel>> getAllUsers() {
-    return _firestore
-        .collection(userCollection)
-        .snapshots()
-        .map((querySnapshot) {
-      return querySnapshot.docs
-          .map((doc) => UserModel.fromMap(
-                doc.id,
-                doc.data(),
-              ))
-          .toList();
-    });
-  }
+  Stream<List<UserModel>> getAllUsers() =>
+      _firestore.collection(_userCollection).snapshots().map(
+            (querySnapshot) => querySnapshot.docs
+                .map(
+                  (doc) => UserModel.fromMap(
+                    doc.id,
+                    doc.data(),
+                  ),
+                )
+                .toList(),
+          );
 
   @override
-  Stream<UserModel> getUser({required String userId}) {
-    return _firestore
-        .collection(userCollection)
-        .doc(userId)
-        .snapshots()
-        .map((snapshot) {
-      return UserModel.fromMap(
-        snapshot.id,
-        snapshot.data() as Map<String, dynamic>,
-      );
-    });
-  }
+  Stream<UserModel> getUser({required String userId}) =>
+      _firestore.collection(_userCollection).doc(userId).snapshots().map(
+            (snapshot) => UserModel.fromMap(
+              snapshot.id,
+              snapshot.data()!,
+            ),
+          );
 }

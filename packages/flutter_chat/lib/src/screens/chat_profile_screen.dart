@@ -35,6 +35,7 @@ class ChatProfileScreen extends StatelessWidget {
   /// Callback function triggered when a user is tapped
   final Function(String)? onTapUser;
 
+  /// instance of a chat service
   final ChatService service;
 
   /// Callback function triggered when the start chat button is pressed
@@ -135,6 +136,76 @@ class _Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+
+    var chatUserDisplay = Wrap(
+      children: [
+        ...chat!.users.map(
+          (tappedUser) => Padding(
+            padding: const EdgeInsets.only(
+              bottom: 8,
+              right: 8,
+            ),
+            child: InkWell(
+              onTap: () {
+                onTapUser?.call(tappedUser);
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FutureBuilder<UserModel>(
+                    future: service.getUser(userId: tappedUser).first,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+
+                      var user = snapshot.data;
+
+                      if (user == null) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return options.builders.userAvatarBuilder?.call(
+                            context,
+                            user,
+                            44,
+                          ) ??
+                          Avatar(
+                            boxfit: BoxFit.cover,
+                            user: User(
+                              firstName: user.firstName,
+                              lastName: user.lastName,
+                              imageUrl:
+                                  user.imageUrl != null || user.imageUrl != ""
+                                      ? user.imageUrl
+                                      : null,
+                            ),
+                            size: 60,
+                          );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+
+    var targetUser = user ??
+        (
+          chat != null
+              ? UserModel(
+                  id: UniqueKey().toString(),
+                  firstName: chat?.chatName,
+                  imageUrl: chat?.imageUrl,
+                )
+              : UserModel(
+                  id: UniqueKey().toString(),
+                  firstName: options.translations.groupNameEmpty,
+                ),
+        ) as UserModel;
     return Stack(
       children: [
         ListView(
@@ -145,20 +216,7 @@ class _Body extends StatelessWidget {
                 children: [
                   options.builders.userAvatarBuilder?.call(
                         context,
-                        user ??
-                            (
-                              chat != null
-                                  ? UserModel(
-                                      id: UniqueKey().toString(),
-                                      firstName: chat?.chatName,
-                                      imageUrl: chat?.imageUrl,
-                                    )
-                                  : UserModel(
-                                      id: UniqueKey().toString(),
-                                      firstName:
-                                          options.translations.groupNameEmpty,
-                                    ),
-                            ) as UserModel,
+                        targetUser,
                         60,
                       ) ??
                       Avatar(
@@ -223,65 +281,7 @@ class _Body extends StatelessWidget {
                     const SizedBox(
                       height: 12,
                     ),
-                    Wrap(
-                      children: [
-                        ...chat!.users.map(
-                          (tappedUser) => Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 8,
-                              right: 8,
-                            ),
-                            child: InkWell(
-                              onTap: () {
-                                onTapUser?.call(tappedUser);
-                              },
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  FutureBuilder<UserModel>(
-                                    future: service
-                                        .getUser(userId: tappedUser)
-                                        .first,
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return const CircularProgressIndicator();
-                                      }
-
-                                      var user = snapshot.data;
-
-                                      if (user == null) {
-                                        return const SizedBox.shrink();
-                                      }
-
-                                      return options.builders.userAvatarBuilder
-                                              ?.call(
-                                            context,
-                                            user,
-                                            44,
-                                          ) ??
-                                          Avatar(
-                                            boxfit: BoxFit.cover,
-                                            user: User(
-                                              firstName: user.firstName,
-                                              lastName: user.lastName,
-                                              imageUrl: user.imageUrl != null ||
-                                                      user.imageUrl != ""
-                                                  ? user.imageUrl
-                                                  : null,
-                                            ),
-                                            size: 60,
-                                          );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    chatUserDisplay,
                   ],
                 ),
               ),

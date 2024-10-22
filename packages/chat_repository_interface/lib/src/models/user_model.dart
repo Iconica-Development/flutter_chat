@@ -14,6 +14,14 @@ class UserModel {
     this.imageUrl,
   });
 
+  /// Creates a user based on a given map [data]
+  factory UserModel.fromMap(String id, Map<String, dynamic> data) => UserModel(
+        id: id,
+        firstName: data["first_name"],
+        lastName: data["last_name"],
+        imageUrl: data["image_url"],
+      );
+
   /// The user id
   final String id;
 
@@ -25,15 +33,6 @@ class UserModel {
 
   /// The user image url
   final String? imageUrl;
-
-  factory UserModel.fromMap(String id, Map<String, dynamic> data) {
-    return UserModel(
-      id: id,
-      firstName: data['firstName'],
-      lastName: data['lastName'],
-      imageUrl: data['imageUrl'],
-    );
-  }
 }
 
 /// Extension on [UserModel] to get the user full name
