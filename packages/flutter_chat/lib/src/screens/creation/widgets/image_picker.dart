@@ -50,6 +50,7 @@ Future<void> onPressSelectImage(
   ).then(
     (image) async {
       if (image == null) return;
+      if (!context.mounted) return;
       var messenger = ScaffoldMessenger.of(context)
         ..showSnackBar(
           _getImageLoadingSnackbar(options.translations),

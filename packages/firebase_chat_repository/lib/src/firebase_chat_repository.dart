@@ -4,20 +4,25 @@ import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_storage/firebase_storage.dart";
 
+/// Firebase implementation of the chat repository
 class FirebaseChatRepository implements ChatRepositoryInterface {
+  /// Creates a firebase implementation of the chat repository
   FirebaseChatRepository({
     FirebaseFirestore? firestore,
     FirebaseStorage? storage,
-    this.chatCollection = "chats",
-    this.messageCollection = "messages",
-    this.mediaPath = "chat",
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+    String chatCollection = "chats",
+    String messageCollection = "messages",
+    String mediaPath = "chat",
+  })  : _mediaPath = mediaPath,
+        _messageCollection = messageCollection,
+        _chatCollection = chatCollection,
+        _firestore = firestore ?? FirebaseFirestore.instance,
         _storage = storage ?? FirebaseStorage.instance;
   final FirebaseFirestore _firestore;
   final FirebaseStorage _storage;
-  final String chatCollection;
-  final String messageCollection;
-  final String mediaPath;
+  final String _chatCollection;
+  final String _messageCollection;
+  final String _mediaPath;
 
   @override
   Future<void> createChat({
@@ -36,17 +41,17 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
       "imageUrl": imageUrl,
       "createdAt": DateTime.now().millisecondsSinceEpoch,
     };
-    await _firestore.collection(chatCollection).add(chatData);
+    await _firestore.collection(_chatCollection).add(chatData);
   }
 
   @override
   Future<void> deleteChat({required String chatId}) async {
-    await _firestore.collection(chatCollection).doc(chatId).delete();
+    await _firestore.collection(_chatCollection).doc(chatId).delete();
   }
 
   @override
   Stream<ChatModel> getChat({required String chatId}) => _firestore
-          .collection(chatCollection)
+          .collection(_chatCollection)
           .doc(chatId)
           .snapshots()
           .map((snapshot) {
@@ -56,7 +61,7 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
 
   @override
   Stream<List<ChatModel>?> getChats({required String userId}) => _firestore
-      .collection(chatCollection)
+      .collection(_chatCollection)
       .where("users", arrayContains: userId)
       .snapshots()
       .map(
@@ -72,9 +77,9 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
     required String messageId,
   }) =>
       _firestore
-          .collection(chatCollection)
+          .collection(_chatCollection)
           .doc(chatId)
-          .collection(messageCollection)
+          .collection(_messageCollection)
           .doc(messageId)
           .snapshots()
           .map((snapshot) {
@@ -93,9 +98,9 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
     required int page,
   }) =>
       _firestore
-          .collection(chatCollection)
+          .collection(_chatCollection)
           .doc(chatId)
-          .collection(messageCollection)
+          .collection(_messageCollection)
           .orderBy("timestamp")
           .limit(pageSize)
           .snapshots()
@@ -116,7 +121,7 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
     String? chatId,
   }) async* {
     var query = _firestore
-        .collection(chatCollection)
+        .collection(_chatCollection)
         .where("users", arrayContains: userId)
         .where("unreadMessageCount", isGreaterThan: 0)
         .snapshots();
@@ -157,15 +162,15 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
     );
 
     await _firestore
-        .collection(chatCollection)
+        .collection(_chatCollection)
         .doc(chatId)
-        .collection(messageCollection)
+        .collection(_messageCollection)
         .doc(messageId)
         .set(
           message.toMap(),
         );
 
-    await _firestore.collection(chatCollection).doc(chatId).update(
+    await _firestore.collection(_chatCollection).doc(chatId).update(
       {
         "lastMessage": messageId,
         "unreadMessageCount": FieldValue.increment(1),
@@ -177,7 +182,7 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
   @override
   Future<void> updateChat({required ChatModel chat}) async {
     await _firestore
-        .collection(chatCollection)
+        .collection(_chatCollection)
         .doc(chat.id)
         .update(chat.toMap());
   }
@@ -187,7 +192,7 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
     required String path,
     required Uint8List image,
   }) async {
-    var ref = _storage.ref().child(mediaPath).child(path);
+    var ref = _storage.ref().child(_mediaPath).child(path);
     var uploadTask = ref.putData(image);
     var snapshot = await uploadTask.whenComplete(() => {});
     return snapshot.ref.getDownloadURL();

@@ -97,6 +97,7 @@ class ChatModel {
         unreadMessageCount: unreadMessageCount ?? this.unreadMessageCount,
       );
 
+  /// Creates a map representation of this object
   Map<String, dynamic> toMap() => {
         "users": users,
         "isGroupChat": isGroupChat,

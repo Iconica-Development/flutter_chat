@@ -16,6 +16,7 @@ class MessageModel {
     required this.senderId,
   });
 
+  /// Creates a message model instance given a map instance
   factory MessageModel.fromMap(String id, Map<String, dynamic> map) =>
       MessageModel(
         chatId: map["chatId"],
@@ -62,6 +63,7 @@ class MessageModel {
         senderId: senderId ?? this.senderId,
       );
 
+  /// Creates a map representation of this object
   Map<String, dynamic> toMap() => {
         "chatId": chatId,
         "text": text,

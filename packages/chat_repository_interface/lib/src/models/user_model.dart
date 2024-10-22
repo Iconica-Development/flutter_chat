@@ -14,6 +14,7 @@ class UserModel {
     this.imageUrl,
   });
 
+  /// Creates a user based on a given map [data]
   factory UserModel.fromMap(String id, Map<String, dynamic> data) => UserModel(
         id: id,
         firstName: data["first_name"],
