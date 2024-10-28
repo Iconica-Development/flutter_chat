@@ -1,0 +1,15 @@
+name: Iconica Standard Component Release Workflow
+# Workflow Caller version: 1.0.0
+
+on:
+  release:
+    types: [published]
+    
+  workflow_dispatch:
+
+jobs:
+  call-global-iconica-workflow:
+    uses: Iconica-Development/.github/.github/workflows/component-release.yml@master
+    secrets: inherit
+    permissions: write-all
+
