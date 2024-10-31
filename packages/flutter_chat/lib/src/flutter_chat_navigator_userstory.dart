@@ -117,7 +117,9 @@ class _NavigatorWrapper extends StatelessWidget {
             route(context, chatProfileScreen(context, user, null)),
         onUploadImage: (data) async {
           var path = await chatService.uploadImage(
-              path: "chats/${chat.id}-$userId-${DateTime.now()}", image: data);
+            path: "chats/${chat.id}-$userId-${DateTime.now()}",
+            image: data,
+          );
 
           await chatService.sendMessage(
             messageId: "${chat.id}-$userId-${DateTime.now()}",
@@ -191,7 +193,9 @@ class _NavigatorWrapper extends StatelessWidget {
           String? path;
           if (image != null) {
             path = await chatService.uploadImage(
-                path: "groups/$title", image: image);
+              path: "groups/$title",
+              image: image,
+            );
           }
           var chat = await createGroupChat(
             users,

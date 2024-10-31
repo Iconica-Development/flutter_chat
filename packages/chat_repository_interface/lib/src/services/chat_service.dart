@@ -188,9 +188,8 @@ class ChatService {
   /// Returns a [Stream] of [int].
   Stream<int> getUnreadMessagesCount({
     required String userId,
-  }) {
-    return chatRepository.getUnreadMessagesCount(userId: userId);
-  }
+  }) =>
+      chatRepository.getUnreadMessagesCount(userId: userId);
 
   /// Upload an image with the given parameters.
   /// [path] is the image path.
