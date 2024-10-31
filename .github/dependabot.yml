@@ -7,16 +7,11 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "pub"
-    directory: "/packages/flutter_chat_firebase"
+    directory: "/packages/flutter_chat_repository"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "pub"
-    directory: "/packages/flutter_chat_interface"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "pub"
-    directory: "/packages/flutter_chat_view"
+    directory: "/packages/chat_repository_interface"
     schedule:
       interval: "weekly"

@@ -1,3 +1,7 @@
+## 4.1.0
+- Update the cloud_firestore dependency constraint to ">=4.0.5 <6.0.0"
+- Update the firebase_storage dependency constraint to ">=11.0.5 <13.0.0"
+
 ## 4.0.0
 - Move to the new user story architecture
 
