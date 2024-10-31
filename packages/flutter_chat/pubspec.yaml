@@ -22,7 +22,7 @@ dependencies:
     version: ^1.6.0
   chat_repository_interface:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
-    version: ^1.0.0
+    version: ^4.0.0
 
 dev_dependencies:
   flutter_test:
