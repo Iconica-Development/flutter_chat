@@ -24,12 +24,15 @@ Future<void> onPressSelectImage(
             color: Colors.white,
             child: ImagePicker(
               theme: ImagePickerTheme(
+                spaceBetweenIcons: 32.0,
+                iconColor: Theme.of(context).primaryColor,
                 title: options.translations.imagePickerTitle,
                 titleStyle: Theme.of(context).textTheme.titleMedium,
                 iconSize: 60.0,
                 makePhotoText: options.translations.takePicture,
                 selectImageText: options.translations.uploadFile,
-                selectImageIcon: const Icon(
+                selectImageIcon: Icon(
+                  color: Theme.of(context).primaryColor,
                   Icons.insert_drive_file_rounded,
                   size: 60,
                 ),
