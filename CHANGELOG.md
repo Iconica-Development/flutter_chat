@@ -1,3 +1,6 @@
+## 5.0.0 - WIP
+- Get the color for the imagepicker from the Theme's primaryColor
+
 ## 4.0.0
 - Move to the new user story architecture
 
