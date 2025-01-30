@@ -1,5 +1,6 @@
 ## 5.0.0 - WIP
 - Get the color for the imagepicker from the Theme's primaryColor
+- Added chatMessageBuilder to the userstory configuration to customize the chat messages
 
 ## 4.0.0
 - Move to the new user story architecture
