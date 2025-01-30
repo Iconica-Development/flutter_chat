@@ -17,6 +17,7 @@ class ChatBuilders {
     this.newChatButtonBuilder,
     this.noUsersPlaceholderBuilder,
     this.chatTitleBuilder,
+    this.chatMessageBuilder,
     this.usernameBuilder,
     this.loadingWidgetBuilder,
   });
@@ -62,6 +63,9 @@ class ChatBuilders {
   /// The chat title builder
   final Widget Function(String chatTitle)? chatTitleBuilder;
 
+  /// The chat message builder
+  final ChatMessageBuilder? chatMessageBuilder;
+
   /// The username builder
   final Widget Function(String userFullName)? usernameBuilder;
 
@@ -106,6 +110,17 @@ typedef BaseScreenBuilder = Widget Function(
 typedef ContainerBuilder = Widget Function(
   BuildContext context,
   Widget child,
+);
+
+/// The chat message builder
+/// This builder is used to override the default chat message widget
+/// If null is returned, the default chat message widget will be used so you can
+/// override for specific cases
+/// [previousMessage] is the previous message in the chat
+typedef ChatMessageBuilder = Widget? Function(
+  BuildContext context,
+  MessageModel message,
+  MessageModel? previousMessage,
 );
 
 /// The group avatar builder

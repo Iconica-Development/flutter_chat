@@ -86,46 +86,36 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var appBar = _AppBar(
+      chatTitle: chatTitle,
+      chatOptions: widget.chatOptions,
+      onPressChatTitle: widget.onPressChatTitle,
+      chatModel: widget.chat,
+    );
+
+    var body = _Body(
+      chatService: widget.chatService,
+      options: widget.chatOptions,
+      chat: widget.chat,
+      currentUserId: widget.userId,
+      onPressUserProfile: widget.onPressUserProfile,
+      onUploadImage: widget.onUploadImage,
+      onMessageSubmit: widget.onMessageSubmit,
+      onReadChat: widget.onReadChat,
+    );
+
     if (widget.chatOptions.builders.baseScreenBuilder == null) {
       return Scaffold(
-        appBar: _AppBar(
-          chatTitle: chatTitle,
-          chatOptions: widget.chatOptions,
-          onPressChatTitle: widget.onPressChatTitle,
-          chatModel: widget.chat,
-        ),
-        body: _Body(
-          chatService: widget.chatService,
-          options: widget.chatOptions,
-          chat: widget.chat,
-          currentUserId: widget.userId,
-          onPressUserProfile: widget.onPressUserProfile,
-          onUploadImage: widget.onUploadImage,
-          onMessageSubmit: widget.onMessageSubmit,
-          onReadChat: widget.onReadChat,
-        ),
+        appBar: appBar,
+        body: body,
       );
     }
 
     return widget.chatOptions.builders.baseScreenBuilder!.call(
       context,
       widget.mapScreenType,
-      _AppBar(
-        chatTitle: chatTitle,
-        chatOptions: widget.chatOptions,
-        onPressChatTitle: widget.onPressChatTitle,
-        chatModel: widget.chat,
-      ),
-      _Body(
-        chatService: widget.chatService,
-        options: widget.chatOptions,
-        chat: widget.chat,
-        currentUserId: widget.userId,
-        onPressUserProfile: widget.onPressUserProfile,
-        onUploadImage: widget.onUploadImage,
-        onMessageSubmit: widget.onMessageSubmit,
-        onReadChat: widget.onReadChat,
-      ),
+      appBar,
+      body,
     );
   }
 }
@@ -375,16 +365,53 @@ class _ChatBottomState extends State<_ChatBottom> {
     var theme = Theme.of(context);
 
     _textEditingController.addListener(() {
-      if (_textEditingController.text.isEmpty) {
-        setState(() {
-          _isTyping = false;
-        });
-      } else {
-        setState(() {
-          _isTyping = true;
-        });
-      }
+      setState(() {
+        _isTyping = _textEditingController.text.isNotEmpty;
+      });
     });
+
+    Future<void> sendMessage() async {
+      setState(() {
+        _isSending = true;
+      });
+
+      var value = _textEditingController.text;
+      if (value.isNotEmpty) {
+        await widget.onMessageSubmit(value);
+        _textEditingController.clear();
+      }
+      setState(() {
+        _isSending = false;
+      });
+    }
+
+    Future<void> Function()? onClickSendMessage;
+    if (_isTyping && !_isSending) {
+      onClickSendMessage = () async => sendMessage();
+    }
+
+    var messageSendButtons = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          onPressed: widget.onPressSelectImage,
+          icon: Icon(
+            Icons.image_outlined,
+            color: widget.options.iconEnabledColor,
+          ),
+        ),
+        IconButton(
+          disabledColor: widget.options.iconDisabledColor,
+          color: widget.options.iconEnabledColor,
+          onPressed: onClickSendMessage,
+          icon: const Icon(
+            Icons.send,
+          ),
+        ),
+      ],
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 12,
@@ -395,44 +422,7 @@ class _ChatBottomState extends State<_ChatBottom> {
         child: widget.options.builders.messageInputBuilder?.call(
               context,
               _textEditingController,
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: widget.onPressSelectImage,
-                    icon: Icon(
-                      Icons.image_outlined,
-                      color: widget.options.iconEnabledColor,
-                    ),
-                  ),
-                  IconButton(
-                    disabledColor: widget.options.iconDisabledColor,
-                    color: widget.options.iconEnabledColor,
-                    onPressed: _isTyping && !_isSending
-                        ? () async {
-                            setState(() {
-                              _isSending = true;
-                            });
-
-                            var value = _textEditingController.text;
-
-                            if (value.isNotEmpty) {
-                              await widget.onMessageSubmit(value);
-                              _textEditingController.clear();
-                            }
-
-                            setState(() {
-                              _isSending = false;
-                            });
-                          }
-                        : null,
-                    icon: const Icon(
-                      Icons.send,
-                    ),
-                  ),
-                ],
-              ),
+              messageSendButtons,
               widget.options.translations,
             ) ??
             TextField(
@@ -468,43 +458,7 @@ class _ChatBottomState extends State<_ChatBottom> {
                   ),
                   borderSide: BorderSide.none,
                 ),
-                suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: widget.onPressSelectImage,
-                      icon: Icon(
-                        Icons.image_outlined,
-                        color: widget.options.iconEnabledColor,
-                      ),
-                    ),
-                    IconButton(
-                      disabledColor: widget.options.iconDisabledColor,
-                      color: widget.options.iconEnabledColor,
-                      onPressed: _isTyping && !_isSending
-                          ? () async {
-                              setState(() {
-                                _isSending = true;
-                              });
-
-                              var value = _textEditingController.text;
-
-                              if (value.isNotEmpty) {
-                                await widget.onMessageSubmit(value);
-                                _textEditingController.clear();
-                              }
-
-                              setState(() {
-                                _isSending = false;
-                              });
-                            }
-                          : null,
-                      icon: const Icon(
-                        Icons.send,
-                      ),
-                    ),
-                  ],
-                ),
+                suffixIcon: messageSendButtons,
               ),
             ),
       ),
@@ -557,123 +511,130 @@ class _ChatBubbleState extends State<_ChatBubble> {
 
         var user = snapshot.data!;
 
-        return Padding(
-          padding: EdgeInsets.only(
-            top: isNewDate || isSameSender ? 25.0 : 0,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (isNewDate || isSameSender) ...[
-                InkWell(
-                  onTap: () => widget.onPressUserProfile(user),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: user.imageUrl?.isNotEmpty ?? false
-                        ? _ChatImage(
-                            image: user.imageUrl!,
-                          )
-                        : widget.options.builders.userAvatarBuilder?.call(
-                              context,
-                              user,
-                              40,
-                            ) ??
-                            Avatar(
-                              key: ValueKey(user.id),
-                              boxfit: BoxFit.cover,
-                              user: User(
-                                firstName: user.firstName,
-                                lastName: user.lastName,
-                                imageUrl:
-                                    user.imageUrl != "" ? user.imageUrl : null,
-                              ),
-                              size: 40,
-                            ),
-                  ),
-                ),
-              ] else ...[
-                const SizedBox(
-                  width: 50,
-                ),
-              ],
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      if (isNewDate || isSameSender) ...[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: widget.options.builders.usernameBuilder
-                                      ?.call(
-                                    user.fullname ?? "",
-                                  ) ??
-                                  Text(
-                                    user.fullname ?? translations.anonymousUser,
-                                    style: theme.textTheme.titleMedium,
+        return widget.options.builders.chatMessageBuilder?.call(
+              context,
+              widget.message,
+              widget.previousMessage,
+            ) ??
+            Padding(
+              padding: EdgeInsets.only(
+                top: isNewDate || isSameSender ? 25.0 : 0,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (isNewDate || isSameSender) ...[
+                    InkWell(
+                      onTap: () => widget.onPressUserProfile(user),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: user.imageUrl?.isNotEmpty ?? false
+                            ? _ChatImage(
+                                image: user.imageUrl!,
+                              )
+                            : widget.options.builders.userAvatarBuilder?.call(
+                                  context,
+                                  user,
+                                  40,
+                                ) ??
+                                Avatar(
+                                  key: ValueKey(user.id),
+                                  boxfit: BoxFit.cover,
+                                  user: User(
+                                    firstName: user.firstName,
+                                    lastName: user.lastName,
+                                    imageUrl: user.imageUrl != ""
+                                        ? user.imageUrl
+                                        : null,
                                   ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 5.0),
-                              child: Text(
-                                dateFormatter.format(
-                                  date: widget.message.timestamp,
-                                  showFullDate: true,
+                                  size: 40,
                                 ),
-                                style: theme.textTheme.labelSmall,
-                              ),
+                      ),
+                    ),
+                  ] else ...[
+                    const SizedBox(
+                      width: 50,
+                    ),
+                  ],
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 22.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          if (isNewDate || isSameSender) ...[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: widget.options.builders.usernameBuilder
+                                          ?.call(
+                                        user.fullname ?? "",
+                                      ) ??
+                                      Text(
+                                        user.fullname ??
+                                            translations.anonymousUser,
+                                        style: theme.textTheme.titleMedium,
+                                      ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 5.0),
+                                  child: Text(
+                                    dateFormatter.format(
+                                      date: widget.message.timestamp,
+                                      showFullDate: true,
+                                    ),
+                                    style: theme.textTheme.labelSmall,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
-                        ),
-                      ],
-                      Padding(
-                        padding: const EdgeInsets.only(top: 3.0),
-                        child: widget.message.isTextMessage
-                            ? Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      widget.message.text ?? "",
-                                      style: theme.textTheme.bodySmall,
-                                    ),
-                                  ),
-                                  if (widget.options.showTimes &&
-                                      !isSameMinute &&
-                                      !isNewDate &&
-                                      !hasHeader)
-                                    Text(
-                                      dateFormatter
-                                          .format(
-                                            date: widget.message.timestamp,
-                                            showFullDate: true,
-                                          )
-                                          .split(" ")
-                                          .last,
-                                      style: theme.textTheme.labelSmall,
-                                      textAlign: TextAlign.end,
-                                    ),
-                                ],
-                              )
-                            : widget.message.isImageMessage
-                                ? CachedNetworkImage(
-                                    imageUrl: widget.message.imageUrl ?? "",
+                          Padding(
+                            padding: const EdgeInsets.only(top: 3.0),
+                            child: widget.message.isTextMessage
+                                ? Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          widget.message.text ?? "",
+                                          style: theme.textTheme.bodySmall,
+                                        ),
+                                      ),
+                                      if (widget.options.showTimes &&
+                                          !isSameMinute &&
+                                          !isNewDate &&
+                                          !hasHeader)
+                                        Text(
+                                          dateFormatter
+                                              .format(
+                                                date: widget.message.timestamp,
+                                                showFullDate: true,
+                                              )
+                                              .split(" ")
+                                              .last,
+                                          style: theme.textTheme.labelSmall,
+                                          textAlign: TextAlign.end,
+                                        ),
+                                    ],
                                   )
-                                : const SizedBox.shrink(),
+                                : widget.message.isImageMessage
+                                    ? CachedNetworkImage(
+                                        imageUrl: widget.message.imageUrl ?? "",
+                                      )
+                                    : const SizedBox.shrink(),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        );
+            );
       },
     );
   }
