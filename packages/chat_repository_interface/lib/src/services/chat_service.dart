@@ -155,12 +155,14 @@ class ChatService {
     required String senderId,
     required String messageId,
     String? text,
+    String? messageText,
     String? imageUrl,
   }) =>
       chatRepository.sendMessage(
         chatId: chatId,
         messageId: messageId,
         text: text,
+        messageType: messageText,
         senderId: senderId,
         imageUrl: imageUrl,
       );

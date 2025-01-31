@@ -1,4 +1,5 @@
 ## 5.0.0 - WIP
+- Added messageType to the ChatMessageModel to allow for different type of messages, it is nullable to remain backwards compatible
 - Get the color for the imagepicker from the Theme's primaryColor
 - Added chatMessageBuilder to the userstory configuration to customize the chat messages
 

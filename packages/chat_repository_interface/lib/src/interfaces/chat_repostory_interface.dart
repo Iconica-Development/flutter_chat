@@ -74,6 +74,7 @@ abstract class ChatRepositoryInterface {
     required String messageId,
     String? text,
     String? imageUrl,
+    String? messageType,
     DateTime? timestamp,
   });
 
