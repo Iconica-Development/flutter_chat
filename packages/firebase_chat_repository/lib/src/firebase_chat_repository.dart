@@ -150,6 +150,7 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
     required String messageId,
     String? text,
     String? imageUrl,
+    String? messageType,
     DateTime? timestamp,
   }) async {
     var message = MessageModel(
@@ -157,6 +158,7 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
       id: messageId,
       text: text,
       imageUrl: imageUrl,
+      messageType: messageType,
       timestamp: timestamp ?? DateTime.now(),
       senderId: senderId,
     );
