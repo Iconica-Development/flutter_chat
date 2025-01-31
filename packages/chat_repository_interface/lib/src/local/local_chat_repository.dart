@@ -50,6 +50,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
           chatId: chat.id,
           senderId: message.senderId,
           text: message.text,
+          messageType: message.messageType,
           imageUrl: message.imageUrl,
           timestamp: message.timestamp,
         );
@@ -182,6 +183,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
     required String messageId,
     String? text,
     String? imageUrl,
+    String? messageType,
     DateTime? timestamp,
   }) async {
     var message = MessageModel(
@@ -189,6 +191,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
       id: messageId,
       timestamp: timestamp ?? DateTime.now(),
       text: text,
+      messageType: messageType,
       senderId: senderId,
       imageUrl: imageUrl,
     );

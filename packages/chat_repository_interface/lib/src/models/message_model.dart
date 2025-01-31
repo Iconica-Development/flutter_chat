@@ -11,6 +11,7 @@ class MessageModel {
     required this.chatId,
     required this.id,
     required this.text,
+    required this.messageType,
     required this.imageUrl,
     required this.timestamp,
     required this.senderId,
@@ -22,6 +23,7 @@ class MessageModel {
         chatId: map["chatId"],
         id: id,
         text: map["text"],
+        messageType: map["messageType"],
         imageUrl: map["imageUrl"],
         timestamp: DateTime.fromMillisecondsSinceEpoch(map["timestamp"]),
         senderId: map["senderId"],
@@ -35,6 +37,9 @@ class MessageModel {
 
   /// The message text
   final String? text;
+
+  /// The type of message for instance (user, system, etc)
+  final String? messageType;
 
   /// The message image url
   final String? imageUrl;
@@ -50,6 +55,7 @@ class MessageModel {
     String? chatId,
     String? id,
     String? text,
+    String? messageType,
     String? imageUrl,
     DateTime? timestamp,
     String? senderId,
@@ -58,6 +64,7 @@ class MessageModel {
         chatId: chatId ?? this.chatId,
         id: id ?? this.id,
         text: text ?? this.text,
+        messageType: messageType ?? this.messageType,
         imageUrl: imageUrl ?? this.imageUrl,
         timestamp: timestamp ?? this.timestamp,
         senderId: senderId ?? this.senderId,
@@ -67,6 +74,7 @@ class MessageModel {
   Map<String, dynamic> toMap() => {
         "chatId": chatId,
         "text": text,
+        "messageType": messageType,
         "imageUrl": imageUrl,
         "timestamp": timestamp.millisecondsSinceEpoch,
         "senderId": senderId,
