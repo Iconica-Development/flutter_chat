@@ -1,5 +1,5 @@
-import "dart:ui";
-
+import "package:chat_repository_interface/chat_repository_interface.dart";
+import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_builders.dart";
 import "package:flutter_chat/src/config/chat_translations.dart";
 
@@ -10,11 +10,15 @@ class ChatOptions {
   const ChatOptions({
     this.dateformat,
     this.groupChatEnabled = true,
-    this.showTimes = true,
+    this.enableLoadingIndicator = false,
     this.translations = const ChatTranslations.empty(),
     this.builders = const ChatBuilders(),
-    this.iconEnabledColor = const Color(0xFF212121),
-    this.iconDisabledColor = const Color(0xFF9E9E9E),
+    this.spacing = const ChatSpacing(),
+    this.messageTheme,
+    this.messageThemeResolver = _defaultMessageThemeResolver,
+    this.iconEnabledColor,
+    this.iconDisabledColor,
+    this.chatAlignment,
     this.onNoChats,
     this.pageSize = 20,
   });
@@ -29,21 +33,186 @@ class ChatOptions {
   /// [builders] is the chat builders.
   final ChatBuilders builders;
 
+  //// The spacing between elements of the chat
+  final ChatSpacing spacing;
+
   /// [groupChatEnabled] is a boolean that indicates if group chat is enabled.
   final bool groupChatEnabled;
 
-  /// [showTimes] is a boolean that indicates if the chat times are shown.
-  final bool showTimes;
-
   /// [iconEnabledColor] is the color of the enabled icon.
-  final Color iconEnabledColor;
+  /// Defaults to the [IconThemeData.color] of the current [Theme]
+  final Color? iconEnabledColor;
 
   /// [iconDisabledColor] is the color of the disabled icon.
-  final Color iconDisabledColor;
+  /// Defaults to the [ThemeData.disabledColor] of the current [Theme]
+  final Color? iconDisabledColor;
+
+  /// The default [MessageTheme] for the chat messages.
+  /// If not set, the default values are based on the current [Theme].
+  final MessageTheme? messageTheme;
+
+  /// If [messageThemeResolver] is set and returns null for a message,
+  /// the [messageTheme] will be used.
+  final MessageThemeResolver messageThemeResolver;
+
+  /// The alignment of the chatmessages in the ChatDetailScreen.
+  /// Defaults to [Alignment.bottomCenter]
+  final Alignment? chatAlignment;
+
+  /// Enable the loading indicator that is over the entire chat screen while
+  /// loading messages. Defaults to false. The streambuilder for chat messages
+  /// already shows a loading indicator. So this is an additional loading that
+  /// can be used for more customization.
+  final bool enableLoadingIndicator;
 
   /// [onNoChats] is a function that is triggered when there are no chats.
   final Function? onNoChats;
 
   /// [pageSize] is the number of chats to load at a time.
   final int pageSize;
+}
+
+/// Typedef for the messageThemeResolver function that is used to get a
+/// [MessageTheme] for a message. This can return null so you can fall back to
+/// default values for some messages.
+typedef MessageThemeResolver = MessageTheme? Function(
+  BuildContext context,
+  MessageModel message,
+  UserModel? sender,
+);
+
+/// The message theme
+class MessageTheme {
+  /// The message theme constructor
+  const MessageTheme({
+    this.backgroundColor,
+    this.nameColor,
+    this.borderColor,
+    this.textColor,
+    this.timeTextColor,
+    this.messageAlignment,
+    this.messageSidePadding,
+    this.textAlignment,
+    this.showName,
+    this.showTime,
+  });
+
+  ///
+  factory MessageTheme.fromTheme(ThemeData theme) => MessageTheme(
+        backgroundColor: theme.colorScheme.primary,
+        nameColor: theme.colorScheme.onPrimary,
+        borderColor: theme.colorScheme.primary,
+        textColor: theme.colorScheme.onPrimary,
+        timeTextColor: theme.colorScheme.onPrimary,
+        textAlignment: TextAlign.start,
+        messageSidePadding: 144.0,
+        messageAlignment: null,
+        showName: true,
+        showTime: true,
+      );
+
+  /// The alignment of the message in the chat
+  /// By default, the current user is aligned to the right and the other senders
+  /// are aligned to the left.
+  final TextAlign? messageAlignment;
+
+  /// The alignment of the text in the message
+  /// Defaults to [TextAlign.start]
+  final TextAlign? textAlignment;
+
+  /// The color of the message text
+  /// Defaults to [ThemeData.colorScheme.onPrimary]
+  final Color? textColor;
+
+  /// The color of the text displaying the time
+  /// Defaults to [ThemeData.colorScheme.onPrimary]
+  final Color? timeTextColor;
+
+  /// The color of the sender name
+  /// Defaults to [ThemeData.colorScheme.onPrimary]
+  final Color? nameColor;
+
+  /// The color of the message container background
+  /// Defaults to [ThemeData.colorScheme.primary]
+  final Color? backgroundColor;
+
+  /// The color of the border around the message
+  /// Defaults to [ThemeData.colorScheme.primaryColor]
+  final Color? borderColor;
+
+  /// The padding on the side of the message
+  /// If not set, the padding is 144.0
+  final double? messageSidePadding;
+
+  /// If the name of the sender should be shown above the message
+  /// Defaults to true
+  final bool? showName;
+
+  /// If the time of the message should be shown below the message
+  /// Defaults to true
+  final bool? showTime;
+
+  /// Creates a copy of the current object with the provided values
+  MessageTheme copyWith({
+    Color? backgroundColor,
+    Color? nameColor,
+    Color? borderColor,
+    Color? textColor,
+    Color? timeTextColor,
+    double? messageSidePadding,
+    TextAlign? messageAlignment,
+    TextAlign? textAlignment,
+    bool? showName,
+    bool? showTime,
+  }) =>
+      MessageTheme(
+        backgroundColor: backgroundColor ?? this.backgroundColor,
+        nameColor: nameColor ?? this.nameColor,
+        borderColor: borderColor ?? this.borderColor,
+        textColor: textColor ?? this.textColor,
+        timeTextColor: timeTextColor ?? this.timeTextColor,
+        messageSidePadding: messageSidePadding ?? this.messageSidePadding,
+        messageAlignment: messageAlignment ?? this.messageAlignment,
+        textAlignment: textAlignment ?? this.textAlignment,
+        showName: showName ?? this.showName,
+        showTime: showTime ?? this.showTime,
+      );
+
+  /// If a value is null in the first object, the value from the second object
+  /// is used.
+  MessageTheme operator |(MessageTheme other) => MessageTheme(
+        backgroundColor: backgroundColor ?? other.backgroundColor,
+        nameColor: nameColor ?? other.nameColor,
+        borderColor: borderColor ?? other.borderColor,
+        textColor: textColor ?? other.textColor,
+        timeTextColor: timeTextColor ?? other.timeTextColor,
+        messageSidePadding: messageSidePadding ?? other.messageSidePadding,
+        messageAlignment: messageAlignment ?? other.messageAlignment,
+        textAlignment: textAlignment ?? other.textAlignment,
+        showName: showName ?? other.showName,
+        showTime: showTime ?? other.showTime,
+      );
+}
+
+MessageTheme? _defaultMessageThemeResolver(
+  BuildContext context,
+  MessageModel message,
+  UserModel? sender,
+) =>
+    null;
+
+/// All configurable paddings and whitespaces within the userstory
+class ChatSpacing {
+  /// Creates a ChatSpacing object
+  const ChatSpacing({
+    this.chatBetweenMessagesPadding = 16.0,
+    this.chatSidePadding = 20.0,
+  });
+
+  /// The padding between the chat messages and the screen edge
+  final double chatSidePadding;
+
+  /// The padding between different chat messages if they are not from the same
+  /// sender.
+  final double chatBetweenMessagesPadding;
 }

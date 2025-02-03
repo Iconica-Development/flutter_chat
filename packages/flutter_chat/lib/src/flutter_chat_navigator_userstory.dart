@@ -7,7 +7,7 @@ import "dart:async";
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
-import "package:flutter_chat/src/screens/chat_detail_screen.dart";
+import "package:flutter_chat/src/screens/chat_detail/chat_detail_screen.dart";
 import "package:flutter_chat/src/screens/chat_profile_screen.dart";
 import "package:flutter_chat/src/screens/chat_screen.dart";
 import "package:flutter_chat/src/screens/creation/new_chat_screen.dart";
@@ -114,9 +114,6 @@ class _NavigatorWrapper extends StatelessWidget {
 
   Widget chatDetailScreen(BuildContext context, ChatModel chat) =>
       ChatDetailScreen(
-        userId: userId,
-        chatService: chatService,
-        chatOptions: chatOptions,
         chat: chat,
         onReadChat: (chat) async =>
             chatService.markAsRead(chatId: chat.id, userId: userId),
