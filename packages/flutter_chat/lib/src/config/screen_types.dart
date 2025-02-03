@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/screens/chat_detail_screen.dart";
+import "package:flutter_chat/src/screens/chat_detail/chat_detail_screen.dart";
 import "package:flutter_chat/src/screens/chat_profile_screen.dart";
 import "package:flutter_chat/src/screens/chat_screen.dart";
 import "package:flutter_chat/src/screens/creation/new_chat_screen.dart";

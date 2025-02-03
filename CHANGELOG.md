@@ -1,7 +1,10 @@
 ## 5.0.0 - WIP
+- Removed the default values for the ChatOptions that are now nullable so they resolve to the ThemeData values
+- Added chatAlignment to change the alignment of the chat messages
 - Added messageType to the ChatMessageModel to allow for different type of messages, it is nullable to remain backwards compatible
 - Get the color for the imagepicker from the Theme's primaryColor
 - Added chatMessageBuilder to the userstory configuration to customize the chat messages
+- Update the default chat message builder to a new design
 - Added ChatScope that can be used to get the ChatService and ChatTranslations from the context. If you use individual components instead of the userstory you need to wrap them with the ChatScope. The options and service will be removed from all the component constructors.
 
 ## 4.0.0
