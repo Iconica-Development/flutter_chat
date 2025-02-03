@@ -11,14 +11,19 @@ export "src/config/chat_options.dart";
 export "src/config/chat_translations.dart";
 export "src/config/screen_types.dart";
 
-// Screens
-export "src/screens/chat_detail_screen.dart";
+// Screens and widgets
+export "src/screens/chat_detail/chat_detail_screen.dart";
+export "src/screens/chat_detail/widgets/default_message_builder.dart";
+export "src/screens/chat_detail/widgets/old_message_builder.dart";
 export "src/screens/chat_profile_screen.dart";
 export "src/screens/chat_screen.dart";
 export "src/screens/creation/new_chat_screen.dart";
 export "src/screens/creation/new_group_chat_overview.dart";
 export "src/screens/creation/new_group_chat_screen.dart";
+
+// Services
 export "src/services/date_formatter.dart";
+export "src/services/pop_handler.dart";
 
 // Utils
 export "src/util/scope.dart";

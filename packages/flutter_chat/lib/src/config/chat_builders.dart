@@ -2,6 +2,8 @@ import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_translations.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
+import "package:flutter_chat/src/screens/chat_detail/widgets/default_loader.dart";
+import "package:flutter_chat/src/screens/chat_detail/widgets/default_message_builder.dart";
 
 /// The chat builders
 class ChatBuilders {
@@ -17,9 +19,9 @@ class ChatBuilders {
     this.newChatButtonBuilder,
     this.noUsersPlaceholderBuilder,
     this.chatTitleBuilder,
-    this.chatMessageBuilder,
+    this.chatMessageBuilder = DefaultChatMessageBuilder.builder,
     this.usernameBuilder,
-    this.loadingWidgetBuilder,
+    this.loadingWidgetBuilder = DefaultChatLoadingOverlay.builder,
   });
 
   /// The base screen builder
@@ -64,7 +66,7 @@ class ChatBuilders {
   final Widget Function(String chatTitle)? chatTitleBuilder;
 
   /// The chat message builder
-  final ChatMessageBuilder? chatMessageBuilder;
+  final ChatMessageBuilder chatMessageBuilder;
 
   /// The username builder
   final Widget Function(String userFullName)? usernameBuilder;
@@ -73,7 +75,7 @@ class ChatBuilders {
   final ImagePickerContainerBuilder? imagePickerContainerBuilder;
 
   /// The loading widget builder
-  final Widget? Function(BuildContext context)? loadingWidgetBuilder;
+  final Widget? Function(BuildContext context) loadingWidgetBuilder;
 }
 
 /// The button builder
@@ -121,6 +123,8 @@ typedef ChatMessageBuilder = Widget? Function(
   BuildContext context,
   MessageModel message,
   MessageModel? previousMessage,
+  UserModel user,
+  Function(UserModel user) onPressUserProfile,
 );
 
 /// The group avatar builder
