@@ -13,6 +13,8 @@ import "package:flutter_chat/src/screens/chat_screen.dart";
 import "package:flutter_chat/src/screens/creation/new_chat_screen.dart";
 import "package:flutter_chat/src/screens/creation/new_group_chat_overview.dart";
 import "package:flutter_chat/src/screens/creation/new_group_chat_screen.dart";
+import "package:flutter_chat/src/services/pop_handler.dart";
+import "package:flutter_chat/src/util/scope.dart";
 
 /// The flutter chat navigator userstory
 /// [userId] is the id of the user
@@ -44,29 +46,45 @@ class FlutterChatNavigatorUserstory extends StatefulWidget {
 
 class _FlutterChatNavigatorUserstoryState
     extends State<FlutterChatNavigatorUserstory> {
-  late ChatService chatService;
-  late ChatOptions chatOptions;
+  late ChatService _service = widget.chatService ?? ChatService();
+
+  late final PopHandler _popHandler = PopHandler();
 
   @override
-  void initState() {
-    chatService = widget.chatService ?? ChatService();
-    chatOptions = widget.chatOptions ?? const ChatOptions();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) => Navigator(
-        key: const ValueKey(
-          "chat_navigator",
-        ),
-        onGenerateRoute: (settings) => MaterialPageRoute(
-          builder: (context) => _NavigatorWrapper(
-            userId: widget.userId,
-            chatService: chatService,
-            chatOptions: chatOptions,
+  Widget build(BuildContext context) => ChatScope(
+        userId: widget.userId,
+        options: widget.chatOptions ?? const ChatOptions(),
+        service: _service,
+        popHandler: _popHandler,
+        child: NavigatorPopHandler(
+          // ignore: deprecated_member_use
+          onPop: _popHandler.handlePop,
+          child: Navigator(
+            key: const ValueKey(
+              "chat_navigator",
+            ),
+            onGenerateRoute: (settings) => MaterialPageRoute(
+              builder: (context) => _NavigatorWrapper(
+                userId: widget.userId,
+                chatService: _service,
+                chatOptions: widget.chatOptions ?? const ChatOptions(),
+              ),
+            ),
           ),
         ),
       );
+
+  @override
+  void didUpdateWidget(covariant FlutterChatNavigatorUserstory oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.userId != widget.userId ||
+        oldWidget.chatOptions != widget.chatOptions) {
+      setState(() {
+        _service = widget.chatService ?? ChatService();
+      });
+    }
+  }
 }
 
 class _NavigatorWrapper extends StatelessWidget {

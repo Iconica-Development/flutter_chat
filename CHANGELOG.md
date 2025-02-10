@@ -2,6 +2,7 @@
 - Added messageType to the ChatMessageModel to allow for different type of messages, it is nullable to remain backwards compatible
 - Get the color for the imagepicker from the Theme's primaryColor
 - Added chatMessageBuilder to the userstory configuration to customize the chat messages
+- Added ChatScope that can be used to get the ChatService and ChatTranslations from the context. If you use individual components instead of the userstory you need to wrap them with the ChatScope. The options and service will be removed from all the component constructors.
 
 ## 4.0.0
 - Move to the new user story architecture
