@@ -2,6 +2,7 @@ import "dart:async";
 import "dart:typed_data";
 
 import "package:chat_repository_interface/chat_repository_interface.dart";
+import "package:chat_repository_interface/src/local/local_memory_db.dart";
 import "package:collection/collection.dart";
 import "package:rxdart/rxdart.dart";
 
@@ -18,9 +19,6 @@ class LocalChatRepository implements ChatRepositoryInterface {
 
   final StreamController<List<MessageModel>> _messageController =
       BehaviorSubject<List<MessageModel>>();
-
-  final List<ChatModel> _chats = [];
-  final Map<String, List<MessageModel>> _messages = {};
 
   @override
   Future<void> createChat({
@@ -40,8 +38,8 @@ class LocalChatRepository implements ChatRepositoryInterface {
       imageUrl: imageUrl,
     );
 
-    _chats.add(chat);
-    _chatsController.add(_chats);
+    chats.add(chat);
+    _chatsController.add(chats);
 
     if (messages != null) {
       for (var message in messages) {
@@ -62,11 +60,11 @@ class LocalChatRepository implements ChatRepositoryInterface {
   Future<void> updateChat({
     required ChatModel chat,
   }) async {
-    var index = _chats.indexWhere((e) => e.id == chat.id);
+    var index = chats.indexWhere((e) => e.id == chat.id);
 
     if (index != -1) {
-      _chats[index] = chat;
-      _chatsController.add(_chats);
+      chats[index] = chat;
+      _chatsController.add(chats);
     }
   }
 
@@ -75,8 +73,8 @@ class LocalChatRepository implements ChatRepositoryInterface {
     required String chatId,
   }) async {
     try {
-      _chats.removeWhere((e) => e.id == chatId);
-      _chatsController.add(_chats);
+      chats.removeWhere((e) => e.id == chatId);
+      _chatsController.add(chats);
     } on Exception catch (_) {
       rethrow;
     }
@@ -86,7 +84,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
   Stream<ChatModel> getChat({
     required String chatId,
   }) {
-    var chat = _chats.firstWhereOrNull((e) => e.id == chatId);
+    var chat = chats.firstWhereOrNull((e) => e.id == chatId);
 
     if (chat != null) {
       _chatController.add(chat);
@@ -103,7 +101,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
   Stream<List<ChatModel>?> getChats({
     required String userId,
   }) {
-    _chatsController.add(_chats);
+    _chatsController.add(chats);
 
     return _chatsController.stream;
   }
@@ -117,10 +115,10 @@ class LocalChatRepository implements ChatRepositoryInterface {
   }) {
     ChatModel? chat;
 
-    chat = _chats.firstWhereOrNull((e) => e.id == chatId);
+    chat = chats.firstWhereOrNull((e) => e.id == chatId);
 
     if (chat != null) {
-      var messages = List<MessageModel>.from(_messages[chatId] ?? []);
+      var messages = List<MessageModel>.from(chatMessages[chatId] ?? []);
 
       messages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
@@ -171,7 +169,8 @@ class LocalChatRepository implements ChatRepositoryInterface {
     required String chatId,
     required String messageId,
   }) {
-    var message = _messages[chatId]?.firstWhereOrNull((e) => e.id == messageId);
+    var message =
+        chatMessages[chatId]?.firstWhereOrNull((e) => e.id == messageId);
 
     return Stream.value(message);
   }
@@ -196,13 +195,13 @@ class LocalChatRepository implements ChatRepositoryInterface {
       imageUrl: imageUrl,
     );
 
-    var chat = _chats.firstWhereOrNull((e) => e.id == chatId);
+    var chat = chats.firstWhereOrNull((e) => e.id == chatId);
 
     if (chat == null) throw Exception("Chat not found");
 
-    var messages = List<MessageModel>.from(_messages[chatId] ?? []);
+    var messages = List<MessageModel>.from(chatMessages[chatId] ?? []);
     messages.add(message);
-    _messages[chatId] = messages;
+    chatMessages[chatId] = messages;
 
     var newChat = chat.copyWith(
       lastMessage: messageId,
@@ -210,10 +209,10 @@ class LocalChatRepository implements ChatRepositoryInterface {
       lastUsed: DateTime.now(),
     );
 
-    _chats[_chats.indexWhere((e) => e.id == chatId)] = newChat;
+    chats[chats.indexWhere((e) => e.id == chatId)] = newChat;
 
-    _chatsController.add(_chats);
-    _messageController.add(_messages[chatId] ?? []);
+    _chatsController.add(chats);
+    _messageController.add(chatMessages[chatId] ?? []);
   }
 
   @override

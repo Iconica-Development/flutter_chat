@@ -33,4 +33,21 @@ class FirebaseUserRepository implements UserRepositoryInterface {
               snapshot.data()!,
             ),
           );
+
+  @override
+  Stream<List<UserModel>> getAllUsersForChat({required String chatId}) =>
+      _firestore
+          .collection(_userCollection)
+          .where("chats", arrayContains: chatId)
+          .snapshots()
+          .map(
+            (querySnapshot) => querySnapshot.docs
+                .map(
+                  (doc) => UserModel.fromMap(
+                    doc.id,
+                    doc.data(),
+                  ),
+                )
+                .toList(),
+          );
 }

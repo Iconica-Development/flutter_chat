@@ -6,6 +6,7 @@
 - Added chatMessageBuilder to the userstory configuration to customize the chat messages
 - Update the default chat message builder to a new design
 - Added ChatScope that can be used to get the ChatService and ChatTranslations from the context. If you use individual components instead of the userstory you need to wrap them with the ChatScope. The options and service will be removed from all the component constructors.
+- Added getAllUsersForChat to UserRepositoryInterface for fetching all users for a chat
 
 ## 4.0.0
 - Move to the new user story architecture
