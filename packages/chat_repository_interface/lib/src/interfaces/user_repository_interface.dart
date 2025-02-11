@@ -11,4 +11,8 @@ abstract class UserRepositoryInterface {
   /// Get all the users.
   /// Returns a list of [UserModel] stream.
   Stream<List<UserModel>> getAllUsers();
+
+  /// Get all the users for the given [chatId].
+  /// Returns a list of [UserModel] stream.
+  Stream<List<UserModel>> getAllUsersForChat({required String chatId});
 }
