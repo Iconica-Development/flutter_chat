@@ -15,15 +15,11 @@ import "package:flutter_profile/flutter_profile.dart";
 class NewGroupChatOverview extends HookWidget {
   /// Constructs a [NewGroupChatOverview]
   const NewGroupChatOverview({
-    required this.options,
     required this.onExit,
     required this.users,
     required this.onComplete,
     super.key,
   });
-
-  /// The chat options
-  final ChatOptions options;
 
   /// The users to be added to the group chat
   final List<UserModel> users;
@@ -42,6 +38,7 @@ class NewGroupChatOverview extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
 
     useEffect(() {
       chatScope.popHandler.add(onExit);

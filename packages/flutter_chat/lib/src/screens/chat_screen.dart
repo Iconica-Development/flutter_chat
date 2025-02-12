@@ -13,20 +13,12 @@ import "package:flutter_profile/flutter_profile.dart";
 class ChatScreen extends HookWidget {
   /// Constructs a [ChatScreen]
   const ChatScreen({
-    required this.chatService,
-    required this.chatOptions,
     required this.onPressChat,
     required this.onDeleteChat,
     required this.onExit,
     this.onPressStartChat,
     super.key,
   });
-
-  /// The chat service
-  final ChatService chatService;
-
-  /// The chat options
-  final ChatOptions chatOptions;
 
   /// Callback function for starting a chat.
   final Function()? onPressStartChat;
@@ -43,6 +35,8 @@ class ChatScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
+    var service = chatScope.service;
 
     useEffect(() {
       if (onExit == null) return null;
@@ -50,15 +44,15 @@ class ChatScreen extends HookWidget {
       return () => chatScope.popHandler.remove(onExit!);
     });
 
-    if (chatOptions.builders.baseScreenBuilder == null) {
+    if (options.builders.baseScreenBuilder == null) {
       return Scaffold(
         appBar: _AppBar(
-          chatOptions: chatOptions,
-          chatService: chatService,
+          chatOptions: options,
+          chatService: service,
         ),
         body: _Body(
-          chatOptions: chatOptions,
-          chatService: chatService,
+          chatOptions: options,
+          chatService: service,
           onPressChat: onPressChat,
           onPressStartChat: onPressStartChat,
           onDeleteChat: onDeleteChat,
@@ -66,16 +60,16 @@ class ChatScreen extends HookWidget {
       );
     }
 
-    return chatOptions.builders.baseScreenBuilder!.call(
+    return options.builders.baseScreenBuilder!.call(
       context,
       mapScreenType,
       _AppBar(
-        chatOptions: chatOptions,
-        chatService: chatService,
+        chatOptions: options,
+        chatService: service,
       ),
       _Body(
-        chatOptions: chatOptions,
-        chatService: chatService,
+        chatOptions: options,
+        chatService: service,
         onPressChat: onPressChat,
         onPressStartChat: onPressStartChat,
         onDeleteChat: onDeleteChat,

@@ -13,22 +13,10 @@ import "package:flutter_hooks/flutter_hooks.dart";
 class NewGroupChatScreen extends StatefulHookWidget {
   /// Constructs a [NewGroupChatScreen]
   const NewGroupChatScreen({
-    required this.userId,
     required this.onExit,
-    required this.chatService,
-    required this.chatOptions,
     required this.onContinue,
     super.key,
   });
-
-  /// The user ID of the person currently looking at the chat
-  final String userId;
-
-  /// The chat service associated with the widget.
-  final ChatService chatService;
-
-  /// The chat options
-  final ChatOptions chatOptions;
 
   /// Callback for when the user wants to navigate back
   final VoidCallback onExit;
@@ -50,15 +38,18 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
+    var chatOptions = chatScope.options;
+    var chatService = chatScope.service;
+    var userId = chatScope.userId;
 
     useEffect(() {
       chatScope.popHandler.add(widget.onExit);
       return () => chatScope.popHandler.remove(widget.onExit);
     });
-    if (widget.chatOptions.builders.baseScreenBuilder == null) {
+    if (chatOptions.builders.baseScreenBuilder == null) {
       return Scaffold(
         appBar: _AppBar(
-          chatOptions: widget.chatOptions,
+          chatOptions: chatOptions,
           isSearching: _isSearching,
           onSearch: (query) {
             setState(() {
@@ -82,20 +73,20 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
           onSelectedUser: handleUserTap,
           selectedUsers: selectedUsers,
           onPressGroupChatOverview: widget.onContinue,
-          chatOptions: widget.chatOptions,
-          chatService: widget.chatService,
+          chatOptions: chatOptions,
+          chatService: chatService,
           isSearching: _isSearching,
-          userId: widget.userId,
+          userId: userId,
           query: query,
         ),
       );
     }
 
-    return widget.chatOptions.builders.baseScreenBuilder!.call(
+    return chatOptions.builders.baseScreenBuilder!.call(
       context,
       widget.mapScreenType,
       _AppBar(
-        chatOptions: widget.chatOptions,
+        chatOptions: chatOptions,
         isSearching: _isSearching,
         onSearch: (query) {
           setState(() {
@@ -119,10 +110,10 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
         onSelectedUser: handleUserTap,
         selectedUsers: selectedUsers,
         onPressGroupChatOverview: widget.onContinue,
-        chatOptions: widget.chatOptions,
-        chatService: widget.chatService,
+        chatOptions: chatOptions,
+        chatService: chatService,
         isSearching: _isSearching,
-        userId: widget.userId,
+        userId: userId,
         query: query,
       ),
     );
