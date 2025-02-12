@@ -1,87 +1,16 @@
 // SPDX-FileCopyrightText: 2023 Iconica
 //
 // SPDX-License-Identifier: BSD-3-Clause
-
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/routes.dart";
 import "package:flutter_chat/src/services/pop_handler.dart";
 import "package:flutter_chat/src/util/scope.dart";
-
-/// Base class for both chat navigator user stories.
-abstract class BaseChatNavigatorUserstory extends StatefulWidget {
-  /// Constructs a [BaseChatNavigatorUserstory].
-  const BaseChatNavigatorUserstory({
-    required this.userId,
-    required this.options,
-    this.onExit,
-    super.key,
-  });
-
-  /// The user ID of the person starting the chat userstory.
-  final String userId;
-
-  /// The chat userstory configuration.
-  final ChatOptions options;
-
-  /// Callback for when the user wants to navigate back to a previous screen
-  final VoidCallback? onExit;
-
-  @override
-  State<BaseChatNavigatorUserstory> createState();
-}
-
-abstract class _BaseChatNavigatorUserstoryState<
-    T extends BaseChatNavigatorUserstory> extends State<T> {
-  late ChatService _service = ChatService(
-    userId: widget.userId,
-    chatRepository: widget.options.chatRepository,
-    userRepository: widget.options.userRepository,
-  );
-
-  late final PopHandler _popHandler = PopHandler();
-  final GlobalKey<NavigatorState> _nestedNavigatorKey =
-      GlobalKey<NavigatorState>();
-
-  @override
-  Widget build(BuildContext context) => ChatScope(
-        userId: widget.userId,
-        options: widget.options,
-        service: _service,
-        popHandler: _popHandler,
-        child: NavigatorPopHandler(
-          onPop: () => _popHandler.handlePop(),
-          child: Navigator(
-            key: _nestedNavigatorKey,
-            onGenerateRoute: (settings) => MaterialPageRoute(
-              builder: (context) => buildInitialScreen(),
-            ),
-          ),
-        ),
-      );
-
-  @override
-  void didUpdateWidget(covariant T oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.userId != widget.userId ||
-        oldWidget.options != widget.options) {
-      setState(() {
-        _service = ChatService(
-          userId: widget.userId,
-          chatRepository: widget.options.chatRepository,
-          userRepository: widget.options.userRepository,
-        );
-      });
-    }
-  }
-
-  /// Implemented by subclasses to provide the initial screen of the userstory.
-  Widget buildInitialScreen();
-}
+import "package:flutter_hooks/flutter_hooks.dart";
 
 /// Default Chat Userstory that starts at the chat list screen.
-class FlutterChatNavigatorUserstory extends BaseChatNavigatorUserstory {
+class FlutterChatNavigatorUserstory extends _BaseChatNavigatorUserstory {
   /// Constructs a [FlutterChatNavigatorUserstory].
   const FlutterChatNavigatorUserstory({
     required super.userId,
@@ -91,23 +20,21 @@ class FlutterChatNavigatorUserstory extends BaseChatNavigatorUserstory {
   });
 
   @override
-  State<BaseChatNavigatorUserstory> createState() =>
-      _FlutterChatNavigatorUserstoryState();
-}
-
-class _FlutterChatNavigatorUserstoryState
-    extends _BaseChatNavigatorUserstoryState<FlutterChatNavigatorUserstory> {
-  @override
-  Widget buildInitialScreen() => NavigatorWrapper(
-        userId: widget.userId,
-        chatService: _service,
-        chatOptions: widget.options,
-        onExit: widget.onExit,
+  MaterialPageRoute buildInitialRoute(
+    BuildContext context,
+    ChatService service,
+    PopHandler popHandler,
+  ) =>
+      chatOverviewRoute(
+        userId: userId,
+        chatService: service,
+        chatOptions: options,
+        onExit: onExit,
       );
 }
 
 /// Chat Userstory that starts directly in a chat detail screen.
-class FlutterChatDetailNavigatorUserstory extends BaseChatNavigatorUserstory {
+class FlutterChatDetailNavigatorUserstory extends _BaseChatNavigatorUserstory {
   /// Constructs a [FlutterChatDetailNavigatorUserstory].
   const FlutterChatDetailNavigatorUserstory({
     required super.userId,
@@ -121,22 +48,74 @@ class FlutterChatDetailNavigatorUserstory extends BaseChatNavigatorUserstory {
   final ChatModel chat;
 
   @override
-  State<BaseChatNavigatorUserstory> createState() =>
-      _FlutterChatDetailNavigatorUserstoryState();
+  MaterialPageRoute buildInitialRoute(
+    BuildContext context,
+    ChatService service,
+    PopHandler popHandler,
+  ) =>
+      chatDetailRoute(
+        chat: chat,
+        userId: userId,
+        chatService: service,
+        chatOptions: options,
+        onExit: onExit,
+      );
 }
 
-class _FlutterChatDetailNavigatorUserstoryState
-    extends _BaseChatNavigatorUserstoryState<
-        FlutterChatDetailNavigatorUserstory> {
+/// Base hook widget for chat navigator userstories.
+abstract class _BaseChatNavigatorUserstory extends HookWidget {
+  /// Constructs a [_BaseChatNavigatorUserstory].
+  const _BaseChatNavigatorUserstory({
+    required this.userId,
+    required this.options,
+    this.onExit,
+    super.key,
+  });
+
+  /// The user ID of the person starting the chat userstory.
+  final String userId;
+
+  /// The chat userstory configuration.
+  final ChatOptions options;
+
+  /// Callback for when the user wants to navigate back.
+  final VoidCallback? onExit;
+
+  /// Implemented by subclasses to provide the initial route of the userstory.
+  MaterialPageRoute buildInitialRoute(
+    BuildContext context,
+    ChatService service,
+    PopHandler popHandler,
+  );
+
   @override
-  Widget buildInitialScreen() => NavigatorWrapper(
-        userId: widget.userId,
-        chatService: _service,
-        chatOptions: widget.options,
-        onExit: widget.onExit,
-      ).chatDetailScreen(
-        context,
-        widget.chat,
-        widget.onExit,
-      );
+  Widget build(BuildContext context) {
+    var service = useMemoized(
+      () => ChatService(
+        userId: userId,
+        chatRepository: options.chatRepository,
+        userRepository: options.userRepository,
+      ),
+      [userId, options],
+    );
+
+    var popHandler = useMemoized(PopHandler.new, []);
+    var nestedNavigatorKey = useMemoized(GlobalKey<NavigatorState>.new, []);
+
+    return ChatScope(
+      userId: userId,
+      options: options,
+      service: service,
+      popHandler: popHandler,
+      child: NavigatorPopHandler(
+        onPop: () => popHandler.handlePop(),
+        child: Navigator(
+          key: nestedNavigatorKey,
+          onGenerateInitialRoutes: (_, __) => [
+            buildInitialRoute(context, service, popHandler),
+          ],
+        ),
+      ),
+    );
+  }
 }

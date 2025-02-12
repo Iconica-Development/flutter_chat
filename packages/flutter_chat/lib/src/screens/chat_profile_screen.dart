@@ -47,42 +47,34 @@ class ChatProfileScreen extends HookWidget {
       return () => chatScope.popHandler.remove(onExit);
     });
 
+    var appBar = _AppBar(
+      user: userModel,
+      chat: chatModel,
+      options: options,
+    );
+
+    var body = _Body(
+      currentUser: userId,
+      options: options,
+      service: service,
+      user: userModel,
+      chat: chatModel,
+      onTapUser: onTapUser,
+      onPressStartChat: onPressStartChat,
+    );
+
     if (options.builders.baseScreenBuilder == null) {
       return Scaffold(
-        appBar: _AppBar(
-          user: userModel,
-          chat: chatModel,
-          options: options,
-        ),
-        body: _Body(
-          currentUser: userId,
-          options: options,
-          service: service,
-          user: userModel,
-          chat: chatModel,
-          onTapUser: onTapUser,
-          onPressStartChat: onPressStartChat,
-        ),
+        appBar: appBar,
+        body: body,
       );
     }
 
     return options.builders.baseScreenBuilder!.call(
       context,
       mapScreenType,
-      _AppBar(
-        user: userModel,
-        chat: chatModel,
-        options: options,
-      ),
-      _Body(
-        currentUser: userId,
-        options: options,
-        service: service,
-        user: userModel,
-        chat: chatModel,
-        onTapUser: onTapUser,
-        onPressStartChat: onPressStartChat,
-      ),
+      appBar,
+      body,
     );
   }
 }
@@ -102,8 +94,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return AppBar(
-      iconTheme: theme.appBarTheme.iconTheme ??
-          const IconThemeData(color: Colors.white),
+      iconTheme: theme.appBarTheme.iconTheme,
       title: Text(
         user != null
             ? "${user!.fullname}"
@@ -143,57 +134,58 @@ class _Body extends StatelessWidget {
 
     var chatUserDisplay = Wrap(
       children: [
-        ...chat!.users.map(
-          (tappedUser) => Padding(
-            padding: const EdgeInsets.only(
-              bottom: 8,
-              right: 8,
-            ),
-            child: InkWell(
-              onTap: () {
-                onTapUser?.call(tappedUser);
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FutureBuilder<UserModel>(
-                    future: service.getUser(userId: tappedUser).first,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      }
+        if (chat != null) ...[
+          ...chat!.users.map(
+            (tappedUser) => Padding(
+              padding: const EdgeInsets.only(
+                bottom: 8,
+                right: 8,
+              ),
+              child: InkWell(
+                onTap: () => onTapUser?.call(tappedUser),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FutureBuilder<UserModel>(
+                      future: service.getUser(userId: tappedUser).first,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
 
-                      var user = snapshot.data;
+                        var user = snapshot.data;
 
-                      if (user == null) {
-                        return const SizedBox.shrink();
-                      }
+                        if (user == null) {
+                          return const SizedBox.shrink();
+                        }
 
-                      return options.builders.userAvatarBuilder?.call(
-                            context,
-                            user,
-                            44,
-                          ) ??
-                          Avatar(
-                            boxfit: BoxFit.cover,
-                            user: User(
-                              firstName: user.firstName,
-                              lastName: user.lastName,
-                              imageUrl:
-                                  user.imageUrl != null || user.imageUrl != ""
-                                      ? user.imageUrl
-                                      : null,
-                            ),
-                            size: 60,
-                          );
-                    },
-                  ),
-                ],
+                        return options.builders.userAvatarBuilder?.call(
+                              context,
+                              user,
+                              44,
+                            ) ??
+                            Avatar(
+                              boxfit: BoxFit.cover,
+                              user: User(
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                imageUrl:
+                                    user.imageUrl != null || user.imageUrl != ""
+                                        ? user.imageUrl
+                                        : null,
+                              ),
+                              size: 60,
+                            );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ],
     );
 
@@ -210,6 +202,7 @@ class _Body extends StatelessWidget {
                   firstName: options.translations.groupNameEmpty,
                 ),
         ) as UserModel;
+
     return Stack(
       children: [
         ListView(
@@ -268,23 +261,17 @@ class _Body extends StatelessWidget {
                       options.translations.groupProfileBioHeader,
                       style: theme.textTheme.titleMedium,
                     ),
-                    const SizedBox(
-                      height: 12,
-                    ),
+                    const SizedBox(height: 12),
                     Text(
                       chat!.description ?? "",
                       style: theme.textTheme.bodyMedium,
                     ),
-                    const SizedBox(
-                      height: 12,
-                    ),
+                    const SizedBox(height: 12),
                     Text(
                       options.translations.chatProfileUsers,
                       style: theme.textTheme.titleMedium,
                     ),
-                    const SizedBox(
-                      height: 12,
-                    ),
+                    const SizedBox(height: 12),
                     chatUserDisplay,
                   ],
                 ),
