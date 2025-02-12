@@ -8,13 +8,15 @@ import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/default_message_builder.dart";
 import "package:flutter_chat/src/screens/creation/widgets/image_picker.dart";
 import "package:flutter_chat/src/util/scope.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 
 /// Chat detail screen
 /// Seen when a user clicks on a chat
-class ChatDetailScreen extends StatefulWidget {
+class ChatDetailScreen extends StatefulHookWidget {
   /// Constructs a [ChatDetailScreen].
   const ChatDetailScreen({
     required this.chat,
+    required this.onExit,
     required this.onPressChatTitle,
     required this.onPressUserProfile,
     required this.onUploadImage,
@@ -44,6 +46,9 @@ class ChatDetailScreen extends StatefulWidget {
 
   /// Callback function to get the chat title
   final String Function(ChatModel chat)? getChatTitle;
+
+  /// Callback for when the user wants to navigate back
+  final VoidCallback onExit;
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -85,7 +90,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var chatOptions = ChatScope.of(context).options;
+    var chatScope = ChatScope.of(context);
+    var chatOptions = chatScope.options;
     var appBar = _AppBar(
       chatTitle: chatTitle,
       onPressChatTitle: widget.onPressChatTitle,
@@ -99,6 +105,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       onMessageSubmit: widget.onMessageSubmit,
       onReadChat: widget.onReadChat,
     );
+
+    useEffect(() {
+      chatScope.popHandler.add(widget.onExit);
+      return () => chatScope.popHandler.remove(widget.onExit);
+    });
 
     if (chatOptions.builders.baseScreenBuilder == null) {
       return Scaffold(

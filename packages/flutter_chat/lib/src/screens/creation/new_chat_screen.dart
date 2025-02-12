@@ -5,13 +5,16 @@ import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/creation/widgets/search_field.dart";
 import "package:flutter_chat/src/screens/creation/widgets/search_icon.dart";
 import "package:flutter_chat/src/screens/creation/widgets/user_list.dart";
+import "package:flutter_chat/src/util/scope.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 
 /// New chat screen
 /// This screen is used to create a new chat
-class NewChatScreen extends StatefulWidget {
+class NewChatScreen extends StatefulHookWidget {
   /// Constructs a [NewChatScreen]
   const NewChatScreen({
     required this.userId,
+    required this.onExit,
     required this.chatService,
     required this.chatOptions,
     required this.onPressCreateGroupChat,
@@ -34,6 +37,9 @@ class NewChatScreen extends StatefulWidget {
   /// Callback function triggered when a user is tapped
   final Function(UserModel) onPressCreateChat;
 
+  /// Callback for when the user wants to navigate back
+  final VoidCallback onExit;
+
   @override
   State<NewChatScreen> createState() => _NewChatScreenState();
 }
@@ -45,6 +51,13 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+
+    useEffect(() {
+      chatScope.popHandler.add(widget.onExit);
+      return () => chatScope.popHandler.remove(widget.onExit);
+    });
+
     if (widget.chatOptions.builders.baseScreenBuilder == null) {
       return Scaffold(
         appBar: _AppBar(
