@@ -2,7 +2,6 @@ import "dart:typed_data";
 
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/creation/widgets/image_picker.dart";
 import "package:flutter_chat/src/util/scope.dart";
@@ -47,11 +46,8 @@ class NewGroupChatOverview extends HookWidget {
 
     if (options.builders.baseScreenBuilder == null) {
       return Scaffold(
-        appBar: _AppBar(
-          options: options,
-        ),
+        appBar: const _AppBar(),
         body: _Body(
-          options: options,
           users: users,
           onComplete: onComplete,
         ),
@@ -61,11 +57,8 @@ class NewGroupChatOverview extends HookWidget {
     return options.builders.baseScreenBuilder!.call(
       context,
       mapScreenType,
-      _AppBar(
-        options: options,
-      ),
+      const _AppBar(),
       _Body(
-        options: options,
         users: users,
         onComplete: onComplete,
       ),
@@ -74,14 +67,12 @@ class NewGroupChatOverview extends HookWidget {
 }
 
 class _AppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _AppBar({
-    required this.options,
-  });
-
-  final ChatOptions options;
+  const _AppBar();
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
     var theme = Theme.of(context);
     return AppBar(
       iconTheme: theme.appBarTheme.iconTheme ??
@@ -99,12 +90,10 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
 
 class _Body extends StatefulWidget {
   const _Body({
-    required this.options,
     required this.users,
     required this.onComplete,
   });
 
-  final ChatOptions options;
   final List<UserModel> users;
   final Function(
     List<UserModel> users,
@@ -147,8 +136,10 @@ class _BodyState extends State<_Body> {
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
     var theme = Theme.of(context);
-    var translations = widget.options.translations;
+    var translations = options.translations;
     return Stack(
       children: [
         SingleChildScrollView(
@@ -168,7 +159,7 @@ class _BodyState extends State<_Body> {
                         InkWell(
                           onTap: () async => onPressSelectImage(
                             context,
-                            widget.options,
+                            options,
                             (image) {
                               setState(() {
                                 this.image = image;
@@ -322,7 +313,6 @@ class _BodyState extends State<_Body> {
                       ...users.map(
                         (e) => _SelectedUser(
                           user: e,
-                          options: widget.options,
                           onRemove: (user) {
                             setState(() {
                               users.remove(user);
@@ -387,47 +377,49 @@ class _BodyState extends State<_Body> {
 class _SelectedUser extends StatelessWidget {
   const _SelectedUser({
     required this.user,
-    required this.options,
     required this.onRemove,
   });
 
   final UserModel user;
-  final ChatOptions options;
   final Function(UserModel) onRemove;
 
   @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: () {
-          onRemove(user);
-        },
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: options.builders.userAvatarBuilder?.call(
-                    context,
-                    user,
-                    40,
-                  ) ??
-                  Avatar(
-                    boxfit: BoxFit.cover,
-                    user: User(
-                      firstName: user.firstName,
-                      lastName: user.lastName,
-                      imageUrl: user.imageUrl != "" ? user.imageUrl : null,
-                    ),
-                    size: 40,
+  Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
+    return InkWell(
+      onTap: () {
+        onRemove(user);
+      },
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: options.builders.userAvatarBuilder?.call(
+                  context,
+                  user,
+                  40,
+                ) ??
+                Avatar(
+                  boxfit: BoxFit.cover,
+                  user: User(
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    imageUrl: user.imageUrl != "" ? user.imageUrl : null,
                   ),
+                  size: 40,
+                ),
+          ),
+          Positioned.directional(
+            textDirection: Directionality.of(context),
+            end: 0,
+            child: const Icon(
+              Icons.cancel,
+              size: 20,
             ),
-            Positioned.directional(
-              textDirection: Directionality.of(context),
-              end: 0,
-              child: const Icon(
-                Icons.cancel,
-                size: 20,
-              ),
-            ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
+  }
 }

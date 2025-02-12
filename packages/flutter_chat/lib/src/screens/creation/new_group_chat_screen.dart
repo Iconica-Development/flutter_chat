@@ -1,6 +1,5 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/creation/widgets/search_field.dart";
 import "package:flutter_chat/src/screens/creation/widgets/search_icon.dart";
@@ -38,18 +37,15 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
-    var chatOptions = chatScope.options;
-    var chatService = chatScope.service;
-    var userId = chatScope.userId;
+    var options = chatScope.options;
 
     useEffect(() {
       chatScope.popHandler.add(widget.onExit);
       return () => chatScope.popHandler.remove(widget.onExit);
     });
-    if (chatOptions.builders.baseScreenBuilder == null) {
+    if (options.builders.baseScreenBuilder == null) {
       return Scaffold(
         appBar: _AppBar(
-          chatOptions: chatOptions,
           isSearching: _isSearching,
           onSearch: (query) {
             setState(() {
@@ -73,20 +69,16 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
           onSelectedUser: handleUserTap,
           selectedUsers: selectedUsers,
           onPressGroupChatOverview: widget.onContinue,
-          chatOptions: chatOptions,
-          chatService: chatService,
           isSearching: _isSearching,
-          userId: userId,
           query: query,
         ),
       );
     }
 
-    return chatOptions.builders.baseScreenBuilder!.call(
+    return options.builders.baseScreenBuilder!.call(
       context,
       widget.mapScreenType,
       _AppBar(
-        chatOptions: chatOptions,
         isSearching: _isSearching,
         onSearch: (query) {
           setState(() {
@@ -110,10 +102,7 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
         onSelectedUser: handleUserTap,
         selectedUsers: selectedUsers,
         onPressGroupChatOverview: widget.onContinue,
-        chatOptions: chatOptions,
-        chatService: chatService,
         isSearching: _isSearching,
-        userId: userId,
         query: query,
       ),
     );
@@ -134,14 +123,12 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
 
 class _AppBar extends StatelessWidget implements PreferredSizeWidget {
   const _AppBar({
-    required this.chatOptions,
     required this.isSearching,
     required this.onSearch,
     required this.onPressedSearchIcon,
     required this.focusNode,
   });
 
-  final ChatOptions chatOptions;
   final bool isSearching;
   final Function(String) onSearch;
   final VoidCallback onPressedSearchIcon;
@@ -149,17 +136,18 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
     var theme = Theme.of(context);
 
     return AppBar(
       iconTheme: theme.appBarTheme.iconTheme ??
           const IconThemeData(color: Colors.white),
       title: SearchField(
-        chatOptions: chatOptions,
         isSearching: isSearching,
         onSearch: onSearch,
         focusNode: focusNode,
-        text: chatOptions.translations.newGroupChatTitle,
+        text: options.translations.newGroupChatTitle,
       ),
       actions: [
         SearchIcon(
@@ -176,21 +164,15 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
 
 class _Body extends StatelessWidget {
   const _Body({
-    required this.chatOptions,
-    required this.chatService,
     required this.isSearching,
-    required this.userId,
     required this.query,
     required this.selectedUsers,
     required this.onSelectedUser,
     required this.onPressGroupChatOverview,
   });
 
-  final ChatOptions chatOptions;
-  final ChatService chatService;
   final bool isSearching;
 
-  final String userId;
   final String query;
 
   final List<UserModel> selectedUsers;
@@ -199,7 +181,11 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var translations = chatOptions.translations;
+    var chatScope = ChatScope.of(context);
+    var service = chatScope.service;
+    var options = chatScope.options;
+    var userId = chatScope.userId;
+    var translations = options.translations;
     var theme = Theme.of(context);
 
     return Column(
@@ -207,7 +193,7 @@ class _Body extends StatelessWidget {
         Expanded(
           child: StreamBuilder<List<UserModel>>(
             // ignore: discarded_futures
-            stream: chatService.getAllUsers(),
+            stream: service.getAllUsers(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -220,7 +206,6 @@ class _Body extends StatelessWidget {
                       users: snapshot.data!,
                       currentUser: userId,
                       query: query,
-                      options: chatOptions,
                       onPressCreateChat: null,
                       creatingGroup: true,
                       selectedUsers: selectedUsers,
@@ -229,12 +214,11 @@ class _Body extends StatelessWidget {
                     _NextButton(
                       selectedUsers: selectedUsers,
                       onPressGroupChatOverview: onPressGroupChatOverview,
-                      chatOptions: chatOptions,
                     ),
                   ],
                 );
               } else {
-                return chatOptions.builders.noUsersPlaceholderBuilder
+                return options.builders.noUsersPlaceholderBuilder
                         ?.call(context, translations) ??
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -260,15 +244,15 @@ class _NextButton extends StatelessWidget {
   const _NextButton({
     required this.onPressGroupChatOverview,
     required this.selectedUsers,
-    required this.chatOptions,
   });
 
   final Function(List<UserModel>) onPressGroupChatOverview;
   final List<UserModel> selectedUsers;
-  final ChatOptions chatOptions;
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
     var theme = Theme.of(context);
     return Align(
       alignment: Alignment.bottomCenter,
@@ -287,7 +271,7 @@ class _NextButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  chatOptions.translations.next,
+                  options.translations.next,
                   style: theme.textTheme.displayLarge,
                 ),
               ],

@@ -3,7 +3,6 @@ import "dart:typed_data";
 
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/default_message_builder.dart";
 import "package:flutter_chat/src/screens/creation/widgets/image_picker.dart";
@@ -91,7 +90,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
-    var chatOptions = chatScope.options;
+    var options = chatScope.options;
     var appBar = _AppBar(
       chatTitle: chatTitle,
       onPressChatTitle: widget.onPressChatTitle,
@@ -113,14 +112,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       return () => chatScope.popHandler.remove(widget.onExit!);
     });
 
-    if (chatOptions.builders.baseScreenBuilder == null) {
+    if (options.builders.baseScreenBuilder == null) {
       return Scaffold(
         appBar: appBar,
         body: body,
       );
     }
 
-    return chatOptions.builders.baseScreenBuilder!.call(
+    return options.builders.baseScreenBuilder!.call(
       context,
       widget.mapScreenType,
       appBar,
@@ -305,7 +304,6 @@ class _BodyState extends State<_Body> {
                 widget.onUploadImage,
               ),
               onMessageSubmit: widget.onMessageSubmit,
-              options: options,
             ),
           ],
         ),
@@ -347,7 +345,6 @@ class _ChatBottom extends StatefulWidget {
   const _ChatBottom({
     required this.chat,
     required this.onMessageSubmit,
-    required this.options,
     this.onPressSelectImage,
   });
 
@@ -360,8 +357,6 @@ class _ChatBottom extends StatefulWidget {
   /// The chat model.
   final ChatModel chat;
 
-  final ChatOptions options;
-
   @override
   State<_ChatBottom> createState() => _ChatBottomState();
 }
@@ -373,6 +368,8 @@ class _ChatBottomState extends State<_ChatBottom> {
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
     var theme = Theme.of(context);
 
     _textEditingController.addListener(() {
@@ -409,12 +406,12 @@ class _ChatBottomState extends State<_ChatBottom> {
           onPressed: widget.onPressSelectImage,
           icon: Icon(
             Icons.image_outlined,
-            color: widget.options.iconEnabledColor,
+            color: options.iconEnabledColor,
           ),
         ),
         IconButton(
-          disabledColor: widget.options.iconDisabledColor,
-          color: widget.options.iconEnabledColor,
+          disabledColor: options.iconDisabledColor,
+          color: options.iconEnabledColor,
           onPressed: onClickSendMessage,
           icon: const Icon(
             Icons.send_rounded,
@@ -446,7 +443,7 @@ class _ChatBottomState extends State<_ChatBottom> {
           vertical: 0,
           horizontal: 30,
         ),
-        hintText: widget.options.translations.messagePlaceholder,
+        hintText: options.translations.messagePlaceholder,
         hintStyle: theme.textTheme.bodyMedium,
         fillColor: Colors.white,
         filled: true,
@@ -467,11 +464,11 @@ class _ChatBottomState extends State<_ChatBottom> {
       ),
       child: SizedBox(
         height: 45,
-        child: widget.options.builders.messageInputBuilder?.call(
+        child: options.builders.messageInputBuilder?.call(
               context,
               _textEditingController,
               messageSendButtons,
-              widget.options.translations,
+              options.translations,
             ) ??
             defaultInputField,
       ),

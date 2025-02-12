@@ -1,20 +1,16 @@
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_chat/src/util/scope.dart";
 
 /// The search field widget
 class SearchField extends StatelessWidget {
   /// Constructs a [SearchField]
   const SearchField({
-    required this.chatOptions,
     required this.isSearching,
     required this.onSearch,
     required this.focusNode,
     required this.text,
     super.key,
   });
-
-  /// The chat options
-  final ChatOptions chatOptions;
 
   /// Whether the search field is currently in use
   final bool isSearching;
@@ -30,8 +26,10 @@ class SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
     var theme = Theme.of(context);
-    var translations = chatOptions.translations;
+    var translations = options.translations;
 
     if (isSearching) {
       return TextField(

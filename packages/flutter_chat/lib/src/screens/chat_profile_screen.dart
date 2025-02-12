@@ -1,6 +1,5 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/util/scope.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
@@ -39,8 +38,6 @@ class ChatProfileScreen extends HookWidget {
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
     var options = chatScope.options;
-    var service = chatScope.service;
-    var userId = chatScope.userId;
 
     useEffect(() {
       chatScope.popHandler.add(onExit);
@@ -50,13 +47,9 @@ class ChatProfileScreen extends HookWidget {
     var appBar = _AppBar(
       user: userModel,
       chat: chatModel,
-      options: options,
     );
 
     var body = _Body(
-      currentUser: userId,
-      options: options,
-      service: service,
       user: userModel,
       chat: chatModel,
       onTapUser: onTapUser,
@@ -83,15 +76,15 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
   const _AppBar({
     required this.user,
     required this.chat,
-    required this.options,
   });
 
   final UserModel? user;
   final ChatModel? chat;
-  final ChatOptions options;
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
     var theme = Theme.of(context);
     return AppBar(
       iconTheme: theme.appBarTheme.iconTheme,
@@ -111,25 +104,23 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
 
 class _Body extends StatelessWidget {
   const _Body({
-    required this.options,
-    required this.service,
     required this.user,
     required this.chat,
     required this.onPressStartChat,
     required this.onTapUser,
-    required this.currentUser,
   });
 
-  final ChatOptions options;
-  final ChatService service;
   final UserModel? user;
   final ChatModel? chat;
   final Function(String)? onTapUser;
   final Function(String)? onPressStartChat;
-  final String currentUser;
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
+    var service = chatScope.service;
+    var currentUser = chatScope.userId;
     var theme = Theme.of(context);
 
     var chatUserDisplay = Wrap(
