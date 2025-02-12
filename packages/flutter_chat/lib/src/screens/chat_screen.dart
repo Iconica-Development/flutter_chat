@@ -4,6 +4,7 @@ import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/chat_translations.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/services/date_formatter.dart";
+import "package:flutter_chat/src/util/scope.dart";
 import "package:flutter_profile/flutter_profile.dart";
 
 /// The chat screen
@@ -11,7 +12,6 @@ import "package:flutter_profile/flutter_profile.dart";
 class ChatScreen extends StatelessWidget {
   /// Constructs a [ChatScreen]
   const ChatScreen({
-    required this.userId,
     required this.chatService,
     required this.chatOptions,
     required this.onPressChat,
@@ -19,9 +19,6 @@ class ChatScreen extends StatelessWidget {
     this.onPressStartChat,
     super.key,
   });
-
-  /// The user ID of the person currently looking at the chat
-  final String userId;
 
   /// The chat service
   final ChatService chatService;
@@ -43,12 +40,10 @@ class ChatScreen extends StatelessWidget {
     if (chatOptions.builders.baseScreenBuilder == null) {
       return Scaffold(
         appBar: _AppBar(
-          userId: userId,
           chatOptions: chatOptions,
           chatService: chatService,
         ),
         body: _Body(
-          userId: userId,
           chatOptions: chatOptions,
           chatService: chatService,
           onPressChat: onPressChat,
@@ -62,12 +57,10 @@ class ChatScreen extends StatelessWidget {
       context,
       mapScreenType,
       _AppBar(
-        userId: userId,
         chatOptions: chatOptions,
         chatService: chatService,
       ),
       _Body(
-        userId: userId,
         chatOptions: chatOptions,
         chatService: chatService,
         onPressChat: onPressChat,
@@ -80,12 +73,10 @@ class ChatScreen extends StatelessWidget {
 
 class _AppBar extends StatelessWidget implements PreferredSizeWidget {
   const _AppBar({
-    required this.userId,
     required this.chatOptions,
     required this.chatService,
   });
 
-  final String userId;
   final ChatOptions chatOptions;
   final ChatService chatService;
 
@@ -100,7 +91,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         StreamBuilder<int>(
-          stream: chatService.getUnreadMessagesCount(userId: userId),
+          stream: chatService.getUnreadMessagesCount(),
           builder: (BuildContext context, snapshot) => Align(
             alignment: Alignment.centerRight,
             child: Visibility(
@@ -127,7 +118,6 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
 
 class _Body extends StatefulWidget {
   const _Body({
-    required this.userId,
     required this.chatOptions,
     required this.chatService,
     required this.onPressChat,
@@ -135,7 +125,6 @@ class _Body extends StatefulWidget {
     this.onPressStartChat,
   });
 
-  final String userId;
   final ChatOptions chatOptions;
   final ChatService chatService;
   final Function(ChatModel chat) onPressChat;
@@ -163,7 +152,7 @@ class _BodyState extends State<_Body> {
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 28),
             children: [
               StreamBuilder<List<ChatModel>?>(
-                stream: widget.chatService.getChats(userId: widget.userId),
+                stream: widget.chatService.getChats(),
                 builder: (BuildContext context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done &&
                           (snapshot.data?.isEmpty ?? true) ||
@@ -251,7 +240,6 @@ class _BodyState extends State<_Body> {
                                       service: widget.chatService,
                                       chat: chat,
                                       chatOptions: widget.chatOptions,
-                                      userId: widget.userId,
                                       onPressChat: widget.onPressChat,
                                     ),
                                   )
@@ -259,7 +247,6 @@ class _BodyState extends State<_Body> {
                                     service: widget.chatService,
                                     chat: chat,
                                     chatOptions: widget.chatOptions,
-                                    userId: widget.userId,
                                     onPressChat: widget.onPressChat,
                                   ),
                           ),
@@ -308,14 +295,12 @@ class _ChatItem extends StatelessWidget {
     required this.chat,
     required this.chatOptions,
     required this.service,
-    required this.userId,
     required this.onPressChat,
   });
 
   final ChatModel chat;
   final ChatOptions chatOptions;
   final ChatService service;
-  final String userId;
   final Function(ChatModel chat) onPressChat;
 
   @override
@@ -335,7 +320,6 @@ class _ChatItem extends StatelessWidget {
               options: chatOptions,
               dateFormatter: dateFormatter,
               chatService: service,
-              currentUserId: userId,
             ),
           ) ??
           DecoratedBox(
@@ -355,7 +339,6 @@ class _ChatItem extends StatelessWidget {
                 options: chatOptions,
                 dateFormatter: dateFormatter,
                 chatService: service,
-                currentUserId: userId,
               ),
             ),
           ),
@@ -368,18 +351,18 @@ class _ChatListItem extends StatelessWidget {
     required this.chat,
     required this.options,
     required this.dateFormatter,
-    required this.currentUserId,
     required this.chatService,
   });
 
   final ChatModel chat;
   final ChatOptions options;
   final DateFormatter dateFormatter;
-  final String currentUserId;
   final ChatService chatService;
 
   @override
   Widget build(BuildContext context) {
+    var scope = ChatScope.of(context);
+    var currentUserId = scope.userId;
     var translations = options.translations;
     if (chat.isGroupChat) {
       return StreamBuilder<MessageModel?>(

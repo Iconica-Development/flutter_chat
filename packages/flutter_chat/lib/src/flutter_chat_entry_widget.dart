@@ -8,7 +8,6 @@ class FlutterChatEntryWidget extends StatefulWidget {
   /// Constructs a [FlutterChatEntryWidget].
   const FlutterChatEntryWidget({
     required this.userId,
-    this.chatService,
     this.options,
     this.onTap,
     this.widgetSize = 75,
@@ -19,9 +18,6 @@ class FlutterChatEntryWidget extends StatefulWidget {
     this.textStyle,
     super.key,
   });
-
-  /// The chat service associated with the widget.
-  final ChatService? chatService;
 
   /// The user ID of the person currently looking at the chat
   final String userId;
@@ -56,12 +52,29 @@ class FlutterChatEntryWidget extends StatefulWidget {
 
 /// State class for [FlutterChatEntryWidget].
 class _FlutterChatEntryWidgetState extends State<FlutterChatEntryWidget> {
-  ChatService? chatService;
+  late ChatService chatService;
 
   @override
   void initState() {
     super.initState();
-    chatService ??= widget.chatService ?? ChatService();
+    _initChatService();
+  }
+
+  @override
+  void didUpdateWidget(covariant FlutterChatEntryWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.userId != widget.userId ||
+        oldWidget.options != widget.options) {
+      _initChatService();
+    }
+  }
+
+  void _initChatService() {
+    chatService = ChatService(
+      userId: widget.userId,
+      chatRepository: widget.options?.chatRepository,
+      userRepository: widget.options?.userRepository,
+    );
   }
 
   @override
@@ -72,13 +85,12 @@ class _FlutterChatEntryWidgetState extends State<FlutterChatEntryWidget> {
               MaterialPageRoute(
                 builder: (context) => FlutterChatNavigatorUserstory(
                   userId: widget.userId,
-                  chatService: chatService,
-                  chatOptions: widget.options,
+                  options: widget.options ?? ChatOptions(),
                 ),
               ),
             ),
         child: StreamBuilder<int>(
-          stream: chatService!.getUnreadMessagesCount(userId: widget.userId),
+          stream: chatService.getUnreadMessagesCount(),
           builder: (BuildContext context, snapshot) => Stack(
             alignment: Alignment.center,
             children: [

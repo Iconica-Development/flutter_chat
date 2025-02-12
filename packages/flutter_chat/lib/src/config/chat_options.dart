@@ -7,7 +7,7 @@ import "package:flutter_chat/src/config/chat_translations.dart";
 /// Use this class to configure the chat options.
 class ChatOptions {
   /// The chat options constructor
-  const ChatOptions({
+  ChatOptions({
     this.dateformat,
     this.groupChatEnabled = true,
     this.enableLoadingIndicator = false,
@@ -21,7 +21,16 @@ class ChatOptions {
     this.chatAlignment,
     this.onNoChats,
     this.pageSize = 20,
-  });
+    ChatRepositoryInterface? chatRepository,
+    UserRepositoryInterface? userRepository,
+  })  : chatRepository = chatRepository ?? LocalChatRepository(),
+        userRepository = userRepository ?? LocalUserRepository();
+
+  /// The implementation for communication with persistance layer for chats
+  final ChatRepositoryInterface chatRepository;
+
+  /// The implementation for communication with persistance layer for users
+  final UserRepositoryInterface userRepository;
 
   /// [dateformat] is a function that formats the date.
   // ignore: avoid_positional_boolean_parameters

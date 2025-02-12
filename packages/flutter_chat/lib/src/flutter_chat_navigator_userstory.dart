@@ -25,19 +25,15 @@ class FlutterChatNavigatorUserstory extends StatefulWidget {
   /// Constructs a [FlutterChatNavigatorUserstory].
   const FlutterChatNavigatorUserstory({
     required this.userId,
-    this.chatService,
-    this.chatOptions,
+    required this.options,
     super.key,
   });
 
   /// The user ID of the person currently looking at the chat
   final String userId;
 
-  /// The chat service associated with the widget.
-  final ChatService? chatService;
-
   /// The chat options
-  final ChatOptions? chatOptions;
+  final ChatOptions options;
 
   @override
   State<FlutterChatNavigatorUserstory> createState() =>
@@ -46,14 +42,18 @@ class FlutterChatNavigatorUserstory extends StatefulWidget {
 
 class _FlutterChatNavigatorUserstoryState
     extends State<FlutterChatNavigatorUserstory> {
-  late ChatService _service = widget.chatService ?? ChatService();
+  late ChatService _service = ChatService(
+    userId: widget.userId,
+    chatRepository: widget.options.chatRepository,
+    userRepository: widget.options.userRepository,
+  );
 
   late final PopHandler _popHandler = PopHandler();
 
   @override
   Widget build(BuildContext context) => ChatScope(
         userId: widget.userId,
-        options: widget.chatOptions ?? const ChatOptions(),
+        options: widget.options,
         service: _service,
         popHandler: _popHandler,
         child: NavigatorPopHandler(
@@ -67,7 +67,7 @@ class _FlutterChatNavigatorUserstoryState
               builder: (context) => _NavigatorWrapper(
                 userId: widget.userId,
                 chatService: _service,
-                chatOptions: widget.chatOptions ?? const ChatOptions(),
+                chatOptions: widget.options,
               ),
             ),
           ),
@@ -79,9 +79,13 @@ class _FlutterChatNavigatorUserstoryState
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.userId != widget.userId ||
-        oldWidget.chatOptions != widget.chatOptions) {
+        oldWidget.options != widget.options) {
       setState(() {
-        _service = widget.chatService ?? ChatService();
+        _service = ChatService(
+          userId: widget.userId,
+          chatRepository: widget.options.chatRepository,
+          userRepository: widget.options.userRepository,
+        );
       });
     }
   }
@@ -102,7 +106,6 @@ class _NavigatorWrapper extends StatelessWidget {
   Widget build(BuildContext context) => chatScreen(context);
 
   Widget chatScreen(BuildContext context) => ChatScreen(
-        userId: userId,
         chatService: chatService,
         chatOptions: chatOptions,
         onPressChat: (chat) => route(context, chatDetailScreen(context, chat)),
@@ -115,8 +118,7 @@ class _NavigatorWrapper extends StatelessWidget {
   Widget chatDetailScreen(BuildContext context, ChatModel chat) =>
       ChatDetailScreen(
         chat: chat,
-        onReadChat: (chat) async =>
-            chatService.markAsRead(chatId: chat.id, userId: userId),
+        onReadChat: (chat) async => chatService.markAsRead(chatId: chat.id),
         onPressChatTitle: (chat) async {
           if (chat.isGroupChat) {
             return route(context, chatProfileScreen(context, null, chat));
