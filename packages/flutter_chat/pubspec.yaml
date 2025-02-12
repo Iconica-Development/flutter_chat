@@ -13,6 +13,7 @@ dependencies:
 
   cached_network_image: ^3.2.2
   intl: any
+  flutter_hooks: ^0.20.5
 
   flutter_image_picker:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
