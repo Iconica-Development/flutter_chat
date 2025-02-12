@@ -8,6 +8,7 @@
 - Added ChatScope that can be used to get the ChatService and ChatTranslations from the context. If you use individual components instead of the userstory you need to wrap them with the ChatScope. The options and service will be removed from all the component constructors.
 - Added getAllUsersForChat to UserRepositoryInterface for fetching all users for a chat
 - Added flutter_hooks as a dependency for easier state management
+- Added FlutterChatDetailNavigatorUserstory that can be used to start the userstory from the chat detail screen without having the chat overview screen
 
 ## 4.0.0
 - Move to the new user story architecture

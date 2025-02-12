@@ -39,8 +39,14 @@ class NavigatorWrapper extends StatelessWidget {
   /// The chat overview screen
   Widget chatScreen(BuildContext context) => ChatScreen(
         onExit: onExit,
-        onPressChat: (chat) async =>
-            _routeToScreen(context, chatDetailScreen(context, chat)),
+        onPressChat: (chat) async => _routeToScreen(
+          context,
+          chatDetailScreen(
+            context,
+            chat,
+            () => Navigator.of(context).pop(),
+          ),
+        ),
         onDeleteChat: (chat) async {
           await chatService.deleteChat(chatId: chat.id);
         },
@@ -49,10 +55,14 @@ class NavigatorWrapper extends StatelessWidget {
       );
 
   /// The chat screen
-  Widget chatDetailScreen(BuildContext context, ChatModel chat) =>
+  Widget chatDetailScreen(
+    BuildContext context,
+    ChatModel chat,
+    VoidCallback? onExit,
+  ) =>
       ChatDetailScreen(
         chat: chat,
-        onExit: () => Navigator.of(context).pop(),
+        onExit: onExit,
         onReadChat: (chat) async => chatService.markAsRead(chatId: chat.id),
         onPressChatTitle: (chat) async {
           if (chat.isGroupChat) {
@@ -116,7 +126,14 @@ class NavigatorWrapper extends StatelessWidget {
           var chat = await _createChat(userId);
 
           if (!context.mounted) return;
-          return _routeToScreen(context, chatDetailScreen(context, chat));
+          return _routeToScreen(
+            context,
+            chatDetailScreen(
+              context,
+              chat,
+              () => Navigator.of(context).pop(),
+            ),
+          );
         },
       );
 
@@ -131,7 +148,11 @@ class NavigatorWrapper extends StatelessWidget {
           if (!context.mounted) return;
           return _replaceCurrentScreen(
             context,
-            chatDetailScreen(context, chat),
+            chatDetailScreen(
+              context,
+              chat,
+              () => Navigator.of(context).pop(),
+            ),
           );
         },
       );
@@ -168,7 +189,11 @@ class NavigatorWrapper extends StatelessWidget {
           if (!context.mounted) return;
           return _replaceCurrentScreen(
             context,
-            chatDetailScreen(context, chat),
+            chatDetailScreen(
+              context,
+              chat,
+              () => Navigator.of(context).pop(),
+            ),
           );
         },
       );

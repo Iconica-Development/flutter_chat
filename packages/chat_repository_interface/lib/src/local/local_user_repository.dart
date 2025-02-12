@@ -47,4 +47,7 @@ class LocalUserRepository implements UserRepositoryInterface {
             )
             .toList(),
       );
+
+  /// All the users of the local memory database
+  List<UserModel> get getLocalUsers => users;
 }
