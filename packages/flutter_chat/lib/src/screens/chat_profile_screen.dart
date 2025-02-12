@@ -2,15 +2,18 @@ import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
+import "package:flutter_chat/src/util/scope.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 import "package:flutter_profile/flutter_profile.dart";
 
 /// The chat profile screen
 /// Seen when a user taps on a chat profile
 /// Also used for group chats
-class ChatProfileScreen extends StatelessWidget {
+class ChatProfileScreen extends HookWidget {
   /// Constructs a [ChatProfileScreen]
   const ChatProfileScreen({
     required this.options,
+    required this.onExit,
     required this.userId,
     required this.userModel,
     required this.service,
@@ -41,8 +44,18 @@ class ChatProfileScreen extends StatelessWidget {
   /// Callback function triggered when the start chat button is pressed
   final Function(String)? onPressStartChat;
 
+  /// Callback for when the user wants to navigate back
+  final VoidCallback onExit;
+
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+
+    useEffect(() {
+      chatScope.popHandler.add(onExit);
+      return () => chatScope.popHandler.remove(onExit);
+    });
+
     if (options.builders.baseScreenBuilder == null) {
       return Scaffold(
         appBar: _AppBar(
