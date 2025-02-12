@@ -11,7 +11,6 @@ import "package:flutter_chat/src/util/scope.dart";
 
 /// The flutter chat navigator userstory
 /// [userId] is the id of the user
-/// [chatService] is the chat service
 /// [chatOptions] are the chat options
 /// This widget is the entry point for the chat UI
 class FlutterChatNavigatorUserstory extends StatefulWidget {
@@ -19,6 +18,7 @@ class FlutterChatNavigatorUserstory extends StatefulWidget {
   const FlutterChatNavigatorUserstory({
     required this.userId,
     required this.options,
+    this.onExit,
     super.key,
   });
 
@@ -27,6 +27,9 @@ class FlutterChatNavigatorUserstory extends StatefulWidget {
 
   /// The chat options
   final ChatOptions options;
+
+  /// Callback for when the user wants to navigate back to a previous screen
+  final VoidCallback? onExit;
 
   @override
   State<FlutterChatNavigatorUserstory> createState() =>
@@ -62,6 +65,7 @@ class _FlutterChatNavigatorUserstoryState
                 userId: widget.userId,
                 chatService: _service,
                 chatOptions: widget.options,
+                onExit: widget.onExit,
               ),
             ),
           ),

@@ -5,15 +5,18 @@ import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/creation/widgets/image_picker.dart";
+import "package:flutter_chat/src/util/scope.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 import "package:flutter_profile/flutter_profile.dart";
 
 /// New group chat overview
 /// Seen after the user has selected the users they
 /// want to add to the group chat
-class NewGroupChatOverview extends StatelessWidget {
+class NewGroupChatOverview extends HookWidget {
   /// Constructs a [NewGroupChatOverview]
   const NewGroupChatOverview({
     required this.options,
+    required this.onExit,
     required this.users,
     required this.onComplete,
     super.key,
@@ -25,6 +28,9 @@ class NewGroupChatOverview extends StatelessWidget {
   /// The users to be added to the group chat
   final List<UserModel> users;
 
+  /// Callback for when the user wants to navigate back
+  final VoidCallback onExit;
+
   /// Callback function triggered when the group chat is created
   final Function(
     List<UserModel> users,
@@ -35,6 +41,13 @@ class NewGroupChatOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+
+    useEffect(() {
+      chatScope.popHandler.add(onExit);
+      return () => chatScope.popHandler.remove(onExit);
+    });
+
     if (options.builders.baseScreenBuilder == null) {
       return Scaffold(
         appBar: _AppBar(

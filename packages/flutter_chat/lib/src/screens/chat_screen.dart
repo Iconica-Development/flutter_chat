@@ -5,17 +5,19 @@ import "package:flutter_chat/src/config/chat_translations.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/services/date_formatter.dart";
 import "package:flutter_chat/src/util/scope.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 import "package:flutter_profile/flutter_profile.dart";
 
 /// The chat screen
 /// Seen when a user is chatting
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends HookWidget {
   /// Constructs a [ChatScreen]
   const ChatScreen({
     required this.chatService,
     required this.chatOptions,
     required this.onPressChat,
     required this.onDeleteChat,
+    required this.onExit,
     this.onPressStartChat,
     super.key,
   });
@@ -35,8 +37,19 @@ class ChatScreen extends StatelessWidget {
   /// Callback function for deleting a chat.
   final void Function(ChatModel chat) onDeleteChat;
 
+  /// Callback for when the user wants to navigate back
+  final VoidCallback? onExit;
+
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+
+    useEffect(() {
+      if (onExit == null) return null;
+      chatScope.popHandler.add(onExit!);
+      return () => chatScope.popHandler.remove(onExit!);
+    });
+
     if (chatOptions.builders.baseScreenBuilder == null) {
       return Scaffold(
         appBar: _AppBar(
