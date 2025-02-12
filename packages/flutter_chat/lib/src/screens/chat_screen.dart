@@ -1,6 +1,5 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/chat_translations.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/services/date_formatter.dart";
@@ -36,7 +35,6 @@ class ChatScreen extends HookWidget {
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
     var options = chatScope.options;
-    var service = chatScope.service;
 
     useEffect(() {
       if (onExit == null) return null;
@@ -46,13 +44,8 @@ class ChatScreen extends HookWidget {
 
     if (options.builders.baseScreenBuilder == null) {
       return Scaffold(
-        appBar: _AppBar(
-          chatOptions: options,
-          chatService: service,
-        ),
+        appBar: const _AppBar(),
         body: _Body(
-          chatOptions: options,
-          chatService: service,
           onPressChat: onPressChat,
           onPressStartChat: onPressStartChat,
           onDeleteChat: onDeleteChat,
@@ -63,13 +56,8 @@ class ChatScreen extends HookWidget {
     return options.builders.baseScreenBuilder!.call(
       context,
       mapScreenType,
-      _AppBar(
-        chatOptions: options,
-        chatService: service,
-      ),
+      const _AppBar(),
       _Body(
-        chatOptions: options,
-        chatService: service,
         onPressChat: onPressChat,
         onPressStartChat: onPressStartChat,
         onDeleteChat: onDeleteChat,
@@ -79,17 +67,14 @@ class ChatScreen extends HookWidget {
 }
 
 class _AppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _AppBar({
-    required this.chatOptions,
-    required this.chatService,
-  });
-
-  final ChatOptions chatOptions;
-  final ChatService chatService;
+  const _AppBar();
 
   @override
   Widget build(BuildContext context) {
-    var translations = chatOptions.translations;
+    var chatScope = ChatScope.of(context);
+    var service = chatScope.service;
+    var options = chatScope.options;
+    var translations = options.translations;
     var theme = Theme.of(context);
 
     return AppBar(
@@ -98,7 +83,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         StreamBuilder<int>(
-          stream: chatService.getUnreadMessagesCount(),
+          stream: service.getUnreadMessagesCount(),
           builder: (BuildContext context, snapshot) => Align(
             alignment: Alignment.centerRight,
             child: Visibility(
@@ -125,15 +110,11 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
 
 class _Body extends StatefulWidget {
   const _Body({
-    required this.chatOptions,
-    required this.chatService,
     required this.onPressChat,
     required this.onDeleteChat,
     this.onPressStartChat,
   });
 
-  final ChatOptions chatOptions;
-  final ChatService chatService;
   final Function(ChatModel chat) onPressChat;
   final Function()? onPressStartChat;
   final Function(ChatModel) onDeleteChat;
@@ -148,7 +129,10 @@ class _BodyState extends State<_Body> {
 
   @override
   Widget build(BuildContext context) {
-    var translations = widget.chatOptions.translations;
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
+    var service = chatScope.service;
+    var translations = options.translations;
     var theme = Theme.of(context);
     return Column(
       children: [
@@ -159,17 +143,16 @@ class _BodyState extends State<_Body> {
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 28),
             children: [
               StreamBuilder<List<ChatModel>?>(
-                stream: widget.chatService.getChats(),
+                stream: service.getChats(),
                 builder: (BuildContext context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done &&
                           (snapshot.data?.isEmpty ?? true) ||
                       (snapshot.data != null && snapshot.data!.isEmpty)) {
-                    if (widget.chatOptions.onNoChats != null &&
-                        !_hasCalledOnNoChats) {
+                    if (options.onNoChats != null && !_hasCalledOnNoChats) {
                       _hasCalledOnNoChats = true; // Set the flag to true
                       WidgetsBinding.instance.addPostFrameCallback((_) async {
                         // ignore: avoid_dynamic_calls
-                        await widget.chatOptions.onNoChats!.call();
+                        await options.onNoChats!.call();
                       });
                     }
                     return Center(
@@ -195,8 +178,8 @@ class _BodyState extends State<_Body> {
                             builder: (context) => !chat.canBeDeleted
                                 ? Dismissible(
                                     confirmDismiss: (_) async {
-                                      await widget.chatOptions.builders
-                                              .deleteChatDialogBuilder
+                                      await options
+                                              .builders.deleteChatDialogBuilder
                                               ?.call(context, chat) ??
                                           _deleteDialog(
                                             chat,
@@ -244,16 +227,12 @@ class _BodyState extends State<_Body> {
                                       chat.id,
                                     ),
                                     child: _ChatItem(
-                                      service: widget.chatService,
                                       chat: chat,
-                                      chatOptions: widget.chatOptions,
                                       onPressChat: widget.onPressChat,
                                     ),
                                   )
                                 : _ChatItem(
-                                    service: widget.chatService,
                                     chat: chat,
-                                    chatOptions: widget.chatOptions,
                                     onPressChat: widget.onPressChat,
                                   ),
                           ),
@@ -267,7 +246,7 @@ class _BodyState extends State<_Body> {
           ),
         ),
         if (widget.onPressStartChat != null)
-          widget.chatOptions.builders.newChatButtonBuilder?.call(
+          options.builders.newChatButtonBuilder?.call(
                 context,
                 widget.onPressStartChat!,
                 translations,
@@ -300,33 +279,29 @@ class _BodyState extends State<_Body> {
 class _ChatItem extends StatelessWidget {
   const _ChatItem({
     required this.chat,
-    required this.chatOptions,
-    required this.service,
     required this.onPressChat,
   });
 
   final ChatModel chat;
-  final ChatOptions chatOptions;
-  final ChatService service;
   final Function(ChatModel chat) onPressChat;
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
     var dateFormatter = DateFormatter(
-      options: chatOptions,
+      options: options,
     );
     var theme = Theme.of(context);
     return InkWell(
       onTap: () {
         onPressChat(chat);
       },
-      child: chatOptions.builders.chatRowContainerBuilder?.call(
+      child: options.builders.chatRowContainerBuilder?.call(
             context,
             _ChatListItem(
               chat: chat,
-              options: chatOptions,
               dateFormatter: dateFormatter,
-              chatService: service,
             ),
           ) ??
           DecoratedBox(
@@ -343,9 +318,7 @@ class _ChatItem extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               child: _ChatListItem(
                 chat: chat,
-                options: chatOptions,
                 dateFormatter: dateFormatter,
-                chatService: service,
               ),
             ),
           ),
@@ -356,25 +329,23 @@ class _ChatItem extends StatelessWidget {
 class _ChatListItem extends StatelessWidget {
   const _ChatListItem({
     required this.chat,
-    required this.options,
     required this.dateFormatter,
-    required this.chatService,
   });
 
   final ChatModel chat;
-  final ChatOptions options;
   final DateFormatter dateFormatter;
-  final ChatService chatService;
 
   @override
   Widget build(BuildContext context) {
     var scope = ChatScope.of(context);
+    var service = scope.service;
+    var options = scope.options;
     var currentUserId = scope.userId;
     var translations = options.translations;
     if (chat.isGroupChat) {
       return StreamBuilder<MessageModel?>(
         stream: chat.lastMessage != null
-            ? chatService.getMessage(
+            ? service.getMessage(
                 chatId: chat.id,
                 messageId: chat.lastMessage!,
               )
@@ -432,7 +403,7 @@ class _ChatListItem extends StatelessWidget {
     );
 
     return StreamBuilder<UserModel>(
-      stream: chatService.getUser(userId: otherUser),
+      stream: service.getUser(userId: otherUser),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -448,7 +419,7 @@ class _ChatListItem extends StatelessWidget {
 
         return StreamBuilder<MessageModel?>(
           stream: chat.lastMessage != null
-              ? chatService.getMessage(
+              ? service.getMessage(
                   chatId: chat.id,
                   messageId: chat.lastMessage!,
                 )

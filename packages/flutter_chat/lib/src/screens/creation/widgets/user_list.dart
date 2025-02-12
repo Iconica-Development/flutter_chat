@@ -1,6 +1,6 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_chat/src/util/scope.dart";
 import "package:flutter_profile/flutter_profile.dart";
 
 /// The user list widget
@@ -10,7 +10,6 @@ class UserList extends StatefulWidget {
     required this.users,
     required this.currentUser,
     required this.query,
-    required this.options,
     required this.onPressCreateChat,
     this.creatingGroup = false,
     this.selectedUsers = const [],
@@ -26,9 +25,6 @@ class UserList extends StatefulWidget {
 
   /// The current user
   final String currentUser;
-
-  /// The chat options
-  final ChatOptions options;
 
   /// Whether the user is creating a group
   final bool creatingGroup;
@@ -60,8 +56,11 @@ class _UserListState extends State<UserList> {
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
     var theme = Theme.of(context);
-    var translations = widget.options.translations;
+
+    var translations = options.translations;
     filteredUsers = widget.query.isNotEmpty
         ? users
             .where(
@@ -88,11 +87,11 @@ class _UserListState extends State<UserList> {
                 return handlePersonalChatTap(user);
               }
             },
-            child: widget.options.builders.chatRowContainerBuilder?.call(
+            child: options.builders.chatRowContainerBuilder?.call(
                   context,
                   Row(
                     children: [
-                      widget.options.builders.userAvatarBuilder
+                      options.builders.userAvatarBuilder
                               ?.call(context, user, 44) ??
                           Avatar(
                             boxfit: BoxFit.cover,
@@ -140,7 +139,7 @@ class _UserListState extends State<UserList> {
                     padding: const EdgeInsets.all(12),
                     child: Row(
                       children: [
-                        widget.options.builders.userAvatarBuilder
+                        options.builders.userAvatarBuilder
                                 ?.call(context, user, 44) ??
                             Avatar(
                               boxfit: BoxFit.cover,
