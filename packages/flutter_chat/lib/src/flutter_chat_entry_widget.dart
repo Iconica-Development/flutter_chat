@@ -81,7 +81,7 @@ class _FlutterChatEntryWidgetState extends State<FlutterChatEntryWidget> {
   Widget build(BuildContext context) => InkWell(
         onTap: () async =>
             widget.onTap?.call() ??
-            Navigator.of(context).pushReplacement(
+            Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => FlutterChatNavigatorUserstory(
                   userId: widget.userId,
@@ -122,7 +122,7 @@ class _FlutterChatEntryWidgetState extends State<FlutterChatEntryWidget> {
                   ),
                   child: Center(
                     child: Text(
-                      "${snapshot.data ?? 0}",
+                      snapshot.data?.toString() ?? "0",
                       style: widget.textStyle,
                     ),
                   ),

@@ -3,7 +3,7 @@ export "package:chat_repository_interface/chat_repository_interface.dart";
 
 // User story
 export "package:flutter_chat/src/flutter_chat_entry_widget.dart";
-export "package:flutter_chat/src/flutter_chat_navigator_userstory.dart";
+export "package:flutter_chat/src/flutter_chat_navigator_userstories.dart";
 
 // Options
 export "src/config/chat_builders.dart";
