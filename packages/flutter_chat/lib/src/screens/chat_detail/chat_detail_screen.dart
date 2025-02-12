@@ -48,7 +48,7 @@ class ChatDetailScreen extends StatefulHookWidget {
   final String Function(ChatModel chat)? getChatTitle;
 
   /// Callback for when the user wants to navigate back
-  final VoidCallback onExit;
+  final VoidCallback? onExit;
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -96,6 +96,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       chatTitle: chatTitle,
       onPressChatTitle: widget.onPressChatTitle,
       chatModel: widget.chat,
+      onPressBack: widget.onExit,
     );
 
     var body = _Body(
@@ -107,8 +108,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
 
     useEffect(() {
-      chatScope.popHandler.add(widget.onExit);
-      return () => chatScope.popHandler.remove(widget.onExit);
+      if (widget.onExit == null) return null;
+      chatScope.popHandler.add(widget.onExit!);
+      return () => chatScope.popHandler.remove(widget.onExit!);
     });
 
     if (chatOptions.builders.baseScreenBuilder == null) {
@@ -132,11 +134,13 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.chatTitle,
     required this.onPressChatTitle,
     required this.chatModel,
+    this.onPressBack,
   });
 
   final String? chatTitle;
   final Function(ChatModel) onPressChatTitle;
   final ChatModel chatModel;
+  final VoidCallback? onPressBack;
 
   @override
   Widget build(BuildContext context) {
@@ -144,18 +148,20 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
     var theme = Theme.of(context);
 
     return AppBar(
-      iconTheme: theme.appBarTheme.iconTheme ??
-          const IconThemeData(color: Colors.white),
+      iconTheme: theme.appBarTheme.iconTheme,
       centerTitle: true,
-      leading: GestureDetector(
-        onTap: () {
-          Navigator.popUntil(context, (route) => route.isFirst);
-        },
-        child: const Icon(
-          Icons.arrow_back_ios,
-        ),
-      ),
-      title: GestureDetector(
+      leading: onPressBack == null
+          ? null
+          : InkWell(
+              onTap: onPressBack,
+              child: const Icon(
+                Icons.arrow_back_ios,
+              ),
+            ),
+      title: InkWell(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
         onTap: () => onPressChatTitle.call(chatModel),
         child: options.builders.chatTitleBuilder?.call(chatTitle ?? "") ??
             Text(

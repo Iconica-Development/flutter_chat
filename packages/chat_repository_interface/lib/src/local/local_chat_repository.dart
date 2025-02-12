@@ -238,4 +238,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
     required Uint8List image,
   }) =>
       Future.value("https://picsum.photos/200/300");
+
+  /// All the chats of the local memory database
+  List<ChatModel> get getLocalChats => chats;
 }
