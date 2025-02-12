@@ -16,10 +16,14 @@ import "package:collection/collection.dart";
 class ChatService {
   /// Create a chat service with the given parameters.
   ChatService({
+    required this.userId,
     ChatRepositoryInterface? chatRepository,
     UserRepositoryInterface? userRepository,
   })  : chatRepository = chatRepository ?? LocalChatRepository(),
         userRepository = userRepository ?? LocalUserRepository();
+
+  /// The user ID of the person currently looking at the chat
+  final String userId;
 
   /// The chat repository
   final ChatRepositoryInterface chatRepository;
@@ -54,11 +58,9 @@ class ChatService {
     );
   }
 
-  /// Get the chats for the given [userId].
+  /// Get the chats for the user with the given [userId].
   /// Returns a list of [ChatModel] stream.
-  Stream<List<ChatModel>?> getChats({
-    required String userId,
-  }) =>
+  Stream<List<ChatModel>?> getChats() =>
       chatRepository.getChats(userId: userId);
 
   /// Get the chat with the given [chatId].
@@ -129,11 +131,9 @@ class ChatService {
   /// Returns a list of [MessageModel] stream.
   /// [pageSize] is the number of messages to be fetched.
   /// [page] is the page number.
-  /// [userId] is the user id.
   /// [chatId] is the chat id.
   /// Returns a list of [MessageModel] stream.
   Stream<List<MessageModel>?> getMessages({
-    required String userId,
     required String chatId,
     required int pageSize,
     required int page,
@@ -183,15 +183,14 @@ class ChatService {
   /// Returns a list of [UserModel] stream.
   Stream<List<UserModel>> getAllUsers() => userRepository.getAllUsers();
 
-  /// Get the unread messages count for the given [userId] and or [chatId].
-  /// [userId] is the user id.
+  /// Get the unread messages count for a user [chatId].
   /// [chatId] is the chat id. If not provided, it will return the
   /// total unread messages count.
   /// Returns a [Stream] of [int].
   Stream<int> getUnreadMessagesCount({
-    required String userId,
+    String? chatId,
   }) =>
-      chatRepository.getUnreadMessagesCount(userId: userId);
+      chatRepository.getUnreadMessagesCount(userId: userId, chatId: chatId);
 
   /// Upload an image with the given parameters.
   /// [path] is the image path.
@@ -211,7 +210,6 @@ class ChatService {
   /// Returns a [Future] of [void].
   Future<void> markAsRead({
     required String chatId,
-    required String userId,
   }) async {
     var chat = await chatRepository.getChat(chatId: chatId).first;
 

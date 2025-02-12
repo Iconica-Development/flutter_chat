@@ -204,7 +204,6 @@ class _BodyState extends State<_Body> {
     var chatScope = ChatScope.of(context);
     var options = chatScope.options;
     var service = chatScope.service;
-    var userId = chatScope.userId;
 
     void handleScroll(PointerMoveEvent event) {
       if (!showIndicator &&
@@ -233,7 +232,6 @@ class _BodyState extends State<_Body> {
                 alignment: options.chatAlignment ?? Alignment.bottomCenter,
                 child: StreamBuilder<List<MessageModel>?>(
                   stream: service.getMessages(
-                    userId: userId,
                     chatId: widget.chat.id,
                     pageSize: pageSize,
                     page: page,
