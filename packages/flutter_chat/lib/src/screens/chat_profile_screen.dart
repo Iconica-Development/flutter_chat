@@ -12,22 +12,13 @@ import "package:flutter_profile/flutter_profile.dart";
 class ChatProfileScreen extends HookWidget {
   /// Constructs a [ChatProfileScreen]
   const ChatProfileScreen({
-    required this.options,
     required this.onExit,
-    required this.userId,
     required this.userModel,
-    required this.service,
     required this.chatModel,
     required this.onTapUser,
     required this.onPressStartChat,
     super.key,
   });
-
-  /// The chat options
-  final ChatOptions options;
-
-  /// The user ID of the person currently looking at the chat
-  final String userId;
 
   /// The user model of the persons profile to be viewed
   final UserModel? userModel;
@@ -38,9 +29,6 @@ class ChatProfileScreen extends HookWidget {
   /// Callback function triggered when a user is tapped
   final Function(String)? onTapUser;
 
-  /// instance of a chat service
-  final ChatService service;
-
   /// Callback function triggered when the start chat button is pressed
   final Function(String)? onPressStartChat;
 
@@ -50,6 +38,9 @@ class ChatProfileScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
+    var service = chatScope.service;
+    var userId = chatScope.userId;
 
     useEffect(() {
       chatScope.popHandler.add(onExit);

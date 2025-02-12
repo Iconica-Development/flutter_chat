@@ -38,8 +38,6 @@ class NavigatorWrapper extends StatelessWidget {
 
   /// The chat overview screen
   Widget chatScreen(BuildContext context) => ChatScreen(
-        chatService: chatService,
-        chatOptions: chatOptions,
         onExit: onExit,
         onPressChat: (chat) async =>
             _routeToScreen(context, chatDetailScreen(context, chat)),
@@ -105,9 +103,6 @@ class NavigatorWrapper extends StatelessWidget {
     ChatModel? chat,
   ) =>
       ChatProfileScreen(
-        service: chatService,
-        options: chatOptions,
-        userId: userId,
         userModel: user,
         chatModel: chat,
         onExit: () => Navigator.of(context).pop(),
@@ -127,9 +122,6 @@ class NavigatorWrapper extends StatelessWidget {
 
   /// The new chat screen
   Widget newChatScreen(BuildContext context) => NewChatScreen(
-        userId: userId,
-        chatService: chatService,
-        chatOptions: chatOptions,
         onExit: () => Navigator.of(context).pop(),
         onPressCreateGroupChat: () async =>
             _routeToScreen(context, newGroupChatScreen(context)),
@@ -146,9 +138,6 @@ class NavigatorWrapper extends StatelessWidget {
 
   /// The new group chat screen
   Widget newGroupChatScreen(BuildContext context) => NewGroupChatScreen(
-        userId: userId,
-        chatService: chatService,
-        chatOptions: chatOptions,
         onExit: () => Navigator.of(context).pop(),
         onContinue: (users) async => _replaceCurrentScreen(
           context,
@@ -159,7 +148,6 @@ class NavigatorWrapper extends StatelessWidget {
   /// The new group chat overview screen
   Widget newGroupChatOverview(BuildContext context, List<UserModel> users) =>
       NewGroupChatOverview(
-        options: chatOptions,
         users: users,
         onExit: () => Navigator.of(context).pop(),
         onComplete: (users, title, description, image) async {

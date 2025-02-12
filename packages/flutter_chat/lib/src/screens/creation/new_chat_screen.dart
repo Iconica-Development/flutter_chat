@@ -13,23 +13,11 @@ import "package:flutter_hooks/flutter_hooks.dart";
 class NewChatScreen extends StatefulHookWidget {
   /// Constructs a [NewChatScreen]
   const NewChatScreen({
-    required this.userId,
     required this.onExit,
-    required this.chatService,
-    required this.chatOptions,
     required this.onPressCreateGroupChat,
     required this.onPressCreateChat,
     super.key,
   });
-
-  /// The user ID of the person currently looking at the chat
-  final String userId;
-
-  /// The chat service associated with the widget.
-  final ChatService chatService;
-
-  /// The chat options
-  final ChatOptions chatOptions;
 
   /// Callback function triggered when the create group chat button is pressed
   final VoidCallback onPressCreateGroupChat;
@@ -52,16 +40,19 @@ class _NewChatScreenState extends State<NewChatScreen> {
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
+    var service = chatScope.service;
+    var userId = chatScope.userId;
 
     useEffect(() {
       chatScope.popHandler.add(widget.onExit);
       return () => chatScope.popHandler.remove(widget.onExit);
     });
 
-    if (widget.chatOptions.builders.baseScreenBuilder == null) {
+    if (options.builders.baseScreenBuilder == null) {
       return Scaffold(
         appBar: _AppBar(
-          chatOptions: widget.chatOptions,
+          chatOptions: options,
           isSearching: _isSearching,
           onSearch: (query) {
             setState(() {
@@ -82,22 +73,22 @@ class _NewChatScreenState extends State<NewChatScreen> {
           focusNode: _textFieldFocusNode,
         ),
         body: _Body(
-          chatOptions: widget.chatOptions,
-          chatService: widget.chatService,
+          chatOptions: options,
+          chatService: service,
           isSearching: _isSearching,
           onPressCreateGroupChat: widget.onPressCreateGroupChat,
           onPressCreateChat: widget.onPressCreateChat,
-          userId: widget.userId,
+          userId: userId,
           query: query,
         ),
       );
     }
 
-    return widget.chatOptions.builders.baseScreenBuilder!.call(
+    return options.builders.baseScreenBuilder!.call(
       context,
       widget.mapScreenType,
       _AppBar(
-        chatOptions: widget.chatOptions,
+        chatOptions: options,
         isSearching: _isSearching,
         onSearch: (query) {
           setState(() {
@@ -118,12 +109,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
         focusNode: _textFieldFocusNode,
       ),
       _Body(
-        chatOptions: widget.chatOptions,
-        chatService: widget.chatService,
+        chatOptions: options,
+        chatService: service,
         isSearching: _isSearching,
         onPressCreateGroupChat: widget.onPressCreateGroupChat,
         onPressCreateChat: widget.onPressCreateChat,
-        userId: widget.userId,
+        userId: userId,
         query: query,
       ),
     );
