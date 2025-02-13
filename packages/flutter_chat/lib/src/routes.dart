@@ -23,7 +23,7 @@ MaterialPageRoute chatOverviewRoute({
         onPressChat: (chat) async => _routeToScreen(
           context,
           chatDetailRoute(
-            chat: chat,
+            chatId: chat.id,
             userId: userId,
             chatService: chatService,
             chatOptions: chatOptions,
@@ -44,7 +44,7 @@ MaterialPageRoute chatOverviewRoute({
 
 /// Pushes the chat detail screen
 MaterialPageRoute chatDetailRoute({
-  required ChatModel chat,
+  required String chatId,
   required String userId,
   required ChatService chatService,
   required ChatOptions chatOptions,
@@ -52,25 +52,25 @@ MaterialPageRoute chatDetailRoute({
 }) =>
     MaterialPageRoute(
       builder: (context) => ChatDetailScreen(
-        chat: chat,
+        chatId: chatId,
         onExit: onExit,
         onReadChat: (chat) async => chatService.markAsRead(chatId: chat.id),
         onUploadImage: (data) async {
           var path = await chatService.uploadImage(
-            path: "chats/${chat.id}-$userId-${DateTime.now()}",
+            path: "chats/$chatId-$userId-${DateTime.now()}",
             image: data,
           );
           await chatService.sendMessage(
-            messageId: "${chat.id}-$userId-${DateTime.now()}",
-            chatId: chat.id,
+            messageId: "$chatId-$userId-${DateTime.now()}",
+            chatId: chatId,
             senderId: userId,
             imageUrl: path,
           );
         },
         onMessageSubmit: (text) async {
           await chatService.sendMessage(
-            messageId: "${chat.id}-$userId-${DateTime.now()}",
-            chatId: chat.id,
+            messageId: "$chatId-$userId-${DateTime.now()}",
+            chatId: chatId,
             senderId: userId,
             text: text,
           );
@@ -150,7 +150,7 @@ MaterialPageRoute _chatProfileRoute({
           await _routeToScreen(
             context,
             chatDetailRoute(
-              chat: chat,
+              chatId: chat.id,
               userId: userId,
               chatService: chatService,
               chatOptions: chatOptions,
@@ -183,7 +183,7 @@ MaterialPageRoute _newChatRoute({
           await _replaceCurrentScreen(
             context,
             chatDetailRoute(
-              chat: chat,
+              chatId: chat.id,
               userId: userId,
               chatService: chatService,
               chatOptions: chatOptions,
@@ -244,7 +244,7 @@ MaterialPageRoute _newGroupChatOverviewRoute({
           await _replaceCurrentScreen(
             context,
             chatDetailRoute(
-              chat: chat,
+              chatId: chat.id,
               userId: userId,
               chatService: chatService,
               chatOptions: chatOptions,
