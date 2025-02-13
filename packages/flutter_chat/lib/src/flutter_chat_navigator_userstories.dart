@@ -28,7 +28,6 @@ class FlutterChatNavigatorUserstory extends _BaseChatNavigatorUserstory {
       chatOverviewRoute(
         userId: userId,
         chatService: service,
-        chatOptions: options,
         onExit: onExit,
       );
 }
@@ -58,7 +57,6 @@ class FlutterChatDetailNavigatorUserstory extends _BaseChatNavigatorUserstory {
         chatId: chatId,
         userId: userId,
         chatService: service,
-        chatOptions: options,
         onExit: onExit,
       );
 }
