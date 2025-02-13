@@ -226,7 +226,6 @@ class _Body extends HookWidget {
     var options = chatScope.options;
     var service = chatScope.service;
 
-    var pageSize = useState(chatScope.options.pageSize);
     var page = useState(0);
     var showIndicator = useState(false);
     var controller = useScrollController();
@@ -253,10 +252,8 @@ class _Body extends HookWidget {
     var messagesStream = useMemoized(
       () => service.getMessages(
         chatId: chat!.id,
-        pageSize: pageSize.value,
-        page: page.value,
       ),
-      [chat!.id, pageSize.value, page.value],
+      [chat!.id, page.value],
     );
     var messagesSnapshot = useStream(messagesStream);
     var messages = messagesSnapshot.data?.reversed.toList() ?? [];

@@ -21,7 +21,6 @@ class ChatOptions {
     this.iconDisabledColor,
     this.chatAlignment,
     this.onNoChats,
-    this.pageSize = 20,
     ChatRepositoryInterface? chatRepository,
     UserRepositoryInterface? userRepository,
   })  : chatRepository = chatRepository ?? LocalChatRepository(),
@@ -81,9 +80,6 @@ class ChatOptions {
 
   /// [onNoChats] is a function that is triggered when there are no chats.
   final Function? onNoChats;
-
-  /// [pageSize] is the number of chats to load at a time.
-  final int pageSize;
 }
 
 /// Typedef for the chatTitleResolver function that is used to get a title for
