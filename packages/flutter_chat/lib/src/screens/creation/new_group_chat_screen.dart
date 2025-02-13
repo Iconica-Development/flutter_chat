@@ -98,6 +98,7 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
         },
         focusNode: _textFieldFocusNode,
       ),
+      options.translations.newGroupChatTitle,
       _Body(
         onSelectedUser: handleUserTap,
         selectedUsers: selectedUsers,

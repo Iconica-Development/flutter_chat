@@ -100,6 +100,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
         },
         focusNode: _textFieldFocusNode,
       ),
+      options.translations.newChatTitle,
       _Body(
         isSearching: _isSearching,
         onPressCreateGroupChat: widget.onPressCreateGroupChat,
