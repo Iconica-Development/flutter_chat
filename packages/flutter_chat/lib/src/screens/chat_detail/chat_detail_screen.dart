@@ -60,23 +60,24 @@ class ChatDetailScreen extends HookWidget {
     var chatSnapshot = useStream(chatStream);
     var chat = chatSnapshot.data;
 
+    var allUsersStream = useMemoized(
+      () => options.userRepository.getAllUsersForChat(chatId: chatId),
+      [chatId],
+    );
+    var usersSnapshot = useStream(allUsersStream);
+    var allUsers = usersSnapshot.data ?? [];
+
     useEffect(
       () {
         if (chat == null) return;
-        if (chat.isGroupChat) {
-          chatTitle.value = options.translations.groupNameEmpty;
-        } else {
-          unawaited(
-            _computeChatTitle(
-              chatScope: chatScope,
-              chat: chat,
-              onTitleComputed: (title) => chatTitle.value = title,
-            ),
-          );
-        }
+        chatTitle.value = _getChatTitle(
+          chatScope: chatScope,
+          chat: chat,
+          allUsers: allUsers,
+        );
         return;
       },
-      [chat],
+      [chat, allUsers],
     );
 
     useEffect(
@@ -98,6 +99,7 @@ class ChatDetailScreen extends HookWidget {
     var body = _Body(
       chatId: chatId,
       chat: chat,
+      chatUsers: allUsers,
       onPressUserProfile: onPressUserProfile,
       onUploadImage: onUploadImage,
       onMessageSubmit: onMessageSubmit,
@@ -120,21 +122,26 @@ class ChatDetailScreen extends HookWidget {
     );
   }
 
-  Future<void> _computeChatTitle({
+  String? _getChatTitle({
     required ChatScope chatScope,
     required ChatModel chat,
-    required void Function(String?) onTitleComputed,
-  }) async {
-    if (chatScope.options.chatTitleResolver != null) {
-      onTitleComputed(chatScope.options.chatTitleResolver!.call(chat));
-      return;
+    required List<UserModel> allUsers,
+  }) {
+    if (chat.isGroupChat) {
+      return chatScope.options.translations.groupNameEmpty;
     }
 
-    var userId = chat.users.firstWhere((user) => user != chatScope.userId);
-    var user = await chatScope.service.getUser(userId: userId).first;
-    onTitleComputed(
-      user.fullname ?? chatScope.options.translations.anonymousUser,
+    // For one-to-one, pick the 'other' user from the list
+    var otherUser = allUsers.firstWhere(
+      (u) => u.id != chatScope.userId,
+      orElse: () => const UserModel(
+        id: "",
+      ),
     );
+
+    return otherUser.fullname?.isNotEmpty ?? false
+        ? otherUser.fullname
+        : chatScope.options.translations.anonymousUser;
   }
 }
 
@@ -198,6 +205,7 @@ class _Body extends HookWidget {
   const _Body({
     required this.chatId,
     required this.chat,
+    required this.chatUsers,
     required this.onPressUserProfile,
     required this.onUploadImage,
     required this.onMessageSubmit,
@@ -206,6 +214,7 @@ class _Body extends HookWidget {
 
   final String chatId;
   final ChatModel? chat;
+  final List<UserModel> chatUsers;
   final Function(UserModel) onPressUserProfile;
   final Function(Uint8List image) onUploadImage;
   final Function(String message) onMessageSubmit;
@@ -261,15 +270,21 @@ class _Body extends HookWidget {
             _ChatNoMessages(isGroupChat: chat!.isGroupChat),
           ]
         : [
-            for (var (index, message) in messages.indexed)
+            for (var (index, message) in messages.indexed) ...[
               if (chat!.id == message.chatId)
                 _ChatBubble(
                   key: ValueKey(message.id),
+                  sender: chatUsers
+                      .where(
+                        (u) => u.id == message.senderId,
+                      )
+                      .firstOrNull,
                   message: message,
                   previousMessage:
                       index < messages.length - 1 ? messages[index + 1] : null,
-                  onPressUserProfile: onPressUserProfile,
+                  onPressSender: onPressUserProfile,
                 ),
+            ],
           ];
 
     return Stack(
@@ -457,7 +472,8 @@ class _ChatBottom extends HookWidget {
 class _ChatBubble extends HookWidget {
   const _ChatBubble({
     required this.message,
-    required this.onPressUserProfile,
+    required this.sender,
+    required this.onPressSender,
     this.previousMessage,
     super.key,
   });
@@ -465,45 +481,33 @@ class _ChatBubble extends HookWidget {
   /// The message to display.
   final MessageModel message;
 
+  /// The user who sent the message. This can be null because some messages are
+  /// not from users
+  final UserModel? sender;
+
   /// The previous message in the list, if any.
   final MessageModel? previousMessage;
 
-  /// Callback function when the user's profile is pressed.
-  final Function(UserModel user) onPressUserProfile;
+  /// Callback function when a message sender is pressed.
+  final Function(UserModel user) onPressSender;
 
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
-    var service = chatScope.service;
     var options = chatScope.options;
-
-    var userStream = useMemoized(
-      () => service.getUser(userId: message.senderId),
-      [message.senderId],
-    );
-    var userSnapshot = useStream(userStream);
-
-    if (userSnapshot.connectionState == ConnectionState.waiting) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    var user = userSnapshot.data;
-    if (user == null) {
-      return const SizedBox.shrink();
-    }
 
     return options.builders.chatMessageBuilder.call(
           context,
           message,
           previousMessage,
-          user,
-          onPressUserProfile,
+          sender,
+          onPressSender,
         ) ??
         DefaultChatMessageBuilder(
           message: message,
           previousMessage: previousMessage,
-          user: user,
-          onPressUserProfile: onPressUserProfile,
+          sender: sender,
+          onPressSender: onPressSender,
         );
   }
 }
