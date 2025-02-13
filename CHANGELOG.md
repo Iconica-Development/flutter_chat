@@ -10,6 +10,7 @@
 - Added flutter_hooks as a dependency for easier state management
 - Added FlutterChatDetailNavigatorUserstory that can be used to start the userstory from the chat detail screen without having the chat overview screen
 - Changed the ChatDetailScreen to use the chatId instead of the ChatModel, the screen will now fetch the chat from the ChatService
+- Changed baseScreenBuilder to include a chatTitle that can be used to show provide the title logic to apps that use the baseScreenBuilder
 
 ## 4.0.0
 - Move to the new user story architecture

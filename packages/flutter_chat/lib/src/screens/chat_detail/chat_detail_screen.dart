@@ -120,6 +120,7 @@ class ChatDetailScreen extends HookWidget {
       context,
       mapScreenType,
       appBar,
+      chatTitle.value,
       body,
     );
   }

@@ -44,10 +44,13 @@ class ChatProfileScreen extends HookWidget {
       return () => chatScope.popHandler.remove(onExit);
     });
 
-    var appBar = _AppBar(
-      user: userModel,
-      chat: chatModel,
-    );
+    var chatTitle = userModel != null
+        ? "${userModel!.fullname}"
+        : chatModel != null
+            ? chatModel?.chatName ?? options.translations.groupNameEmpty
+            : "";
+
+    var appBar = _AppBar(title: chatTitle);
 
     var body = _Body(
       user: userModel,
@@ -67,6 +70,7 @@ class ChatProfileScreen extends HookWidget {
       context,
       mapScreenType,
       appBar,
+      chatTitle,
       body,
     );
   }
@@ -74,27 +78,17 @@ class ChatProfileScreen extends HookWidget {
 
 class _AppBar extends StatelessWidget implements PreferredSizeWidget {
   const _AppBar({
-    required this.user,
-    required this.chat,
+    required this.title,
   });
 
-  final UserModel? user;
-  final ChatModel? chat;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
-    var chatScope = ChatScope.of(context);
-    var options = chatScope.options;
     var theme = Theme.of(context);
     return AppBar(
       iconTheme: theme.appBarTheme.iconTheme,
-      title: Text(
-        user != null
-            ? "${user!.fullname}"
-            : chat != null
-                ? chat?.chatName ?? options.translations.groupNameEmpty
-                : "",
-      ),
+      title: Text(title),
     );
   }
 

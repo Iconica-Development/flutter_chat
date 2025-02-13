@@ -101,10 +101,12 @@ typedef TextInputBuilder = Widget Function(
 );
 
 /// The base screen builder
+/// [title] is the title of the screen and can be null while loading
 typedef BaseScreenBuilder = Widget Function(
   BuildContext context,
   ScreenType screenType,
   PreferredSizeWidget appBar,
+  String? title,
   Widget body,
 );
 
