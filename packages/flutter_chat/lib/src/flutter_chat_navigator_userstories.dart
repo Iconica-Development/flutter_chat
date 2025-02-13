@@ -39,13 +39,14 @@ class FlutterChatDetailNavigatorUserstory extends _BaseChatNavigatorUserstory {
   const FlutterChatDetailNavigatorUserstory({
     required super.userId,
     required super.options,
-    required this.chat,
+    required this.chatId,
     super.onExit,
     super.key,
   });
 
-  /// The chat to start in.
-  final ChatModel chat;
+  /// The identifier of the chat to start in.
+  /// The [ChatModel] will be fetched from the [ChatRepository]
+  final String chatId;
 
   @override
   MaterialPageRoute buildInitialRoute(
@@ -54,7 +55,7 @@ class FlutterChatDetailNavigatorUserstory extends _BaseChatNavigatorUserstory {
     PopHandler popHandler,
   ) =>
       chatDetailRoute(
-        chat: chat,
+        chatId: chatId,
         userId: userId,
         chatService: service,
         chatOptions: options,

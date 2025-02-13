@@ -11,10 +11,10 @@ import "package:flutter_hooks/flutter_hooks.dart";
 
 /// Chat detail screen
 /// Seen when a user clicks on a chat
-class ChatDetailScreen extends StatefulHookWidget {
+class ChatDetailScreen extends HookWidget {
   /// Constructs a [ChatDetailScreen].
   const ChatDetailScreen({
-    required this.chat,
+    required this.chatId,
     required this.onExit,
     required this.onPressChatTitle,
     required this.onPressUserProfile,
@@ -25,8 +25,9 @@ class ChatDetailScreen extends StatefulHookWidget {
     super.key,
   });
 
-  /// The chat model currently being viewed
-  final ChatModel chat;
+  /// The identifier of the chat that is being viewed.
+  /// The chat will be fetched from the chat service.
+  final String chatId;
 
   /// Callback function triggered when the chat title is pressed.
   final Function(ChatModel) onPressChatTitle;
@@ -50,67 +51,63 @@ class ChatDetailScreen extends StatefulHookWidget {
   final VoidCallback? onExit;
 
   @override
-  State<ChatDetailScreen> createState() => _ChatDetailScreenState();
-}
-
-class _ChatDetailScreenState extends State<ChatDetailScreen> {
-  String? chatTitle;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.chat.isGroupChat) {
-      chatTitle = widget.chat.chatName;
-    }
-    if (chatTitle != null) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      var chatScope = ChatScope.of(context);
-
-      if (widget.chat.isGroupChat) {
-        chatTitle = chatScope.options.translations.groupNameEmpty;
-      } else {
-        await _getTitle(chatScope);
-      }
-    });
-  }
-
-  Future<void> _getTitle(ChatScope chatScope) async {
-    if (widget.getChatTitle != null) {
-      chatTitle = widget.getChatTitle!.call(widget.chat);
-    } else {
-      var userId = widget.chat.users
-          .firstWhere((element) => element != chatScope.userId);
-      var user = await chatScope.service.getUser(userId: userId).first;
-
-      chatTitle = user.fullname ?? chatScope.options.translations.anonymousUser;
-    }
-    setState(() {});
-  }
-
-  @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
     var options = chatScope.options;
+
+    var chatTitle = useState<String?>(null);
+
+    var chatStream = useMemoized(
+      () => chatScope.service.getChat(chatId: chatId),
+      [chatId],
+    );
+    var chatSnapshot = useStream(chatStream);
+    var chat = chatSnapshot.data;
+
+    useEffect(
+      () {
+        if (chat == null) return;
+        if (chat.isGroupChat) {
+          chatTitle.value = options.translations.groupNameEmpty;
+        } else {
+          unawaited(
+            _computeChatTitle(
+              chatScope: chatScope,
+              chat: chat,
+              getChatTitle: getChatTitle,
+              onTitleComputed: (title) => chatTitle.value = title,
+            ),
+          );
+        }
+        return;
+      },
+      [chat],
+    );
+
+    useEffect(
+      () {
+        if (onExit == null) return null;
+        chatScope.popHandler.add(onExit!);
+        return () => chatScope.popHandler.remove(onExit!);
+      },
+      [onExit],
+    );
+
     var appBar = _AppBar(
-      chatTitle: chatTitle,
-      onPressChatTitle: widget.onPressChatTitle,
-      chatModel: widget.chat,
-      onPressBack: widget.onExit,
+      chatTitle: chatTitle.value,
+      onPressChatTitle: onPressChatTitle,
+      chatModel: chat,
+      onPressBack: onExit,
     );
 
     var body = _Body(
-      chat: widget.chat,
-      onPressUserProfile: widget.onPressUserProfile,
-      onUploadImage: widget.onUploadImage,
-      onMessageSubmit: widget.onMessageSubmit,
-      onReadChat: widget.onReadChat,
+      chatId: chatId,
+      chat: chat,
+      onPressUserProfile: onPressUserProfile,
+      onUploadImage: onUploadImage,
+      onMessageSubmit: onMessageSubmit,
+      onReadChat: onReadChat,
     );
-
-    useEffect(() {
-      if (widget.onExit == null) return null;
-      chatScope.popHandler.add(widget.onExit!);
-      return () => chatScope.popHandler.remove(widget.onExit!);
-    });
 
     if (options.builders.baseScreenBuilder == null) {
       return Scaffold(
@@ -121,24 +118,43 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
     return options.builders.baseScreenBuilder!.call(
       context,
-      widget.mapScreenType,
+      mapScreenType,
       appBar,
       body,
     );
   }
+
+  Future<void> _computeChatTitle({
+    required ChatScope chatScope,
+    required ChatModel chat,
+    required String? Function(ChatModel chat)? getChatTitle,
+    required void Function(String?) onTitleComputed,
+  }) async {
+    if (getChatTitle != null) {
+      onTitleComputed(getChatTitle(chat));
+      return;
+    }
+
+    var userId = chat.users.firstWhere((user) => user != chatScope.userId);
+    var user = await chatScope.service.getUser(userId: userId).first;
+    onTitleComputed(
+      user.fullname ?? chatScope.options.translations.anonymousUser,
+    );
+  }
 }
 
+/// The app bar widget for the chat detail screen
 class _AppBar extends StatelessWidget implements PreferredSizeWidget {
   const _AppBar({
     required this.chatTitle,
-    required this.onPressChatTitle,
     required this.chatModel,
+    required this.onPressChatTitle,
     this.onPressBack,
   });
 
   final String? chatTitle;
+  final ChatModel? chatModel;
   final Function(ChatModel) onPressChatTitle;
-  final ChatModel chatModel;
   final VoidCallback? onPressBack;
 
   @override
@@ -146,22 +162,28 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
     var options = ChatScope.of(context).options;
     var theme = Theme.of(context);
 
+    VoidCallback? onPressChatTitle;
+    if (chatModel != null) {
+      onPressChatTitle = () => this.onPressChatTitle(chatModel!);
+    }
+
+    Widget? appBarIcon;
+    if (onPressBack != null) {
+      appBarIcon = InkWell(
+        onTap: onPressBack,
+        child: const Icon(Icons.arrow_back_ios),
+      );
+    }
+
     return AppBar(
       iconTheme: theme.appBarTheme.iconTheme,
       centerTitle: true,
-      leading: onPressBack == null
-          ? null
-          : InkWell(
-              onTap: onPressBack,
-              child: const Icon(
-                Icons.arrow_back_ios,
-              ),
-            ),
+      leading: appBarIcon,
       title: InkWell(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         hoverColor: Colors.transparent,
-        onTap: () => onPressChatTitle.call(chatModel),
+        onTap: onPressChatTitle,
         child: options.builders.chatTitleBuilder?.call(chatTitle ?? "") ??
             Text(
               chatTitle ?? "",
@@ -175,8 +197,11 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-class _Body extends StatefulWidget {
+/// Body for the chat detail screen
+/// Displays messages, a scrollable list, and a bottom input field.
+class _Body extends HookWidget {
   const _Body({
+    required this.chatId,
     required this.chat,
     required this.onPressUserProfile,
     required this.onUploadImage,
@@ -184,36 +209,12 @@ class _Body extends StatefulWidget {
     required this.onReadChat,
   });
 
-  final ChatModel chat;
+  final String chatId;
+  final ChatModel? chat;
   final Function(UserModel) onPressUserProfile;
   final Function(Uint8List image) onUploadImage;
   final Function(String message) onMessageSubmit;
   final Function(ChatModel chat) onReadChat;
-
-  @override
-  State<_Body> createState() => _BodyState();
-}
-
-class _BodyState extends State<_Body> {
-  final ScrollController controller = ScrollController();
-  bool showIndicator = false;
-  late int pageSize = 20;
-  int page = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      var chatScope = ChatScope.of(context);
-      pageSize = chatScope.options.pageSize;
-    });
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -221,118 +222,115 @@ class _BodyState extends State<_Body> {
     var options = chatScope.options;
     var service = chatScope.service;
 
-    void handleScroll(PointerMoveEvent event) {
-      if (!showIndicator &&
+    var pageSize = useState(chatScope.options.pageSize);
+    var page = useState(0);
+    var showIndicator = useState(false);
+    var controller = useScrollController();
+
+    /// Trigger to load new page when scrolling to the bottom
+    void handleScroll(PointerMoveEvent _) {
+      if (!showIndicator.value &&
           controller.offset >= controller.position.maxScrollExtent &&
           !controller.position.outOfRange) {
-        setState(() {
-          showIndicator = true;
-          page++;
-        });
+        showIndicator.value = true;
+        page.value++;
 
         Future.delayed(const Duration(seconds: 2), () {
-          if (!mounted) return;
-          setState(() {
-            showIndicator = false;
-          });
+          if (!controller.hasClients) return;
+          showIndicator.value = false;
         });
       }
     }
+
+    if (chat == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    var messagesStream = useMemoized(
+      () => service.getMessages(
+        chatId: chat!.id,
+        pageSize: pageSize.value,
+        page: page.value,
+      ),
+      [chat!.id, pageSize.value, page.value],
+    );
+    var messagesSnapshot = useStream(messagesStream);
+    var messages = messagesSnapshot.data?.reversed.toList() ?? [];
+
+    if (messagesSnapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    var listViewChildren = messages.isEmpty && !showIndicator.value
+        ? [
+            _ChatNoMessages(isGroupChat: chat!.isGroupChat),
+          ]
+        : [
+            for (var (index, message) in messages.indexed)
+              if (chat!.id == message.chatId)
+                _ChatBubble(
+                  key: ValueKey(message.id),
+                  message: message,
+                  previousMessage:
+                      index < messages.length - 1 ? messages[index + 1] : null,
+                  onPressUserProfile: onPressUserProfile,
+                ),
+          ];
 
     return Stack(
       children: [
         Column(
           children: [
             Expanded(
-              child: Align(
-                alignment: options.chatAlignment ?? Alignment.bottomCenter,
-                child: StreamBuilder<List<MessageModel>?>(
-                  stream: service.getMessages(
-                    chatId: widget.chat.id,
-                    pageSize: pageSize,
-                    page: page,
-                  ),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-
-                    var messages = snapshot.data?.reversed.toList() ?? [];
-
-                    WidgetsBinding.instance.addPostFrameCallback((_) async {
-                      await widget.onReadChat(widget.chat);
-                    });
-
-                    return Listener(
-                      onPointerMove: handleScroll,
-                      child: ListView(
-                        shrinkWrap: true,
-                        controller: controller,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        reverse: messages.isNotEmpty,
-                        padding: const EdgeInsets.only(top: 24.0),
-                        children: [
-                          if (messages.isEmpty && !showIndicator) ...[
-                            _ChatNoMessages(widget: widget),
-                          ],
-                          for (var (index, message) in messages.indexed) ...[
-                            if (widget.chat.id == message.chatId) ...[
-                              _ChatBubble(
-                                key: ValueKey(message.id),
-                                message: message,
-                                previousMessage: index < messages.length - 1
-                                    ? messages[index + 1]
-                                    : null,
-                                onPressUserProfile: widget.onPressUserProfile,
-                              ),
-                            ],
-                          ],
-                        ],
-                      ),
-                    );
-                  },
+              child: Listener(
+                onPointerMove: handleScroll,
+                child: ListView(
+                  shrinkWrap: true,
+                  controller: controller,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  reverse: messages.isNotEmpty,
+                  padding: const EdgeInsets.only(top: 24.0),
+                  children: listViewChildren,
                 ),
               ),
             ),
             _ChatBottom(
-              chat: widget.chat,
-              onPressSelectImage: () async => onPressSelectImage.call(
+              chat: chat!,
+              onPressSelectImage: () async => onPressSelectImage(
                 context,
                 options,
-                widget.onUploadImage,
+                onUploadImage,
               ),
-              onMessageSubmit: widget.onMessageSubmit,
+              onMessageSubmit: onMessageSubmit,
             ),
           ],
         ),
-        if (showIndicator && options.enableLoadingIndicator) ...[
-          options.builders.loadingWidgetBuilder.call(context) ??
+        if (showIndicator.value && options.enableLoadingIndicator)
+          options.builders.loadingWidgetBuilder(context) ??
               const SizedBox.shrink(),
-        ],
       ],
     );
   }
 }
 
-class _ChatNoMessages extends StatelessWidget {
+/// Widget displayed when there are no messages in the chat.
+class _ChatNoMessages extends HookWidget {
   const _ChatNoMessages({
-    required this.widget,
+    required this.isGroupChat,
   });
 
-  final _Body widget;
+  /// Determines if this chat is a group chat.
+  final bool isGroupChat;
 
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
-    var options = chatScope.options;
-    var translations = options.translations;
+    var translations = chatScope.options.translations;
     var theme = Theme.of(context);
 
     return Center(
       child: Text(
-        widget.chat.isGroupChat
+        isGroupChat
             ? translations.writeFirstMessageInGroupChat
             : translations.writeMessageToStartChat,
         style: theme.textTheme.bodySmall,
@@ -341,12 +339,16 @@ class _ChatNoMessages extends StatelessWidget {
   }
 }
 
-class _ChatBottom extends StatefulWidget {
+/// Bottom input field where the user can type or upload images.
+class _ChatBottom extends HookWidget {
   const _ChatBottom({
     required this.chat,
     required this.onMessageSubmit,
     this.onPressSelectImage,
   });
+
+  /// The chat model.
+  final ChatModel chat;
 
   /// Callback function invoked when a message is submitted.
   final Function(String text) onMessageSubmit;
@@ -354,56 +356,47 @@ class _ChatBottom extends StatefulWidget {
   /// Callback function invoked when the select image button is pressed.
   final VoidCallback? onPressSelectImage;
 
-  /// The chat model.
-  final ChatModel chat;
-
-  @override
-  State<_ChatBottom> createState() => _ChatBottomState();
-}
-
-class _ChatBottomState extends State<_ChatBottom> {
-  final TextEditingController _textEditingController = TextEditingController();
-  bool _isTyping = false;
-  bool _isSending = false;
-
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
     var options = chatScope.options;
     var theme = Theme.of(context);
 
-    _textEditingController.addListener(() {
-      setState(() {
-        _isTyping = _textEditingController.text.isNotEmpty;
-      });
-    });
+    var textController = useTextEditingController();
+    var isTyping = useState(false);
+    var isSending = useState(false);
+
+    useEffect(
+      () {
+        void listener() => isTyping.value = textController.text.isNotEmpty;
+        textController.addListener(listener);
+        return () => textController.removeListener(listener);
+      },
+      [textController],
+    );
 
     Future<void> sendMessage() async {
-      setState(() {
-        _isSending = true;
-      });
-
-      var value = _textEditingController.text;
+      isSending.value = true;
+      var value = textController.text;
       if (value.isNotEmpty) {
-        await widget.onMessageSubmit(value);
-        _textEditingController.clear();
+        await onMessageSubmit(value);
+        textController.clear();
       }
-      setState(() {
-        _isSending = false;
-      });
+      isSending.value = false;
     }
 
     Future<void> Function()? onClickSendMessage;
-    if (_isTyping && !_isSending) {
+    if (isTyping.value && !isSending.value) {
       onClickSendMessage = () async => sendMessage();
     }
 
+    /// Image and send buttons
     var messageSendButtons = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          onPressed: widget.onPressSelectImage,
+          onPressed: onPressSelectImage,
           icon: Icon(
             Icons.image_outlined,
             color: options.iconEnabledColor,
@@ -413,9 +406,7 @@ class _ChatBottomState extends State<_ChatBottom> {
           disabledColor: options.iconDisabledColor,
           color: options.iconEnabledColor,
           onPressed: onClickSendMessage,
-          icon: const Icon(
-            Icons.send_rounded,
-          ),
+          icon: const Icon(Icons.send_rounded),
         ),
       ],
     );
@@ -425,19 +416,15 @@ class _ChatBottomState extends State<_ChatBottom> {
       textAlignVertical: TextAlignVertical.center,
       style: theme.textTheme.bodySmall,
       textCapitalization: TextCapitalization.sentences,
-      controller: _textEditingController,
+      controller: textController,
       decoration: InputDecoration(
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25),
-          borderSide: const BorderSide(
-            color: Colors.black,
-          ),
+          borderSide: const BorderSide(color: Colors.black),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25),
-          borderSide: const BorderSide(
-            color: Colors.black,
-          ),
+          borderSide: const BorderSide(color: Colors.black),
         ),
         contentPadding: const EdgeInsets.symmetric(
           vertical: 0,
@@ -448,9 +435,7 @@ class _ChatBottomState extends State<_ChatBottom> {
         fillColor: Colors.white,
         filled: true,
         border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(25),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(25)),
           borderSide: BorderSide.none,
         ),
         suffixIcon: messageSendButtons,
@@ -458,15 +443,12 @@ class _ChatBottomState extends State<_ChatBottom> {
     );
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 16,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       child: SizedBox(
         height: 45,
         child: options.builders.messageInputBuilder?.call(
               context,
-              _textEditingController,
+              textController,
               messageSendButtons,
               options.translations,
             ) ??
@@ -476,52 +458,57 @@ class _ChatBottomState extends State<_ChatBottom> {
   }
 }
 
-class _ChatBubble extends StatefulWidget {
+/// A single chat bubble in the chat
+class _ChatBubble extends HookWidget {
   const _ChatBubble({
     required this.message,
     required this.onPressUserProfile,
     this.previousMessage,
     super.key,
   });
+
+  /// The message to display.
   final MessageModel message;
+
+  /// The previous message in the list, if any.
   final MessageModel? previousMessage;
+
+  /// Callback function when the user's profile is pressed.
   final Function(UserModel user) onPressUserProfile;
 
   @override
-  State<_ChatBubble> createState() => _ChatBubbleState();
-}
-
-class _ChatBubbleState extends State<_ChatBubble> {
-  @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
-    var options = chatScope.options;
     var service = chatScope.service;
-    return StreamBuilder<UserModel>(
-      stream: service.getUser(userId: widget.message.senderId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+    var options = chatScope.options;
 
-        var user = snapshot.data!;
-
-        return options.builders.chatMessageBuilder.call(
-              context,
-              widget.message,
-              widget.previousMessage,
-              user,
-              widget.onPressUserProfile,
-            ) ??
-            DefaultChatMessageBuilder(
-              message: widget.message,
-              previousMessage: widget.previousMessage,
-              user: user,
-              onPressUserProfile: widget.onPressUserProfile,
-            );
-      },
+    var userStream = useMemoized(
+      () => service.getUser(userId: message.senderId),
+      [message.senderId],
     );
+    var userSnapshot = useStream(userStream);
+
+    if (userSnapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    var user = userSnapshot.data;
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
+
+    return options.builders.chatMessageBuilder.call(
+          context,
+          message,
+          previousMessage,
+          user,
+          onPressUserProfile,
+        ) ??
+        DefaultChatMessageBuilder(
+          message: message,
+          previousMessage: previousMessage,
+          user: user,
+          onPressUserProfile: onPressUserProfile,
+        );
   }
 }
