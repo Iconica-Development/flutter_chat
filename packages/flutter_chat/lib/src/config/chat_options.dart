@@ -16,6 +16,7 @@ class ChatOptions {
     this.spacing = const ChatSpacing(),
     this.messageTheme,
     this.messageThemeResolver = _defaultMessageThemeResolver,
+    this.chatTitleResolver,
     this.iconEnabledColor,
     this.iconDisabledColor,
     this.chatAlignment,
@@ -64,6 +65,10 @@ class ChatOptions {
   /// the [messageTheme] will be used.
   final MessageThemeResolver messageThemeResolver;
 
+  /// If [chatTitleResolver] is set, it will be used to get the title of
+  /// the chat in the ChatDetailScreen.
+  final ChatTitleResolver? chatTitleResolver;
+
   /// The alignment of the chatmessages in the ChatDetailScreen.
   /// Defaults to [Alignment.bottomCenter]
   final Alignment? chatAlignment;
@@ -80,6 +85,10 @@ class ChatOptions {
   /// [pageSize] is the number of chats to load at a time.
   final int pageSize;
 }
+
+/// Typedef for the chatTitleResolver function that is used to get a title for
+/// a chat.
+typedef ChatTitleResolver = String Function(ChatModel chat);
 
 /// Typedef for the messageThemeResolver function that is used to get a
 /// [MessageTheme] for a message. This can return null so you can fall back to

@@ -21,7 +21,6 @@ class ChatDetailScreen extends HookWidget {
     required this.onUploadImage,
     required this.onMessageSubmit,
     required this.onReadChat,
-    this.getChatTitle,
     super.key,
   });
 
@@ -43,9 +42,6 @@ class ChatDetailScreen extends HookWidget {
 
   /// Callback function triggered when the chat is read.
   final Function(ChatModel chat) onReadChat;
-
-  /// Callback function to get the chat title
-  final String Function(ChatModel chat)? getChatTitle;
 
   /// Callback for when the user wants to navigate back
   final VoidCallback? onExit;
@@ -74,7 +70,6 @@ class ChatDetailScreen extends HookWidget {
             _computeChatTitle(
               chatScope: chatScope,
               chat: chat,
-              getChatTitle: getChatTitle,
               onTitleComputed: (title) => chatTitle.value = title,
             ),
           );
@@ -128,11 +123,10 @@ class ChatDetailScreen extends HookWidget {
   Future<void> _computeChatTitle({
     required ChatScope chatScope,
     required ChatModel chat,
-    required String? Function(ChatModel chat)? getChatTitle,
     required void Function(String?) onTitleComputed,
   }) async {
-    if (getChatTitle != null) {
-      onTitleComputed(getChatTitle(chat));
+    if (chatScope.options.chatTitleResolver != null) {
+      onTitleComputed(chatScope.options.chatTitleResolver!.call(chat));
       return;
     }
 
