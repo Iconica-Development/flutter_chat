@@ -9,6 +9,7 @@
 - Added getAllUsersForChat to UserRepositoryInterface for fetching all users for a chat
 - Added flutter_hooks as a dependency for easier state management
 - Added FlutterChatDetailNavigatorUserstory that can be used to start the userstory from the chat detail screen without having the chat overview screen
+- Changed the ChatDetailScreen to use the chatId instead of the ChatModel, the screen will now fetch the chat from the ChatService
 
 ## 4.0.0
 - Move to the new user story architecture
