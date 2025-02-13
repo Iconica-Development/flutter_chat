@@ -13,8 +13,8 @@ class DefaultChatMessageBuilder extends StatelessWidget {
   const DefaultChatMessageBuilder({
     required this.message,
     required this.previousMessage,
-    required this.user,
-    required this.onPressUserProfile,
+    required this.sender,
+    required this.onPressSender,
     super.key,
   });
 
@@ -25,25 +25,25 @@ class DefaultChatMessageBuilder extends StatelessWidget {
   /// is from the same sender as the previous message.
   final MessageModel? previousMessage;
 
-  /// The user that sent the message
-  final UserModel user;
+  /// The user that sent the message, can be null if the message is an event
+  final UserModel? sender;
 
-  /// The function that is called when the user profile is pressed
-  final Function(UserModel user) onPressUserProfile;
+  /// The function that is called when the sender is clicked
+  final Function(UserModel user) onPressSender;
 
   /// implements [ChatMessageBuilder]
   static Widget builder(
     BuildContext context,
     MessageModel message,
     MessageModel? previousMessage,
-    UserModel user,
-    Function(UserModel user) onPressUserProfile,
+    UserModel? sender,
+    Function(UserModel sender) onPressSender,
   ) =>
       DefaultChatMessageBuilder(
         message: message,
         previousMessage: previousMessage,
-        user: user,
-        onPressUserProfile: onPressUserProfile,
+        sender: sender,
+        onPressSender: onPressSender,
       );
 
   /// Merges the [MessageTheme] from the themeresolver with the [MessageTheme]
@@ -53,7 +53,7 @@ class DefaultChatMessageBuilder extends StatelessWidget {
     required BuildContext context,
     required ChatOptions options,
     required MessageModel message,
-    required UserModel user,
+    required UserModel? user,
   }) =>
       [
         options.messageThemeResolver(context, message, user),
@@ -71,7 +71,7 @@ class DefaultChatMessageBuilder extends StatelessWidget {
       context: context,
       options: options,
       message: message,
-      user: user,
+      user: sender,
     );
 
     var isSameSender = previousMessage != null &&
@@ -84,7 +84,7 @@ class DefaultChatMessageBuilder extends StatelessWidget {
       isMessageFromSelf: isMessageFromSelf,
       message: message,
       messageTheme: messageTheme,
-      user: user,
+      sender: sender,
     );
 
     var messagePadding = messageTheme.messageSidePadding!;
@@ -122,14 +122,14 @@ class _ChatMessageBubble extends StatelessWidget {
     required this.isMessageFromSelf,
     required this.message,
     required this.messageTheme,
-    required this.user,
+    required this.sender,
   });
 
   final bool isSameSender;
   final bool isMessageFromSelf;
   final MessageModel message;
   final MessageTheme messageTheme;
-  final UserModel user;
+  final UserModel? sender;
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +141,7 @@ class _ChatMessageBubble extends StatelessWidget {
     var messageTime = dateFormatter.format(date: message.timestamp);
 
     var senderTitle = Text(
-      user.firstName ?? "",
+      sender?.firstName ?? "",
       style: theme.textTheme.titleMedium,
     );
 
