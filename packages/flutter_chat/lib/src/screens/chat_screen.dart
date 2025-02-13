@@ -35,6 +35,7 @@ class ChatScreen extends HookWidget {
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
     var options = chatScope.options;
+    var translations = options.translations;
 
     useEffect(() {
       if (onExit == null) return null;
@@ -57,6 +58,7 @@ class ChatScreen extends HookWidget {
       context,
       mapScreenType,
       const _AppBar(),
+      translations.chatsTitle,
       _Body(
         onPressChat: onPressChat,
         onPressStartChat: onPressStartChat,

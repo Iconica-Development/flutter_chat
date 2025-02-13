@@ -58,6 +58,7 @@ class NewGroupChatOverview extends HookWidget {
       context,
       mapScreenType,
       const _AppBar(),
+      options.translations.newGroupChatTitle,
       _Body(
         users: users,
         onComplete: onComplete,
