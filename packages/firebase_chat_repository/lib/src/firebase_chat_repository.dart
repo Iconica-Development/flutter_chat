@@ -94,15 +94,12 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
   Stream<List<MessageModel>?> getMessages({
     required String chatId,
     required String userId,
-    required int pageSize,
-    required int page,
   }) =>
       _firestore
           .collection(_chatCollection)
           .doc(chatId)
           .collection(_messageCollection)
           .orderBy("timestamp")
-          .limit(pageSize)
           .snapshots()
           .map(
             (query) => query.docs
@@ -199,4 +196,16 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
     var snapshot = await uploadTask.whenComplete(() => {});
     return snapshot.ref.getDownloadURL();
   }
+
+  @override
+  Future<void> loadNewMessagesAfter({
+    required String userId,
+    required MessageModel lastMessage,
+  }) async {}
+
+  @override
+  Future<void> loadOldMessagesBefore({
+    required String userId,
+    required MessageModel firstMessage,
+  }) async {}
 }

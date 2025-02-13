@@ -135,14 +135,10 @@ class ChatService {
   /// Returns a list of [MessageModel] stream.
   Stream<List<MessageModel>?> getMessages({
     required String chatId,
-    required int pageSize,
-    required int page,
   }) =>
       chatRepository.getMessages(
         userId: userId,
         chatId: chatId,
-        pageSize: pageSize,
-        page: page,
       );
 
   /// Send a message with the given parameters.

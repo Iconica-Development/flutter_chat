@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:math" as math;
 import "dart:typed_data";
 
 import "package:chat_repository_interface/chat_repository_interface.dart";
@@ -19,6 +20,10 @@ class LocalChatRepository implements ChatRepositoryInterface {
 
   final StreamController<List<MessageModel>> _messageController =
       BehaviorSubject<List<MessageModel>>();
+
+  final Map<String, int> _startIndexMap = {};
+  final Map<String, int> _endIndexMap = {};
+  static const int _chunkSize = 30;
 
   @override
   Future<void> createChat({
@@ -110,58 +115,86 @@ class LocalChatRepository implements ChatRepositoryInterface {
   Stream<List<MessageModel>?> getMessages({
     required String chatId,
     required String userId,
-    required int pageSize,
-    required int page,
   }) {
-    ChatModel? chat;
+    var foundChat =
+        chats.firstWhereOrNull((chatModel) => chatModel.id == chatId);
 
-    chat = chats.firstWhereOrNull((e) => e.id == chatId);
-
-    if (chat != null) {
-      var messages = List<MessageModel>.from(chatMessages[chatId] ?? []);
-
-      messages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
-
-      unawaited(
-        _messageController.stream.first
-            .timeout(
-          const Duration(seconds: 1),
-        )
-            .then((oldMessages) {
-          var newMessages = messages.reversed
-              .skip(page * pageSize)
-              .take(pageSize)
-              .toList(growable: false)
-              .reversed
-              .toList();
-
-          if (newMessages.isEmpty) return;
-
-          var allMessages = [...oldMessages, ...newMessages];
-
-          allMessages = allMessages
-              .toSet()
-              .toList()
-              .cast<MessageModel>()
-              .toList(growable: false);
-
-          allMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
-
-          _messageController.add(allMessages);
-        }).onError((error, stackTrace) {
-          _messageController.add(
-            messages.reversed
-                .skip(page * pageSize)
-                .take(pageSize)
-                .toList(growable: false)
-                .reversed
-                .toList(),
-          );
-        }),
+    if (foundChat == null) {
+      _messageController.add([]);
+    } else {
+      var allMessages = List<MessageModel>.from(
+        chatMessages[chatId] ?? [],
       );
+      allMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+      _startIndexMap[chatId] ??= math.max(0, allMessages.length - _chunkSize);
+      _endIndexMap[chatId] ??= allMessages.length;
+
+      var displayedMessages = allMessages.sublist(
+        _startIndexMap[chatId]!,
+        _endIndexMap[chatId],
+      );
+      _messageController.add(displayedMessages);
     }
 
     return _messageController.stream;
+  }
+
+  @override
+  Future<void> loadNewMessagesAfter({
+    required String userId,
+    required MessageModel lastMessage,
+  }) async {
+    var allMessages = List<MessageModel>.from(
+      chatMessages[lastMessage.chatId] ?? [],
+    )..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+    var lastMessageIndex = allMessages
+        .indexWhere((messageModel) => messageModel.id == lastMessage.id);
+    if (lastMessageIndex == -1) {
+      return;
+    }
+
+    var currentEndIndex =
+        _endIndexMap[lastMessage.chatId] ?? allMessages.length;
+    _endIndexMap[lastMessage.chatId] = math.min(
+      allMessages.length,
+      currentEndIndex + _chunkSize,
+    );
+
+    var displayedMessages = allMessages.sublist(
+      _startIndexMap[lastMessage.chatId] ?? 0,
+      _endIndexMap[lastMessage.chatId],
+    );
+    _messageController.add(displayedMessages);
+  }
+
+  @override
+  Future<void> loadOldMessagesBefore({
+    required String userId,
+    required MessageModel firstMessage,
+  }) async {
+    var allMessages = List<MessageModel>.from(
+      chatMessages[firstMessage.chatId] ?? [],
+    )..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+    var firstMessageIndex = allMessages
+        .indexWhere((messageModel) => messageModel.id == firstMessage.id);
+    if (firstMessageIndex == -1) {
+      return;
+    }
+
+    var currentStartIndex = _startIndexMap[firstMessage.chatId] ?? 0;
+    _startIndexMap[firstMessage.chatId] = math.max(
+      0,
+      currentStartIndex - _chunkSize,
+    );
+
+    var displayedMessages = allMessages.sublist(
+      _startIndexMap[firstMessage.chatId]!,
+      _endIndexMap[firstMessage.chatId] ?? allMessages.length,
+    );
+    _messageController.add(displayedMessages);
   }
 
   @override
