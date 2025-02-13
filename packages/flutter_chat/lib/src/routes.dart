@@ -2,7 +2,6 @@ import "dart:async";
 
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/screens/chat_detail/chat_detail_screen.dart";
 import "package:flutter_chat/src/screens/chat_profile_screen.dart";
 import "package:flutter_chat/src/screens/chat_screen.dart";
@@ -14,7 +13,6 @@ import "package:flutter_chat/src/screens/creation/new_group_chat_screen.dart";
 MaterialPageRoute chatOverviewRoute({
   required String userId,
   required ChatService chatService,
-  required ChatOptions chatOptions,
   required VoidCallback? onExit,
 }) =>
     MaterialPageRoute(
@@ -26,7 +24,6 @@ MaterialPageRoute chatOverviewRoute({
             chatId: chat.id,
             userId: userId,
             chatService: chatService,
-            chatOptions: chatOptions,
             onExit: () => Navigator.of(context).pop(),
           ).builder(context),
         ),
@@ -36,7 +33,6 @@ MaterialPageRoute chatOverviewRoute({
           _newChatRoute(
             userId: userId,
             chatService: chatService,
-            chatOptions: chatOptions,
           ).builder(context),
         ),
       ),
@@ -47,7 +43,6 @@ MaterialPageRoute chatDetailRoute({
   required String chatId,
   required String userId,
   required ChatService chatService,
-  required ChatOptions chatOptions,
   required VoidCallback? onExit,
 }) =>
     MaterialPageRoute(
@@ -82,7 +77,6 @@ MaterialPageRoute chatDetailRoute({
               _chatProfileRoute(
                 userId: userId,
                 chatService: chatService,
-                chatOptions: chatOptions,
                 chat: chat,
                 onExit: () => Navigator.of(context).pop(),
               ).builder(context),
@@ -97,7 +91,6 @@ MaterialPageRoute chatDetailRoute({
               _chatProfileRoute(
                 userId: userId,
                 chatService: chatService,
-                chatOptions: chatOptions,
                 user: otherUser,
                 onExit: () => Navigator.of(context).pop(),
               ).builder(context),
@@ -109,7 +102,6 @@ MaterialPageRoute chatDetailRoute({
           _chatProfileRoute(
             userId: userId,
             chatService: chatService,
-            chatOptions: chatOptions,
             user: user,
             onExit: () => Navigator.of(context).pop(),
           ).builder(context),
@@ -120,7 +112,6 @@ MaterialPageRoute chatDetailRoute({
 MaterialPageRoute _chatProfileRoute({
   required String userId,
   required ChatService chatService,
-  required ChatOptions chatOptions,
   required VoidCallback onExit,
   UserModel? user,
   ChatModel? chat,
@@ -138,7 +129,6 @@ MaterialPageRoute _chatProfileRoute({
             _chatProfileRoute(
               userId: userId,
               chatService: chatService,
-              chatOptions: chatOptions,
               user: user,
               onExit: () => Navigator.of(context).pop(),
             ).builder(context),
@@ -153,7 +143,6 @@ MaterialPageRoute _chatProfileRoute({
               chatId: chat.id,
               userId: userId,
               chatService: chatService,
-              chatOptions: chatOptions,
               onExit: () => Navigator.of(context).pop(),
             ).builder(context),
           );
@@ -164,7 +153,6 @@ MaterialPageRoute _chatProfileRoute({
 MaterialPageRoute _newChatRoute({
   required String userId,
   required ChatService chatService,
-  required ChatOptions chatOptions,
 }) =>
     MaterialPageRoute(
       builder: (context) => NewChatScreen(
@@ -174,7 +162,6 @@ MaterialPageRoute _newChatRoute({
           _newGroupChatRoute(
             userId: userId,
             chatService: chatService,
-            chatOptions: chatOptions,
           ).builder(context),
         ),
         onPressCreateChat: (user) async {
@@ -186,7 +173,6 @@ MaterialPageRoute _newChatRoute({
               chatId: chat.id,
               userId: userId,
               chatService: chatService,
-              chatOptions: chatOptions,
               onExit: () => Navigator.of(context).pop(),
             ).builder(context),
           );
@@ -197,7 +183,6 @@ MaterialPageRoute _newChatRoute({
 MaterialPageRoute _newGroupChatRoute({
   required String userId,
   required ChatService chatService,
-  required ChatOptions chatOptions,
 }) =>
     MaterialPageRoute(
       builder: (context) => NewGroupChatScreen(
@@ -207,7 +192,6 @@ MaterialPageRoute _newGroupChatRoute({
           _newGroupChatOverviewRoute(
             userId: userId,
             chatService: chatService,
-            chatOptions: chatOptions,
             users: users,
           ).builder(context),
         ),
@@ -217,7 +201,6 @@ MaterialPageRoute _newGroupChatRoute({
 MaterialPageRoute _newGroupChatOverviewRoute({
   required String userId,
   required ChatService chatService,
-  required ChatOptions chatOptions,
   required List<UserModel> users,
 }) =>
     MaterialPageRoute(
@@ -247,7 +230,6 @@ MaterialPageRoute _newGroupChatOverviewRoute({
               chatId: chat.id,
               userId: userId,
               chatService: chatService,
-              chatOptions: chatOptions,
               onExit: () => Navigator.of(context).pop(),
             ).builder(context),
           );
