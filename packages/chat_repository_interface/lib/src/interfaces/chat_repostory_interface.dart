@@ -43,16 +43,12 @@ abstract class ChatRepositoryInterface {
 
   /// Get the messages for the given [chatId].
   /// Returns a list of [MessageModel] stream.
-  /// [pageSize] is the number of messages to be fetched.
-  /// [page] is the page number.
   /// [userId] is the user id.
   /// [chatId] is the chat id.
   /// Returns a list of [MessageModel] stream.
   Stream<List<MessageModel>?> getMessages({
     required String chatId,
     required String userId,
-    required int pageSize,
-    required int page,
   });
 
   /// Get the message with the given [messageId].
@@ -61,6 +57,20 @@ abstract class ChatRepositoryInterface {
   Stream<MessageModel?> getMessage({
     required String chatId,
     required String messageId,
+  });
+
+  /// Signals that new messages should be loaded after the given message.
+  /// The stream should emit the new messages.
+  Future<void> loadNewMessagesAfter({
+    required String userId,
+    required MessageModel lastMessage,
+  });
+
+  /// Signals that old messages should be loaded before the given message.
+  /// The stream should emit the new messages.
+  Future<void> loadOldMessagesBefore({
+    required String userId,
+    required MessageModel firstMessage,
   });
 
   /// Send a message with the given parameters.
