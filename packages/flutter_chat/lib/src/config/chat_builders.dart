@@ -121,12 +121,13 @@ typedef ContainerBuilder = Widget Function(
 /// If null is returned, the default chat message widget will be used so you can
 /// override for specific cases
 /// [previousMessage] is the previous message in the chat
+/// [sender] is the sender of the message and null if no user sent the message
 typedef ChatMessageBuilder = Widget? Function(
   BuildContext context,
   MessageModel message,
   MessageModel? previousMessage,
-  UserModel user,
-  Function(UserModel user) onPressUserProfile,
+  UserModel? sender,
+  Function(UserModel sender) onPressSender,
 );
 
 /// The group avatar builder
