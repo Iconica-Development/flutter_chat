@@ -228,105 +228,184 @@ class _ChatBody extends HookWidget {
   final List<UserModel> chatUsers;
   final Function(UserModel) onPressUserProfile;
   final Function(Uint8List image) onUploadImage;
-  final Function(String message) onMessageSubmit;
+  final Function(String text) onMessageSubmit;
   final Function(ChatModel chat) onReadChat;
 
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
-    var options = chatScope.options;
     var service = chatScope.service;
+    var options = chatScope.options;
 
-    var page = useState(0);
-    var showIndicator = useState(false);
-    var controller = useScrollController();
+    var isLoadingOlder = useState(false);
+    var isLoadingNewer = useState(false);
 
-    /// Trigger to load new page when scrolling to the bottom
-    void handleScroll(PointerMoveEvent _) {
-      if (!showIndicator.value &&
-          controller.offset >= controller.position.maxScrollExtent &&
-          !controller.position.outOfRange) {
-        showIndicator.value = true;
-        page.value++;
+    var messagesStream = useMemoized(
+      () => service.getMessages(chatId: chatId),
+      [chatId],
+    );
+    var messagesSnapshot = useStream(messagesStream);
+    var messages = messagesSnapshot.data ?? [];
 
-        Future.delayed(const Duration(seconds: 2), () {
-          if (!controller.hasClients) return;
-          showIndicator.value = false;
+    var scrollController = useScrollController();
+
+    Future<void> loadOlderMessages() async {
+      if (messages.isEmpty || isLoadingOlder.value) return;
+      isLoadingOlder.value = true;
+
+      var oldestMsg = messages.first;
+      var oldOffset = scrollController.offset;
+      var oldMaxScroll = scrollController.position.maxScrollExtent;
+      var oldCount = messages.length;
+
+      try {
+        debugPrint("loading from message: ${oldestMsg.id}");
+        await service.loadOldMessagesBefore(firstMessage: oldestMsg);
+      } finally {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!scrollController.hasClients) {
+            isLoadingOlder.value = false;
+            return;
+          }
+          var newCount = messages.length;
+          if (newCount > oldCount) {
+            var newMaxScroll = scrollController.position.maxScrollExtent;
+            var diff = newMaxScroll - oldMaxScroll;
+            scrollController.jumpTo(oldOffset + diff);
+          }
+          isLoadingOlder.value = false;
         });
       }
     }
 
+    Future<void> loadNewerMessages() async {
+      if (messages.isEmpty || isLoadingNewer.value) return;
+      isLoadingNewer.value = true;
+
+      var newestMsg = messages.last;
+      try {
+        debugPrint("loading from message: ${newestMsg.id}");
+        await service.loadNewMessagesAfter(lastMessage: newestMsg);
+      } finally {
+        isLoadingNewer.value = false;
+      }
+    }
+
+    useEffect(() {
+      void onScroll() {
+        if (!scrollController.hasClients) return;
+
+        var offset = scrollController.offset;
+        var maxScroll = scrollController.position.maxScrollExtent;
+
+        if ((maxScroll - offset) <= 50 && !isLoadingOlder.value) {
+          unawaited(loadOlderMessages());
+        }
+
+        if (offset <= 50 && !isLoadingNewer.value) {
+          unawaited(loadNewerMessages());
+        }
+      }
+
+      scrollController.addListener(onScroll);
+      return () => scrollController.removeListener(onScroll);
+    }, [
+      scrollController,
+      isLoadingOlder.value,
+      isLoadingNewer.value,
+      chat,
+    ]);
+
     if (chat == null) {
-      return const Center(child: CircularProgressIndicator());
+      if (!options.enableLoadingIndicator) return const SizedBox.shrink();
+      return options.builders.loadingWidgetBuilder.call(context);
     }
 
-    var messagesStream = useMemoized(
-      () => service.getMessages(
-        chatId: chat!.id,
-      ),
-      [chat!.id, page.value],
-    );
-    var messagesSnapshot = useStream(messagesStream);
-    var messages = messagesSnapshot.data?.reversed.toList() ?? [];
-
-    if (messagesSnapshot.connectionState == ConnectionState.waiting) {
-      return const Center(child: CircularProgressIndicator());
+    var userMap = <String, UserModel>{};
+    for (var u in chatUsers) {
+      userMap[u.id] = u;
     }
 
-    var listViewChildren = messages.isEmpty && !showIndicator.value
-        ? [
-            ChatNoMessages(isGroupChat: chat!.isGroupChat),
-          ]
-        : [
-            for (var (index, message) in messages.indexed) ...[
-              if (chat!.id == message.chatId)
-                ChatBubble(
-                  key: ValueKey(message.id),
-                  sender: chatUsers
-                      .where(
-                        (u) => u.id == message.senderId,
-                      )
-                      .firstOrNull,
-                  message: message,
-                  previousMessage:
-                      index < messages.length - 1 ? messages[index + 1] : null,
-                  onPressSender: onPressUserProfile,
-                ),
-            ],
-          ];
+    var topSpinner = (isLoadingOlder.value && options.enableLoadingIndicator)
+        ? const _LoaderItem()
+        : const SizedBox.shrink();
 
-    return Stack(
+    var bottomSpinner = (isLoadingNewer.value && options.enableLoadingIndicator)
+        ? const _LoaderItem()
+        : const SizedBox.shrink();
+
+    var reversedMessages = messages.reversed.toList();
+    var bubbleChildren = <Widget>[];
+    if (reversedMessages.isEmpty) {
+      bubbleChildren
+          .add(ChatNoMessages(isGroupChat: chat?.isGroupChat ?? false));
+    } else {
+      for (var (index, msg) in reversedMessages.indexed) {
+        var nextIndex = index + 1;
+        var prevMsg = nextIndex < reversedMessages.length
+            ? reversedMessages[nextIndex]
+            : null;
+
+        bubbleChildren.add(
+          ChatBubble(
+            key: ValueKey(msg.id),
+            message: msg,
+            previousMessage: prevMsg,
+            sender: userMap[msg.senderId],
+            onPressSender: onPressUserProfile,
+          ),
+        );
+      }
+    }
+
+    var listViewChildren = [
+      topSpinner,
+      ...bubbleChildren,
+      bottomSpinner,
+    ];
+
+    return Column(
       children: [
-        Column(
-          children: [
-            Expanded(
-              child: Listener(
-                onPointerMove: handleScroll,
-                child: ListView(
-                  shrinkWrap: true,
-                  controller: controller,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  reverse: messages.isNotEmpty,
-                  padding: const EdgeInsets.only(top: 24.0),
-                  children: listViewChildren,
-                ),
-              ),
+        Expanded(
+          child: Align(
+            alignment: options.chatAlignment ?? Alignment.bottomCenter,
+            child: ListView(
+              shrinkWrap: true,
+              reverse: true,
+              controller: scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(top: 24),
+              children: listViewChildren,
             ),
-            ChatBottomInputSection(
-              chat: chat!,
-              onPressSelectImage: () async => onPressSelectImage(
-                context,
-                options,
-                onUploadImage,
-              ),
-              onMessageSubmit: onMessageSubmit,
-            ),
-          ],
+          ),
         ),
-        if (showIndicator.value && options.enableLoadingIndicator) ...[
-          options.builders.loadingWidgetBuilder(context),
-        ],
+        ChatBottomInputSection(
+          chat: chat!,
+          onPressSelectImage: () async => onPressSelectImage(
+            context,
+            options,
+            onUploadImage,
+          ),
+          onMessageSubmit: onMessageSubmit,
+        ),
       ],
     );
   }
+}
+
+/// A small row spinner item to show partial loading
+class _LoaderItem extends StatelessWidget {
+  const _LoaderItem();
+
+  @override
+  Widget build(BuildContext context) => const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Center(
+          child: SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
 }
