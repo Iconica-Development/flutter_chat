@@ -50,18 +50,19 @@ class ChatDetailScreen extends HookWidget {
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
     var options = chatScope.options;
+    var service = chatScope.service;
 
     var chatTitle = useState<String?>(null);
 
     var chatStream = useMemoized(
-      () => chatScope.service.getChat(chatId: chatId),
+      () => service.getChat(chatId: chatId),
       [chatId],
     );
     var chatSnapshot = useStream(chatStream);
     var chat = chatSnapshot.data;
 
     var allUsersStream = useMemoized(
-      () => options.userRepository.getAllUsersForChat(chatId: chatId),
+      () => service.getAllUsersForChat(chatId: chatId),
       [chatId],
     );
     var usersSnapshot = useStream(allUsersStream);
