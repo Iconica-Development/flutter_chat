@@ -14,6 +14,7 @@ class ChatOptions {
     this.translations = const ChatTranslations.empty(),
     this.builders = const ChatBuilders(),
     this.spacing = const ChatSpacing(),
+    this.paginationControls = const ChatPaginationControls(),
     this.messageTheme,
     this.messageThemeResolver = _defaultMessageThemeResolver,
     this.chatTitleResolver,
@@ -44,6 +45,9 @@ class ChatOptions {
 
   //// The spacing between elements of the chat
   final ChatSpacing spacing;
+
+  /// The pagination settings for the chat
+  final ChatPaginationControls paginationControls;
 
   /// [groupChatEnabled] is a boolean that indicates if group chat is enabled.
   final bool groupChatEnabled;
@@ -229,4 +233,25 @@ class ChatSpacing {
   /// The padding between different chat messages if they are not from the same
   /// sender.
   final double chatBetweenMessagesPadding;
+}
+
+/// The chat pagination controls
+/// Use this to define how sensitive the chat pagination should be.
+class ChatPaginationControls {
+  /// The chat pagination controls constructor
+  const ChatPaginationControls({
+    this.scrollOffset = 50.0,
+    this.loadingIndicatorForNewMessages = true,
+    this.loadingIndicatorForOldMessages = true,
+  });
+
+  /// The minimum scroll offset to trigger the pagination to call for more pages
+  /// on both sides of the chat. Defaults to 50.0
+  final double scrollOffset;
+
+  /// Whether to show a loading indicator for new messages loading
+  final bool loadingIndicatorForNewMessages;
+
+  /// Whether to show a loading indicator for old messages loading
+  final bool loadingIndicatorForOldMessages;
 }
