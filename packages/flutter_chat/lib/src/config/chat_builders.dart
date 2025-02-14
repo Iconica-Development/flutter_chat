@@ -75,7 +75,7 @@ class ChatBuilders {
   final ImagePickerContainerBuilder? imagePickerContainerBuilder;
 
   /// The loading widget builder
-  final Widget? Function(BuildContext context) loadingWidgetBuilder;
+  final Widget Function(BuildContext context) loadingWidgetBuilder;
 }
 
 /// The button builder
