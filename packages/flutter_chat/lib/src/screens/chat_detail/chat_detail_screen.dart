@@ -259,7 +259,7 @@ class _ChatBody extends HookWidget {
       var oldCount = messages.length;
 
       try {
-        debugPrint("loading from message: ${oldestMsg.id}");
+        debugPrint("loading old messages from message: ${oldestMsg.id}");
         await service.loadOldMessagesBefore(firstMessage: oldestMsg);
       } finally {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -284,7 +284,7 @@ class _ChatBody extends HookWidget {
 
       var newestMsg = messages.last;
       try {
-        debugPrint("loading from message: ${newestMsg.id}");
+        debugPrint("loading new messages from message: ${newestMsg.id}");
         await service.loadNewMessagesAfter(lastMessage: newestMsg);
       } finally {
         isLoadingNewer.value = false;
@@ -298,11 +298,13 @@ class _ChatBody extends HookWidget {
         var offset = scrollController.offset;
         var maxScroll = scrollController.position.maxScrollExtent;
 
-        if ((maxScroll - offset) <= 50 && !isLoadingOlder.value) {
+        if ((maxScroll - offset) <= options.paginationControls.scrollOffset &&
+            !isLoadingOlder.value) {
           unawaited(loadOlderMessages());
         }
 
-        if (offset <= 50 && !isLoadingNewer.value) {
+        if (offset <= options.paginationControls.scrollOffset &&
+            !isLoadingNewer.value) {
           unawaited(loadNewerMessages());
         }
       }
@@ -326,12 +328,14 @@ class _ChatBody extends HookWidget {
       userMap[u.id] = u;
     }
 
-    var topSpinner = (isLoadingOlder.value && options.enableLoadingIndicator)
-        ? const _LoaderItem()
+    var topSpinner = (isLoadingOlder.value &&
+            options.paginationControls.loadingIndicatorForOldMessages)
+        ? options.builders.loadingChatMessageBuilder.call(context)
         : const SizedBox.shrink();
 
-    var bottomSpinner = (isLoadingNewer.value && options.enableLoadingIndicator)
-        ? const _LoaderItem()
+    var bottomSpinner = (isLoadingNewer.value &&
+            options.paginationControls.loadingIndicatorForNewMessages)
+        ? options.builders.loadingChatMessageBuilder.call(context)
         : const SizedBox.shrink();
 
     var reversedMessages = messages.reversed.toList();
@@ -348,7 +352,6 @@ class _ChatBody extends HookWidget {
 
         bubbleChildren.add(
           ChatBubble(
-            key: ValueKey(msg.id),
             message: msg,
             previousMessage: prevMsg,
             sender: userMap[msg.senderId],
@@ -370,7 +373,6 @@ class _ChatBody extends HookWidget {
           child: Align(
             alignment: options.chatAlignment ?? Alignment.bottomCenter,
             child: ListView(
-              shrinkWrap: true,
               reverse: true,
               controller: scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
@@ -391,21 +393,4 @@ class _ChatBody extends HookWidget {
       ],
     );
   }
-}
-
-/// A small row spinner item to show partial loading
-class _LoaderItem extends StatelessWidget {
-  const _LoaderItem();
-
-  @override
-  Widget build(BuildContext context) => const Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Center(
-          child: SizedBox(
-            width: 24,
-            height: 24,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-        ),
-      );
 }
