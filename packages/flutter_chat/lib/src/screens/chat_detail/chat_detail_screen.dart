@@ -129,21 +129,30 @@ class ChatDetailScreen extends HookWidget {
     required ChatModel chat,
     required List<UserModel> allUsers,
   }) {
+    var options = chatScope.options;
+    var translations = options.translations;
+    var title = options.chatTitleResolver?.call(chat);
+    if (title != null) {
+      return title;
+    }
+
     if (chat.isGroupChat) {
-      return chatScope.options.translations.groupNameEmpty;
+      if (chat.chatName?.isNotEmpty ?? false) {
+        return chat.chatName;
+      }
+      return translations.groupNameEmpty;
     }
 
     // For one-to-one, pick the 'other' user from the list
-    var otherUser = allUsers.firstWhere(
-      (u) => u.id != chatScope.userId,
-      orElse: () => const UserModel(
-        id: "",
-      ),
-    );
+    var otherUser = allUsers
+        .where(
+          (u) => u.id != chatScope.userId,
+        )
+        .firstOrNull;
 
-    return otherUser.fullname?.isNotEmpty ?? false
+    return otherUser != null && otherUser.fullname != null
         ? otherUser.fullname
-        : chatScope.options.translations.anonymousUser;
+        : translations.anonymousUser;
   }
 }
 

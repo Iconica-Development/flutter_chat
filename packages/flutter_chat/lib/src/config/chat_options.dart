@@ -84,7 +84,7 @@ class ChatOptions {
 
 /// Typedef for the chatTitleResolver function that is used to get a title for
 /// a chat.
-typedef ChatTitleResolver = String Function(ChatModel chat);
+typedef ChatTitleResolver = String? Function(ChatModel chat);
 
 /// Typedef for the messageThemeResolver function that is used to get a
 /// [MessageTheme] for a message. This can return null so you can fall back to
