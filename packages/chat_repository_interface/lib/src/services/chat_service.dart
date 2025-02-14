@@ -224,4 +224,9 @@ class ChatService {
 
     await chatRepository.updateChat(chat: newChat);
   }
+
+  /// Get all the users for the given [chatId].
+  /// Returns a list of [UserModel] stream.
+  Stream<List<UserModel>> getAllUsersForChat({required String chatId}) =>
+      userRepository.getAllUsersForChat(chatId: chatId);
 }
