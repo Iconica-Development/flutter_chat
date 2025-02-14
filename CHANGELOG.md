@@ -13,6 +13,7 @@
 - Changed baseScreenBuilder to include a chatTitle that can be used to show provide the title logic to apps that use the baseScreenBuilder
 - Added loadNewMessagesAfter, loadOldMessagesBefore and removed pagination from getMessages in the ChatRepositoryInterface to change pagination behavior to rely on the stream and two methods indicating that more messages should be added to the stream
 - Added chatTitleResolver that can be used to resolve the chat title from the chat model or return null to allow for default behavior
+- Added ChatPaginationControls to the ChatOptions to allow for more control over the pagination
 
 ## 4.0.0
 - Move to the new user story architecture

@@ -22,6 +22,7 @@ class ChatBuilders {
     this.chatMessageBuilder = DefaultChatMessageBuilder.builder,
     this.usernameBuilder,
     this.loadingWidgetBuilder = DefaultChatLoadingOverlay.builder,
+    this.loadingChatMessageBuilder = DefaultChatMessageLoader.builder,
   });
 
   /// The base screen builder
@@ -75,7 +76,14 @@ class ChatBuilders {
   final ImagePickerContainerBuilder? imagePickerContainerBuilder;
 
   /// The loading widget builder
-  final Widget Function(BuildContext context) loadingWidgetBuilder;
+  /// This is used to build the loading widget that is displayed on the chat
+  /// screen when loading the chat
+  final WidgetBuilder loadingWidgetBuilder;
+
+  /// The loading widget builder for chat messages
+  /// This is displayed in the list of chat messages when loading more messages
+  /// can be above and below the list
+  final WidgetBuilder loadingChatMessageBuilder;
 }
 
 /// The button builder
