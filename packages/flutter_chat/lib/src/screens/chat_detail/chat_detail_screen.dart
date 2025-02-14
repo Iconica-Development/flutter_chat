@@ -4,7 +4,8 @@ import "dart:typed_data";
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
-import "package:flutter_chat/src/screens/chat_detail/widgets/default_message_builder.dart";
+import "package:flutter_chat/src/screens/chat_detail/widgets/chat_bottom.dart";
+import "package:flutter_chat/src/screens/chat_detail/widgets/chat_widgets.dart";
 import "package:flutter_chat/src/screens/creation/widgets/image_picker.dart";
 import "package:flutter_chat/src/util/scope.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
@@ -90,14 +91,14 @@ class ChatDetailScreen extends HookWidget {
       [onExit],
     );
 
-    var appBar = _AppBar(
+    var appBar = _ChatAppBar(
       chatTitle: chatTitle.value,
       onPressChatTitle: onPressChatTitle,
       chatModel: chat,
       onPressBack: onExit,
     );
 
-    var body = _Body(
+    var body = _ChatBody(
       chatId: chatId,
       chat: chat,
       chatUsers: allUsers,
@@ -147,8 +148,8 @@ class ChatDetailScreen extends HookWidget {
 }
 
 /// The app bar widget for the chat detail screen
-class _AppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _AppBar({
+class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _ChatAppBar({
     required this.chatTitle,
     required this.chatModel,
     required this.onPressChatTitle,
@@ -202,8 +203,8 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
 
 /// Body for the chat detail screen
 /// Displays messages, a scrollable list, and a bottom input field.
-class _Body extends HookWidget {
-  const _Body({
+class _ChatBody extends HookWidget {
+  const _ChatBody({
     required this.chatId,
     required this.chat,
     required this.chatUsers,
@@ -265,12 +266,12 @@ class _Body extends HookWidget {
 
     var listViewChildren = messages.isEmpty && !showIndicator.value
         ? [
-            _ChatNoMessages(isGroupChat: chat!.isGroupChat),
+            ChatNoMessages(isGroupChat: chat!.isGroupChat),
           ]
         : [
             for (var (index, message) in messages.indexed) ...[
               if (chat!.id == message.chatId)
-                _ChatBubble(
+                ChatBubble(
                   key: ValueKey(message.id),
                   sender: chatUsers
                       .where(
@@ -302,7 +303,7 @@ class _Body extends HookWidget {
                 ),
               ),
             ),
-            _ChatBottom(
+            ChatBottomInputSection(
               chat: chat!,
               onPressSelectImage: () async => onPressSelectImage(
                 context,
@@ -318,194 +319,5 @@ class _Body extends HookWidget {
               const SizedBox.shrink(),
       ],
     );
-  }
-}
-
-/// Widget displayed when there are no messages in the chat.
-class _ChatNoMessages extends HookWidget {
-  const _ChatNoMessages({
-    required this.isGroupChat,
-  });
-
-  /// Determines if this chat is a group chat.
-  final bool isGroupChat;
-
-  @override
-  Widget build(BuildContext context) {
-    var chatScope = ChatScope.of(context);
-    var translations = chatScope.options.translations;
-    var theme = Theme.of(context);
-
-    return Center(
-      child: Text(
-        isGroupChat
-            ? translations.writeFirstMessageInGroupChat
-            : translations.writeMessageToStartChat,
-        style: theme.textTheme.bodySmall,
-      ),
-    );
-  }
-}
-
-/// Bottom input field where the user can type or upload images.
-class _ChatBottom extends HookWidget {
-  const _ChatBottom({
-    required this.chat,
-    required this.onMessageSubmit,
-    this.onPressSelectImage,
-  });
-
-  /// The chat model.
-  final ChatModel chat;
-
-  /// Callback function invoked when a message is submitted.
-  final Function(String text) onMessageSubmit;
-
-  /// Callback function invoked when the select image button is pressed.
-  final VoidCallback? onPressSelectImage;
-
-  @override
-  Widget build(BuildContext context) {
-    var chatScope = ChatScope.of(context);
-    var options = chatScope.options;
-    var theme = Theme.of(context);
-
-    var textController = useTextEditingController();
-    var isTyping = useState(false);
-    var isSending = useState(false);
-
-    useEffect(
-      () {
-        void listener() => isTyping.value = textController.text.isNotEmpty;
-        textController.addListener(listener);
-        return () => textController.removeListener(listener);
-      },
-      [textController],
-    );
-
-    Future<void> sendMessage() async {
-      isSending.value = true;
-      var value = textController.text;
-      if (value.isNotEmpty) {
-        await onMessageSubmit(value);
-        textController.clear();
-      }
-      isSending.value = false;
-    }
-
-    Future<void> Function()? onClickSendMessage;
-    if (isTyping.value && !isSending.value) {
-      onClickSendMessage = () async => sendMessage();
-    }
-
-    /// Image and send buttons
-    var messageSendButtons = Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          onPressed: onPressSelectImage,
-          icon: Icon(
-            Icons.image_outlined,
-            color: options.iconEnabledColor,
-          ),
-        ),
-        IconButton(
-          disabledColor: options.iconDisabledColor,
-          color: options.iconEnabledColor,
-          onPressed: onClickSendMessage,
-          icon: const Icon(Icons.send_rounded),
-        ),
-      ],
-    );
-
-    var defaultInputField = TextField(
-      textAlign: TextAlign.start,
-      textAlignVertical: TextAlignVertical.center,
-      style: theme.textTheme.bodySmall,
-      textCapitalization: TextCapitalization.sentences,
-      controller: textController,
-      decoration: InputDecoration(
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
-          borderSide: const BorderSide(color: Colors.black),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
-          borderSide: const BorderSide(color: Colors.black),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 0,
-          horizontal: 30,
-        ),
-        hintText: options.translations.messagePlaceholder,
-        hintStyle: theme.textTheme.bodyMedium,
-        fillColor: Colors.white,
-        filled: true,
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(25)),
-          borderSide: BorderSide.none,
-        ),
-        suffixIcon: messageSendButtons,
-      ),
-    );
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-      child: SizedBox(
-        height: 45,
-        child: options.builders.messageInputBuilder?.call(
-              context,
-              textController,
-              messageSendButtons,
-              options.translations,
-            ) ??
-            defaultInputField,
-      ),
-    );
-  }
-}
-
-/// A single chat bubble in the chat
-class _ChatBubble extends HookWidget {
-  const _ChatBubble({
-    required this.message,
-    required this.sender,
-    required this.onPressSender,
-    this.previousMessage,
-    super.key,
-  });
-
-  /// The message to display.
-  final MessageModel message;
-
-  /// The user who sent the message. This can be null because some messages are
-  /// not from users
-  final UserModel? sender;
-
-  /// The previous message in the list, if any.
-  final MessageModel? previousMessage;
-
-  /// Callback function when a message sender is pressed.
-  final Function(UserModel user) onPressSender;
-
-  @override
-  Widget build(BuildContext context) {
-    var chatScope = ChatScope.of(context);
-    var options = chatScope.options;
-
-    return options.builders.chatMessageBuilder.call(
-          context,
-          message,
-          previousMessage,
-          sender,
-          onPressSender,
-        ) ??
-        DefaultChatMessageBuilder(
-          message: message,
-          previousMessage: previousMessage,
-          sender: sender,
-          onPressSender: onPressSender,
-        );
   }
 }
