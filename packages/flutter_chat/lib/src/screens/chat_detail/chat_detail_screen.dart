@@ -323,9 +323,9 @@ class _ChatBody extends HookWidget {
             ),
           ],
         ),
-        if (showIndicator.value && options.enableLoadingIndicator)
-          options.builders.loadingWidgetBuilder(context) ??
-              const SizedBox.shrink(),
+        if (showIndicator.value && options.enableLoadingIndicator) ...[
+          options.builders.loadingWidgetBuilder(context),
+        ],
       ],
     );
   }
