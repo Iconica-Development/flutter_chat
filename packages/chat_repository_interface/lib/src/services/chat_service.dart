@@ -141,6 +141,26 @@ class ChatService {
         chatId: chatId,
       );
 
+  /// Signals that new messages should be loaded after the given message.
+  /// The stream should emit the new messages.
+  Future<void> loadNewMessagesAfter({
+    required MessageModel lastMessage,
+  }) =>
+      chatRepository.loadNewMessagesAfter(
+        userId: userId,
+        lastMessage: lastMessage,
+      );
+
+  /// Signals that old messages should be loaded before the given message.
+  /// The stream should emit the new messages.
+  Future<void> loadOldMessagesBefore({
+    required MessageModel firstMessage,
+  }) =>
+      chatRepository.loadOldMessagesBefore(
+        userId: userId,
+        firstMessage: firstMessage,
+      );
+
   /// Send a message with the given parameters.
   /// [chatId] is the chat id.
   /// [senderId] is the sender id.

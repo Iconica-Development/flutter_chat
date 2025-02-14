@@ -23,7 +23,6 @@ class LocalChatRepository implements ChatRepositoryInterface {
 
   final Map<String, int> _startIndexMap = {};
   final Map<String, int> _endIndexMap = {};
-  static const int _chunkSize = 30;
 
   @override
   Future<void> createChat({
@@ -127,7 +126,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
       );
       allMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
-      _startIndexMap[chatId] ??= math.max(0, allMessages.length - _chunkSize);
+      _startIndexMap[chatId] ??= math.max(0, allMessages.length - chunkSize);
       _endIndexMap[chatId] ??= allMessages.length;
 
       var displayedMessages = allMessages.sublist(
@@ -159,7 +158,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
         _endIndexMap[lastMessage.chatId] ?? allMessages.length;
     _endIndexMap[lastMessage.chatId] = math.min(
       allMessages.length,
-      currentEndIndex + _chunkSize,
+      currentEndIndex + chunkSize,
     );
 
     var displayedMessages = allMessages.sublist(
@@ -187,7 +186,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
     var currentStartIndex = _startIndexMap[firstMessage.chatId] ?? 0;
     _startIndexMap[firstMessage.chatId] = math.max(
       0,
-      currentStartIndex - _chunkSize,
+      currentStartIndex - chunkSize,
     );
 
     var displayedMessages = allMessages.sublist(
@@ -274,4 +273,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
 
   /// All the chats of the local memory database
   List<ChatModel> get getLocalChats => chats;
+
+  /// The chunkSize used for pagination
+  int get getChunkSize => chunkSize;
 }

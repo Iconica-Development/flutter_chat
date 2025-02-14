@@ -2,6 +2,9 @@ import "package:chat_repository_interface/src/models/chat_model.dart";
 import "package:chat_repository_interface/src/models/message_model.dart";
 import "package:chat_repository_interface/src/models/user_model.dart";
 
+/// The chunkSize for the LocalChatRepository
+const int chunkSize = 10;
+
 /// All the chats of the local memory database
 final List<ChatModel> chats = [];
 
