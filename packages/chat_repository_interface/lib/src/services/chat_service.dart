@@ -211,14 +211,18 @@ class ChatService {
   /// Upload an image with the given parameters.
   /// [path] is the image path.
   /// [image] is the image bytes.
+  /// [chatId] is the chat id.
   /// Returns a [Future] of [String].
   Future<String> uploadImage({
     required String path,
     required Uint8List image,
+    required String chatId,
   }) =>
       chatRepository.uploadImage(
         path: path,
         image: image,
+        senderId: userId,
+        chatId: chatId,
       );
 
   /// Mark the chat as read with the given parameters.
