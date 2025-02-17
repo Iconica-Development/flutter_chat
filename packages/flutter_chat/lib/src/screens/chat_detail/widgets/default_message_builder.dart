@@ -173,6 +173,7 @@ class _ChatMessageBubble extends StatelessWidget {
           DefaultChatMessageContainer(
             backgroundColor: messageTheme.backgroundColor!,
             borderColor: messageTheme.borderColor!,
+            borderRadius: messageTheme.borderRadius!,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -258,6 +259,7 @@ class DefaultChatMessageContainer extends StatelessWidget {
   const DefaultChatMessageContainer({
     required this.backgroundColor,
     required this.borderColor,
+    required this.borderRadius,
     required this.child,
     super.key,
   });
@@ -268,6 +270,9 @@ class DefaultChatMessageContainer extends StatelessWidget {
   /// The color of the border around the message
   final Color borderColor;
 
+  /// The border radius of the message container
+  final BorderRadius borderRadius;
+
   /// The content of the message
   final Widget child;
 
@@ -275,7 +280,7 @@ class DefaultChatMessageContainer extends StatelessWidget {
   Widget build(BuildContext context) => DecoratedBox(
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: borderRadius,
           border: Border.all(
             width: 1,
             color: borderColor,
