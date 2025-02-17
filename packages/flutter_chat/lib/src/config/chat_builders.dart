@@ -106,6 +106,7 @@ typedef TextInputBuilder = Widget Function(
   TextEditingController textEditingController,
   Widget suffixIcon,
   ChatTranslations translations,
+  VoidCallback onSubmit,
 );
 
 /// The base screen builder

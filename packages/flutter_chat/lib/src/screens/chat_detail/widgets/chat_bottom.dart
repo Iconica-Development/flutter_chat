@@ -77,6 +77,8 @@ class ChatBottomInputSection extends HookWidget {
       ],
     );
 
+    Future<void> onSubmitField() async => sendMessage();
+
     var defaultInputField = TextField(
       textAlign: TextAlign.start,
       textAlignVertical: TextAlignVertical.center,
@@ -106,6 +108,7 @@ class ChatBottomInputSection extends HookWidget {
         ),
         suffixIcon: messageSendButtons,
       ),
+      onSubmitted: (_) async => onSubmitField(),
     );
 
     return Padding(
@@ -117,6 +120,7 @@ class ChatBottomInputSection extends HookWidget {
               textController,
               messageSendButtons,
               options.translations,
+              onSubmitField,
             ) ??
             defaultInputField,
       ),
