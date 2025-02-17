@@ -243,6 +243,8 @@ class ChatPaginationControls {
     this.scrollOffset = 50.0,
     this.loadingIndicatorForNewMessages = true,
     this.loadingIndicatorForOldMessages = true,
+    this.loadingNewMessageMinDuration = Duration.zero,
+    this.loadingOldMessageMinDuration = Duration.zero,
   });
 
   /// The minimum scroll offset to trigger the pagination to call for more pages
@@ -254,4 +256,14 @@ class ChatPaginationControls {
 
   /// Whether to show a loading indicator for old messages loading
   final bool loadingIndicatorForOldMessages;
+
+  /// The minimum duration for the loading indicator for new messages
+  /// to be shown. The loading indicator will wait for this duration and the
+  /// completion of [ChatService.loadNewMessagesAfter]
+  final Duration loadingNewMessageMinDuration;
+
+  /// The minimum duration for the loading indicator for old messages
+  /// to be shown. The loading indicator will wait for this duration and the
+  /// completion of [ChatService.loadOldMessagesBefore]
+  final Duration loadingOldMessageMinDuration;
 }
