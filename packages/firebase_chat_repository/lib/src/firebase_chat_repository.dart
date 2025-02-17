@@ -190,6 +190,8 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
   Future<String> uploadImage({
     required String path,
     required Uint8List image,
+    required String chatId,
+    required String senderId,
   }) async {
     var ref = _storage.ref().child(_mediaPath).child(path);
     var uploadTask = ref.putData(image);

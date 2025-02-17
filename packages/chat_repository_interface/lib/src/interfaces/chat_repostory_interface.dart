@@ -105,9 +105,13 @@ abstract class ChatRepositoryInterface {
   /// Upload an image with the given parameters.
   /// [path] is the path of the image.
   /// [image] is the image data.
+  /// [senderId] is the sender id.
+  /// [chatId] is the chat id.
   /// Returns the image url.
   Future<String> uploadImage({
     required String path,
+    required String senderId,
+    required String chatId,
     required Uint8List image,
   });
 }

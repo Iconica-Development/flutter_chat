@@ -268,6 +268,8 @@ class LocalChatRepository implements ChatRepositoryInterface {
   Future<String> uploadImage({
     required String path,
     required Uint8List image,
+    required String chatId,
+    required String senderId,
   }) =>
       Future.value("https://picsum.photos/200/300");
 
