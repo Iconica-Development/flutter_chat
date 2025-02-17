@@ -15,6 +15,7 @@
 - Added chatTitleResolver that can be used to resolve the chat title from the chat model or return null to allow for default behavior
 - Added ChatPaginationControls to the ChatOptions to allow for more control over the pagination
 - Fixed that chat message is automatically sent when the user presses enter on the keyboard in the chat input
+- Added sender and chatId to uploadImage in the ChatRepositoryInterface
 
 ## 4.0.0
 - Move to the new user story architecture

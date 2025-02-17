@@ -54,6 +54,7 @@ MaterialPageRoute chatDetailRoute({
           var path = await chatService.uploadImage(
             path: "chats/$chatId-$userId-${DateTime.now()}",
             image: data,
+            chatId: chatId,
           );
           await chatService.sendMessage(
             messageId: "$chatId-$userId-${DateTime.now()}",
@@ -213,6 +214,7 @@ MaterialPageRoute _newGroupChatOverviewRoute({
             path = await chatService.uploadImage(
               path: "groups/$title",
               image: image,
+              chatId: "",
             );
           }
           var chat = await _createGroupChat(
