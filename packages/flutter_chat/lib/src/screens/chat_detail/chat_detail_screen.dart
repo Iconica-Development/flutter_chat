@@ -260,7 +260,12 @@ class _ChatBody extends HookWidget {
 
       try {
         debugPrint("loading old messages from message: ${oldestMsg.id}");
-        await service.loadOldMessagesBefore(firstMessage: oldestMsg);
+        await Future.wait([
+          service.loadOldMessagesBefore(firstMessage: oldestMsg),
+          Future.delayed(
+            options.paginationControls.loadingOldMessageMinDuration,
+          ),
+        ]);
       } finally {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!scrollController.hasClients) {
@@ -285,7 +290,12 @@ class _ChatBody extends HookWidget {
       var newestMsg = messages.last;
       try {
         debugPrint("loading new messages from message: ${newestMsg.id}");
-        await service.loadNewMessagesAfter(lastMessage: newestMsg);
+        await Future.wait([
+          service.loadNewMessagesAfter(lastMessage: newestMsg),
+          Future.delayed(
+            options.paginationControls.loadingNewMessageMinDuration,
+          ),
+        ]);
       } finally {
         isLoadingNewer.value = false;
       }
