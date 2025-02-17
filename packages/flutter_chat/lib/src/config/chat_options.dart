@@ -108,6 +108,7 @@ class MessageTheme {
     this.borderColor,
     this.textColor,
     this.timeTextColor,
+    this.borderRadius,
     this.messageAlignment,
     this.messageSidePadding,
     this.textAlignment,
@@ -122,6 +123,7 @@ class MessageTheme {
         borderColor: theme.colorScheme.primary,
         textColor: theme.colorScheme.onPrimary,
         timeTextColor: theme.colorScheme.onPrimary,
+        borderRadius: BorderRadius.circular(12),
         textAlignment: TextAlign.start,
         messageSidePadding: 144.0,
         messageAlignment: null,
@@ -158,6 +160,10 @@ class MessageTheme {
   /// Defaults to [ThemeData.colorScheme.primaryColor]
   final Color? borderColor;
 
+  /// The border radius of the message container
+  /// Defaults to [BorderRadius.circular(12)]
+  final BorderRadius? borderRadius;
+
   /// The padding on the side of the message
   /// If not set, the padding is 144.0
   final double? messageSidePadding;
@@ -177,6 +183,7 @@ class MessageTheme {
     Color? borderColor,
     Color? textColor,
     Color? timeTextColor,
+    BorderRadius? borderRadius,
     double? messageSidePadding,
     TextAlign? messageAlignment,
     TextAlign? textAlignment,
@@ -189,6 +196,7 @@ class MessageTheme {
         borderColor: borderColor ?? this.borderColor,
         textColor: textColor ?? this.textColor,
         timeTextColor: timeTextColor ?? this.timeTextColor,
+        borderRadius: borderRadius ?? this.borderRadius,
         messageSidePadding: messageSidePadding ?? this.messageSidePadding,
         messageAlignment: messageAlignment ?? this.messageAlignment,
         textAlignment: textAlignment ?? this.textAlignment,
@@ -204,6 +212,7 @@ class MessageTheme {
         borderColor: borderColor ?? other.borderColor,
         textColor: textColor ?? other.textColor,
         timeTextColor: timeTextColor ?? other.timeTextColor,
+        borderRadius: borderRadius ?? other.borderRadius,
         messageSidePadding: messageSidePadding ?? other.messageSidePadding,
         messageAlignment: messageAlignment ?? other.messageAlignment,
         textAlignment: textAlignment ?? other.textAlignment,
