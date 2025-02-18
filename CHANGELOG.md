@@ -16,6 +16,7 @@
 - Added ChatPaginationControls to the ChatOptions to allow for more control over the pagination
 - Fixed that chat message is automatically sent when the user presses enter on the keyboard in the chat input
 - Added sender and chatId to uploadImage in the ChatRepositoryInterface
+- Added imagePickerBuilder to the builders in the ChatOptions to override the image picker with a custom implementation that needs to return a Future<Uint8List?>
 
 ## 4.0.0
 - Move to the new user story architecture
