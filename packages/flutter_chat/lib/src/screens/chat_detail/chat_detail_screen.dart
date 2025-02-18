@@ -249,6 +249,7 @@ class _ChatBody extends HookWidget {
 
     var isLoadingOlder = useState(false);
     var isLoadingNewer = useState(false);
+    var autoScrollEnabled = useState(true);
 
     var messagesStream = useMemoized(
       () => service.getMessages(chatId: chatId),
@@ -317,14 +318,21 @@ class _ChatBody extends HookWidget {
 
         var offset = scrollController.offset;
         var maxScroll = scrollController.position.maxScrollExtent;
+        var threshold = options.paginationControls.scrollOffset;
 
-        if ((maxScroll - offset) <= options.paginationControls.scrollOffset &&
-            !isLoadingOlder.value) {
+        var distanceFromBottom = maxScroll - offset;
+
+        if (distanceFromBottom > 50) {
+          autoScrollEnabled.value = false;
+        } else {
+          autoScrollEnabled.value = true;
+        }
+
+        if (offset <= threshold && !isLoadingOlder.value) {
           unawaited(loadOlderMessages());
         }
 
-        if (offset <= options.paginationControls.scrollOffset &&
-            !isLoadingNewer.value) {
+        if (distanceFromBottom <= threshold && !isLoadingNewer.value) {
           unawaited(loadNewerMessages());
         }
       }
@@ -337,6 +345,34 @@ class _ChatBody extends HookWidget {
       isLoadingNewer.value,
       chat,
     ]);
+
+    useEffect(
+      () {
+        var disposed = false;
+
+        /// Continuously scroll to the bottom of the chat
+        Future<void> scrollLoop() async {
+          while (!disposed && autoScrollEnabled.value) {
+            await Future.delayed(const Duration(milliseconds: 500));
+            if (disposed || !autoScrollEnabled.value) break;
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (disposed || !autoScrollEnabled.value) return;
+              if (scrollController.hasClients) {
+                scrollController.jumpTo(
+                  scrollController.position.maxScrollExtent,
+                );
+              }
+            });
+          }
+        }
+
+        unawaited(scrollLoop());
+
+        return () => disposed = true;
+      },
+      [autoScrollEnabled.value],
+    );
 
     if (chat == null) {
       if (!options.enableLoadingIndicator) return const SizedBox.shrink();
@@ -358,17 +394,13 @@ class _ChatBody extends HookWidget {
         ? options.builders.loadingChatMessageBuilder.call(context)
         : const SizedBox.shrink();
 
-    var reversedMessages = messages.reversed.toList();
     var bubbleChildren = <Widget>[];
-    if (reversedMessages.isEmpty) {
+    if (messages.isEmpty) {
       bubbleChildren
           .add(ChatNoMessages(isGroupChat: chat?.isGroupChat ?? false));
     } else {
-      for (var (index, msg) in reversedMessages.indexed) {
-        var nextIndex = index + 1;
-        var prevMsg = nextIndex < reversedMessages.length
-            ? reversedMessages[nextIndex]
-            : null;
+      for (var (index, msg) in messages.indexed) {
+        var prevMsg = index > 0 ? messages[index - 1] : null;
 
         bubbleChildren.add(
           ChatBubble(
@@ -390,15 +422,13 @@ class _ChatBody extends HookWidget {
     return Column(
       children: [
         Expanded(
-          child: Align(
-            alignment: options.chatAlignment ?? Alignment.bottomCenter,
-            child: ListView(
-              reverse: true,
-              controller: scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(top: 24),
-              children: listViewChildren,
-            ),
+          child: ListView.builder(
+            reverse: false,
+            controller: scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(top: 24),
+            itemCount: listViewChildren.length,
+            itemBuilder: (context, index) => listViewChildren[index],
           ),
         ),
         ChatBottomInputSection(
