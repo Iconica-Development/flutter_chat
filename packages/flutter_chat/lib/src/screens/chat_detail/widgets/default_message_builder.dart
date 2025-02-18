@@ -82,6 +82,7 @@ class DefaultChatMessageBuilder extends StatelessWidget {
     var chatMessage = _ChatMessageBubble(
       isSameSender: isSameSender,
       isMessageFromSelf: isMessageFromSelf,
+      previousMessage: previousMessage,
       message: message,
       messageTheme: messageTheme,
       sender: sender,
@@ -121,6 +122,7 @@ class _ChatMessageBubble extends StatelessWidget {
     required this.isSameSender,
     required this.isMessageFromSelf,
     required this.message,
+    required this.previousMessage,
     required this.messageTheme,
     required this.sender,
   });
@@ -128,6 +130,7 @@ class _ChatMessageBubble extends StatelessWidget {
   final bool isSameSender;
   final bool isMessageFromSelf;
   final MessageModel message;
+  final MessageModel? previousMessage;
   final MessageTheme messageTheme;
   final UserModel? sender;
 
@@ -138,7 +141,13 @@ class _ChatMessageBubble extends StatelessWidget {
     var options = ChatScope.of(context).options;
     var dateFormatter = DateFormatter(options: options);
 
-    var messageTime = dateFormatter.format(date: message.timestamp);
+    var isNewDate = previousMessage != null &&
+        message.timestamp.day != previousMessage?.timestamp.day;
+
+    var messageTime = dateFormatter.format(
+      date: message.timestamp,
+      showFullDate: isNewDate || previousMessage == null,
+    );
 
     var senderTitle = Text(
       sender?.firstName ?? "",
