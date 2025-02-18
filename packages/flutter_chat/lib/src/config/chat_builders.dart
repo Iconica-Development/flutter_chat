@@ -1,9 +1,12 @@
+import "dart:typed_data";
+
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_translations.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/default_loader.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/default_message_builder.dart";
+import "package:flutter_chat/src/screens/creation/widgets/default_image_picker.dart";
 
 /// The chat builders
 class ChatBuilders {
@@ -20,6 +23,7 @@ class ChatBuilders {
     this.noUsersPlaceholderBuilder,
     this.chatTitleBuilder,
     this.chatMessageBuilder = DefaultChatMessageBuilder.builder,
+    this.imagePickerBuilder = DefaultImagePickerDialog.builder,
     this.usernameBuilder,
     this.loadingWidgetBuilder = DefaultChatLoadingOverlay.builder,
     this.loadingChatMessageBuilder = DefaultChatMessageLoader.builder,
@@ -75,6 +79,11 @@ class ChatBuilders {
   /// The image picker container builder
   final ImagePickerContainerBuilder? imagePickerContainerBuilder;
 
+  /// A way to provide your own image picker implementation
+  /// If not provided the [DefaultImagePicker.builder] will be used which
+  /// shows a modal buttom sheet with the option for a camera or gallery image
+  final ImagePickerBuilder imagePickerBuilder;
+
   /// The loading widget builder
   /// This is used to build the loading widget that is displayed on the chat
   /// screen when loading the chat
@@ -98,6 +107,11 @@ typedef ImagePickerContainerBuilder = Widget Function(
   BuildContext context,
   VoidCallback onClose,
   ChatTranslations translations,
+);
+
+/// Builder definition for providing an image picker implementation
+typedef ImagePickerBuilder = Future<Uint8List?> Function(
+  BuildContext context,
 );
 
 /// The text input builder

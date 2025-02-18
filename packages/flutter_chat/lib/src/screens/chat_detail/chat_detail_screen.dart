@@ -6,7 +6,7 @@ import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/chat_bottom.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/chat_widgets.dart";
-import "package:flutter_chat/src/screens/creation/widgets/image_picker.dart";
+import "package:flutter_chat/src/screens/creation/widgets/default_image_picker.dart";
 import "package:flutter_chat/src/util/scope.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
