@@ -13,6 +13,7 @@ class ChatBuilders {
   /// The chat builders constructor
   const ChatBuilders({
     this.baseScreenBuilder,
+    this.chatScreenBuilder,
     this.messageInputBuilder,
     this.chatRowContainerBuilder,
     this.groupAvatarBuilder,
@@ -44,6 +45,11 @@ class ChatBuilders {
   ///       // And so on....
   /// ```
   final BaseScreenBuilder? baseScreenBuilder;
+
+  /// The chat screen builder
+  /// This builder is used instead of the [baseScreenBuilder] when building the
+  /// chat screen. While the chat is still loading the [chat] will be null
+  final ChatScreenBuilder? chatScreenBuilder;
 
   /// The message input builder
   final TextInputBuilder? messageInputBuilder;
@@ -128,6 +134,15 @@ typedef TextInputBuilder = Widget Function(
 typedef BaseScreenBuilder = Widget Function(
   BuildContext context,
   ScreenType screenType,
+  PreferredSizeWidget appBar,
+  String? title,
+  Widget body,
+);
+
+/// The chat screen builder
+typedef ChatScreenBuilder = Widget Function(
+  BuildContext context,
+  ChatModel? chat,
   PreferredSizeWidget appBar,
   String? title,
   Widget body,
