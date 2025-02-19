@@ -108,19 +108,29 @@ class ChatDetailScreen extends HookWidget {
       onReadChat: onReadChat,
     );
 
-    if (options.builders.baseScreenBuilder == null) {
-      return Scaffold(
-        appBar: appBar,
-        body: body,
+    if (options.builders.chatScreenBuilder != null) {
+      return options.builders.chatScreenBuilder!.call(
+        context,
+        chat,
+        appBar,
+        chatTitle.value,
+        body,
       );
     }
 
-    return options.builders.baseScreenBuilder!.call(
-      context,
-      mapScreenType,
-      appBar,
-      chatTitle.value,
-      body,
+    if (options.builders.baseScreenBuilder != null) {
+      return options.builders.baseScreenBuilder!.call(
+        context,
+        mapScreenType,
+        appBar,
+        chatTitle.value,
+        body,
+      );
+    }
+
+    return Scaffold(
+      appBar: appBar,
+      body: body,
     );
   }
 
