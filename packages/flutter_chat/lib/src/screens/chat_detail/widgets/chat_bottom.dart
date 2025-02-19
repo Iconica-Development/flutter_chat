@@ -57,64 +57,88 @@ class ChatBottomInputSection extends HookWidget {
     }
 
     /// Image and send buttons
-    var messageSendButtons = Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          onPressed: onPressSelectImage,
-          icon: Icon(
-            Icons.image_outlined,
-            color: options.iconEnabledColor,
+    var messageSendButtons = SizedBox(
+      height: 45,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            alignment: Alignment.bottomRight,
+            onPressed: onPressSelectImage,
+            icon: Icon(
+              Icons.image_outlined,
+              color: options.iconEnabledColor,
+            ),
           ),
-        ),
-        IconButton(
-          disabledColor: options.iconDisabledColor,
-          color: options.iconEnabledColor,
-          onPressed: onClickSendMessage,
-          icon: const Icon(Icons.send_rounded),
-        ),
-      ],
+          IconButton(
+            alignment: Alignment.bottomRight,
+            disabledColor: options.iconDisabledColor,
+            color: options.iconEnabledColor,
+            onPressed: onClickSendMessage,
+            icon: const Icon(Icons.send_rounded),
+          ),
+        ],
+      ),
     );
 
     Future<void> onSubmitField() async => sendMessage();
 
-    var defaultInputField = TextField(
-      textAlign: TextAlign.start,
-      textAlignVertical: TextAlignVertical.center,
-      style: theme.textTheme.bodySmall,
-      textCapitalization: TextCapitalization.sentences,
-      controller: textController,
-      decoration: InputDecoration(
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
-          borderSide: const BorderSide(color: Colors.black),
+    var defaultInputField = Stack(
+      children: [
+        TextField(
+          textAlign: TextAlign.start,
+          textAlignVertical: TextAlignVertical.center,
+          style: theme.textTheme.bodySmall,
+          textCapitalization: TextCapitalization.sentences,
+          textInputAction: TextInputAction.newline,
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
+          controller: textController,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.black),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.black),
+            ),
+            contentPadding: const EdgeInsets.only(
+              left: 16,
+              top: 16,
+              bottom: 16,
+            ),
+            // this ensures that that there is space at the end of the textfield
+            suffixIcon: AbsorbPointer(
+              child: Opacity(
+                opacity: 0.0,
+                child: messageSendButtons,
+              ),
+            ),
+            hintText: options.translations.messagePlaceholder,
+            hintStyle: theme.textTheme.bodyMedium,
+            fillColor: Colors.white,
+            filled: true,
+            border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(25)),
+              borderSide: BorderSide.none,
+            ),
+          ),
+          onSubmitted: (_) async => onSubmitField(),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
-          borderSide: const BorderSide(color: Colors.black),
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: messageSendButtons,
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 0,
-          horizontal: 30,
-        ),
-        hintText: options.translations.messagePlaceholder,
-        hintStyle: theme.textTheme.bodyMedium,
-        fillColor: Colors.white,
-        filled: true,
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(25)),
-          borderSide: BorderSide.none,
-        ),
-        suffixIcon: messageSendButtons,
-      ),
-      onSubmitted: (_) async => onSubmitField(),
+      ],
     );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-      child: SizedBox(
-        height: 45,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 120, minHeight: 45),
         child: options.builders.messageInputBuilder?.call(
               context,
               textController,
