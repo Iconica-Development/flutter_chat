@@ -21,6 +21,7 @@
 - Added chatScreenBuilder to the userstory configuration to customize the specific chat screen with a ChatModel as argument
 - Added senderTitleResolver to the ChatOptions to resolve the title of the sender in the chat message
 - Added imageProviderResolver to the ChatOptions to resolve ImageProvider for all images in the userstory
+- Added enabled boolean to the messageInputBuilder and made parameters named
 
 ## 4.0.0
 - Move to the new user story architecture

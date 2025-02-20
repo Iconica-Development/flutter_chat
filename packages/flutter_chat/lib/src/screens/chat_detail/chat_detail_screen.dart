@@ -69,6 +69,10 @@ class ChatDetailScreen extends HookWidget {
     var usersSnapshot = useStream(allUsersStream);
     var allUsers = usersSnapshot.data ?? [];
 
+    var chatIsloading =
+        chatSnapshot.connectionState == ConnectionState.waiting ||
+            usersSnapshot.connectionState == ConnectionState.waiting;
+
     useEffect(
       () {
         if (chat == null) return;
@@ -106,6 +110,7 @@ class ChatDetailScreen extends HookWidget {
       onUploadImage: onUploadImage,
       onMessageSubmit: onMessageSubmit,
       onReadChat: onReadChat,
+      chatIsLoading: chatIsloading,
     );
 
     if (options.builders.chatScreenBuilder != null) {
@@ -231,6 +236,7 @@ class _ChatBody extends HookWidget {
     required this.onUploadImage,
     required this.onMessageSubmit,
     required this.onReadChat,
+    required this.chatIsLoading,
   });
 
   final String chatId;
@@ -240,6 +246,7 @@ class _ChatBody extends HookWidget {
   final Function(Uint8List image) onUploadImage;
   final Function(String text) onMessageSubmit;
   final Function(ChatModel chat) onReadChat;
+  final bool chatIsLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -377,11 +384,6 @@ class _ChatBody extends HookWidget {
       [autoScrollEnabled.value],
     );
 
-    if (chat == null) {
-      if (!options.enableLoadingIndicator) return const SizedBox.shrink();
-      return options.builders.loadingWidgetBuilder.call(context);
-    }
-
     var userMap = <String, UserModel>{};
     for (var u in chatUsers) {
       userMap[u.id] = u;
@@ -424,18 +426,23 @@ class _ChatBody extends HookWidget {
 
     return Column(
       children: [
-        Expanded(
-          child: ListView.builder(
-            reverse: false,
-            controller: scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(top: 24),
-            itemCount: listViewChildren.length,
-            itemBuilder: (context, index) => listViewChildren[index],
+        if (chatIsLoading && options.enableLoadingIndicator) ...[
+          Expanded(child: options.builders.loadingWidgetBuilder.call(context)),
+        ] else ...[
+          Expanded(
+            child: ListView.builder(
+              reverse: false,
+              controller: scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(top: 24),
+              itemCount: listViewChildren.length,
+              itemBuilder: (context, index) => listViewChildren[index],
+            ),
           ),
-        ),
+        ],
         ChatBottomInputSection(
-          chat: chat!,
+          chat: chat,
+          isLoading: chatIsLoading,
           onPressSelectImage: () async => onPressSelectImage(
             context,
             options,

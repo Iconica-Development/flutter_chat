@@ -8,13 +8,18 @@ class ChatBottomInputSection extends HookWidget {
   /// Creates a new [ChatBottomInputSection].
   const ChatBottomInputSection({
     required this.chat,
+    required this.isLoading,
     required this.onMessageSubmit,
     this.onPressSelectImage,
     super.key,
   });
 
   /// The chat model.
-  final ChatModel chat;
+  final ChatModel? chat;
+
+  /// Whether the chat is still loading.
+  /// The inputfield is disabled when the chat is loading.
+  final bool isLoading;
 
   /// Callback function invoked when a message is submitted.
   final Function(String text) onMessageSubmit;
@@ -65,7 +70,7 @@ class ChatBottomInputSection extends HookWidget {
         children: [
           IconButton(
             alignment: Alignment.bottomRight,
-            onPressed: onPressSelectImage,
+            onPressed: isLoading ? null : onPressSelectImage,
             icon: Icon(
               Icons.image_outlined,
               color: options.iconEnabledColor,
@@ -75,7 +80,7 @@ class ChatBottomInputSection extends HookWidget {
             alignment: Alignment.bottomRight,
             disabledColor: options.iconDisabledColor,
             color: options.iconEnabledColor,
-            onPressed: onClickSendMessage,
+            onPressed: isLoading ? null : onClickSendMessage,
             icon: const Icon(Icons.send_rounded),
           ),
         ],
@@ -95,6 +100,7 @@ class ChatBottomInputSection extends HookWidget {
           keyboardType: TextInputType.multiline,
           maxLines: null,
           controller: textController,
+          enabled: !isLoading,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25),
@@ -141,10 +147,11 @@ class ChatBottomInputSection extends HookWidget {
         constraints: const BoxConstraints(maxHeight: 120, minHeight: 45),
         child: options.builders.messageInputBuilder?.call(
               context,
-              textController,
-              messageSendButtons,
-              options.translations,
-              onSubmitField,
+              textEditingController: textController,
+              suffixIcon: messageSendButtons,
+              translations: options.translations,
+              onSubmit: onSubmitField,
+              enabled: !isLoading,
             ) ??
             defaultInputField,
       ),
