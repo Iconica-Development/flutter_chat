@@ -53,10 +53,11 @@ class DefaultChatMessageBuilder extends StatelessWidget {
     required BuildContext context,
     required ChatOptions options,
     required MessageModel message,
+    required MessageModel? previousMessage,
     required UserModel? user,
   }) =>
       [
-        options.messageThemeResolver(context, message, user),
+        options.messageThemeResolver(context, message, previousMessage, user),
         options.messageTheme,
         MessageTheme.fromTheme(Theme.of(context)),
       ].whereType<MessageTheme>().reduce((value, element) => value | element);
@@ -71,6 +72,7 @@ class DefaultChatMessageBuilder extends StatelessWidget {
       context: context,
       options: options,
       message: message,
+      previousMessage: previousMessage,
       user: sender,
     );
 
