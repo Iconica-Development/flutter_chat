@@ -11,7 +11,7 @@ class ChatOptions {
   ChatOptions({
     this.dateformat,
     this.groupChatEnabled = true,
-    this.enableLoadingIndicator = false,
+    this.enableLoadingIndicator = true,
     this.translations = const ChatTranslations.empty(),
     this.builders = const ChatBuilders(),
     this.spacing = const ChatSpacing(),
