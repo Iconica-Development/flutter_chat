@@ -149,8 +149,10 @@ class _ChatMessageBubble extends StatelessWidget {
       showFullDate: isNewDate || previousMessage == null,
     );
 
-    var senderTitle = Text(
-      sender?.firstName ?? "",
+    var senderTitle =
+        options.senderTitleResolver?.call(sender) ?? sender?.firstName ?? "";
+    var senderTitleText = Text(
+      senderTitle,
       style: theme.textTheme.titleMedium,
     );
 
@@ -176,7 +178,7 @@ class _ChatMessageBubble extends StatelessWidget {
         children: [
           if (messageTheme.showName! && !isSameSender) ...[
             SizedBox(height: options.spacing.chatBetweenMessagesPadding),
-            senderTitle,
+            senderTitleText,
           ],
           const SizedBox(height: 4),
           DefaultChatMessageContainer(
