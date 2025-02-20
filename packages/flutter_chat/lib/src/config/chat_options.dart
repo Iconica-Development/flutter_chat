@@ -23,6 +23,7 @@ class ChatOptions {
     this.iconDisabledColor,
     this.chatAlignment,
     this.onNoChats,
+    this.imageAuthenticationResolver,
     ChatRepositoryInterface? chatRepository,
     UserRepositoryInterface? userRepository,
   })  : chatRepository = chatRepository ?? LocalChatRepository(),
@@ -90,6 +91,11 @@ class ChatOptions {
 
   /// [onNoChats] is a function that is triggered when there are no chats.
   final Function? onNoChats;
+
+  /// If [imageAuthenticationResolver] is set, it will be used to get the
+  /// authentication headers for an image. The [imageUrl] is provided to allow
+  /// for different authentication headers for different images.
+  final ImageAuthenticationResolver? imageAuthenticationResolver;
 }
 
 /// Typedef for the chatTitleResolver function that is used to get a title for
@@ -99,6 +105,12 @@ typedef ChatTitleResolver = String? Function(ChatModel chat);
 /// Typedef for the senderTitleResolver function that is used to get a title for
 /// a sender.
 typedef SenderTitleResolver = String? Function(UserModel? user);
+
+/// Typedef for the imageAuthenticationResolver function that is used to get
+/// authentication headers for an image.
+typedef ImageAuthenticationResolver = Map<String, String>? Function(
+  String imageUrl,
+);
 
 /// Typedef for the messageThemeResolver function that is used to get a
 /// [MessageTheme] for a message. This can return null so you can fall back to

@@ -161,6 +161,8 @@ class OldChatMessageBuilder extends StatelessWidget {
                         : message.isImageMessage
                             ? CachedNetworkImage(
                                 imageUrl: message.imageUrl ?? "",
+                                httpHeaders: options.imageAuthenticationResolver
+                                    ?.call(message.imageUrl ?? ""),
                               )
                             : const SizedBox.shrink(),
                   ),
@@ -182,20 +184,26 @@ class _ChatImage extends StatelessWidget {
   final String image;
 
   @override
-  Widget build(BuildContext context) => Container(
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(40.0),
-        ),
-        width: 40,
-        height: 40,
-        child: image.isNotEmpty
-            ? CachedNetworkImage(
-                fadeInDuration: Duration.zero,
-                imageUrl: image,
-                fit: BoxFit.cover,
-              )
-            : null,
-      );
+  Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
+
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(40.0),
+      ),
+      width: 40,
+      height: 40,
+      child: image.isNotEmpty
+          ? CachedNetworkImage(
+              fadeInDuration: Duration.zero,
+              imageUrl: image,
+              httpHeaders: options.imageAuthenticationResolver?.call(image),
+              fit: BoxFit.cover,
+            )
+          : null,
+    );
+  }
 }

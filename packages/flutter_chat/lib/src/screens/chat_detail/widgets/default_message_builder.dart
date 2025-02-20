@@ -241,7 +241,10 @@ class _DefaultChatImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
     var textTheme = Theme.of(context).textTheme;
+    var imageUrl = message.imageUrl!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: SizedBox(
@@ -251,10 +254,11 @@ class _DefaultChatImage extends StatelessWidget {
           child: AnimatedSize(
             duration: const Duration(milliseconds: 300),
             child: CachedNetworkImage(
-              imageUrl: message.imageUrl!,
+              imageUrl: imageUrl,
               fit: BoxFit.fitWidth,
+              httpHeaders: options.imageAuthenticationResolver?.call(imageUrl),
               errorWidget: (context, url, error) => Text(
-                "Something went wrong",
+                "Something went wrong with loading the image",
                 style: textTheme.bodyLarge?.copyWith(
                   color: messageTheme.textColor,
                 ),
