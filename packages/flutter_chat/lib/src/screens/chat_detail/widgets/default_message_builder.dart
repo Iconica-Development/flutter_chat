@@ -1,4 +1,3 @@
-import "package:cached_network_image/cached_network_image.dart";
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
@@ -241,7 +240,10 @@ class _DefaultChatImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
     var textTheme = Theme.of(context).textTheme;
+    var imageUrl = message.imageUrl!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: SizedBox(
@@ -250,11 +252,12 @@ class _DefaultChatImage extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           child: AnimatedSize(
             duration: const Duration(milliseconds: 300),
-            child: CachedNetworkImage(
-              imageUrl: message.imageUrl!,
+            child: Image(
+              image:
+                  options.imageProviderResolver(context, Uri.parse(imageUrl)),
               fit: BoxFit.fitWidth,
-              errorWidget: (context, url, error) => Text(
-                "Something went wrong",
+              errorBuilder: (context, error, stackTrace) => Text(
+                "Something went wrong with loading the image",
                 style: textTheme.bodyLarge?.copyWith(
                   color: messageTheme.textColor,
                 ),

@@ -1,4 +1,3 @@
-import "package:cached_network_image/cached_network_image.dart";
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/services/date_formatter.dart";
@@ -159,8 +158,11 @@ class OldChatMessageBuilder extends StatelessWidget {
                             ],
                           )
                         : message.isImageMessage
-                            ? CachedNetworkImage(
-                                imageUrl: message.imageUrl ?? "",
+                            ? Image(
+                                image: options.imageProviderResolver(
+                                  context,
+                                  Uri.parse(message.imageUrl!),
+                                ),
                               )
                             : const SizedBox.shrink(),
                   ),
@@ -182,20 +184,24 @@ class _ChatImage extends StatelessWidget {
   final String image;
 
   @override
-  Widget build(BuildContext context) => Container(
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(40.0),
-        ),
-        width: 40,
-        height: 40,
-        child: image.isNotEmpty
-            ? CachedNetworkImage(
-                fadeInDuration: Duration.zero,
-                imageUrl: image,
-                fit: BoxFit.cover,
-              )
-            : null,
-      );
+  Widget build(BuildContext context) {
+    var chatScope = ChatScope.of(context);
+    var options = chatScope.options;
+
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(40.0),
+      ),
+      width: 40,
+      height: 40,
+      child: image.isNotEmpty
+          ? Image(
+              fit: BoxFit.cover,
+              image: options.imageProviderResolver(context, Uri.parse(image)),
+            )
+          : null,
+    );
+  }
 }
