@@ -278,6 +278,7 @@ class _ChatBody extends HookWidget {
         ]);
       } finally {
         WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
           if (!scrollController.hasClients) {
             isLoadingOlder.value = false;
             return;
@@ -307,7 +308,9 @@ class _ChatBody extends HookWidget {
           ),
         ]);
       } finally {
-        isLoadingNewer.value = false;
+        if (context.mounted) {
+          isLoadingNewer.value = false;
+        }
       }
     }
 
