@@ -144,9 +144,11 @@ class _ChatMessageBubble extends StatelessWidget {
     var isNewDate = previousMessage != null &&
         message.timestamp.day != previousMessage?.timestamp.day;
 
+    var showFullDateOnMessage =
+        messageTheme.showFullDate ?? (isNewDate || previousMessage == null);
     var messageTime = dateFormatter.format(
       date: message.timestamp,
-      showFullDate: isNewDate || previousMessage == null,
+      showFullDate: showFullDateOnMessage,
     );
 
     var senderTitle =
@@ -176,7 +178,7 @@ class _ChatMessageBubble extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (messageTheme.showName! && !isSameSender) ...[
+          if (messageTheme.showName ?? !isSameSender) ...[
             SizedBox(height: options.spacing.chatBetweenMessagesPadding),
             senderTitleText,
           ],
