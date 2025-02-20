@@ -124,9 +124,10 @@ class MessageTheme {
     this.textAlignment,
     this.showName,
     this.showTime,
+    this.showFullDate,
   });
 
-  ///
+  /// Creates a [MessageTheme] from a [ThemeData]
   factory MessageTheme.fromTheme(ThemeData theme) => MessageTheme(
         backgroundColor: theme.colorScheme.primary,
         nameColor: theme.colorScheme.onPrimary,
@@ -137,8 +138,9 @@ class MessageTheme {
         textAlignment: TextAlign.start,
         messageSidePadding: 144.0,
         messageAlignment: null,
-        showName: true,
+        showName: null,
         showTime: true,
+        showFullDate: null,
       );
 
   /// The alignment of the message in the chat
@@ -179,12 +181,19 @@ class MessageTheme {
   final double? messageSidePadding;
 
   /// If the name of the sender should be shown above the message
-  /// Defaults to true
+  /// If not set the name will be shown if the previous message was not from the
+  /// same sender.
   final bool? showName;
 
   /// If the time of the message should be shown below the message
   /// Defaults to true
   final bool? showTime;
+
+  /// If the full date should be shown with the time in the message
+  /// If not set the date will be shown if the previous message was not on the
+  /// same day.
+  /// If [showTime] is false, this value is ignored.
+  final bool? showFullDate;
 
   /// Creates a copy of the current object with the provided values
   MessageTheme copyWith({
@@ -199,6 +208,7 @@ class MessageTheme {
     TextAlign? textAlignment,
     bool? showName,
     bool? showTime,
+    bool? showFullDate,
   }) =>
       MessageTheme(
         backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -212,6 +222,7 @@ class MessageTheme {
         textAlignment: textAlignment ?? this.textAlignment,
         showName: showName ?? this.showName,
         showTime: showTime ?? this.showTime,
+        showFullDate: showFullDate ?? this.showFullDate,
       );
 
   /// If a value is null in the first object, the value from the second object
@@ -228,6 +239,7 @@ class MessageTheme {
         textAlignment: textAlignment ?? other.textAlignment,
         showName: showName ?? other.showName,
         showTime: showTime ?? other.showTime,
+        showFullDate: showFullDate ?? other.showFullDate,
       );
 }
 
