@@ -18,6 +18,7 @@ class ChatOptions {
     this.messageTheme,
     this.messageThemeResolver = _defaultMessageThemeResolver,
     this.chatTitleResolver,
+    this.senderTitleResolver,
     this.iconEnabledColor,
     this.iconDisabledColor,
     this.chatAlignment,
@@ -72,6 +73,11 @@ class ChatOptions {
   /// the chat in the ChatDetailScreen.
   final ChatTitleResolver? chatTitleResolver;
 
+  /// If [senderTitleResolver] is set, it will be used to get the title of
+  /// the sender in a chat message. If not set, the [sender.firstName] is used.
+  /// [sender] can be null if the message is an event.
+  final SenderTitleResolver? senderTitleResolver;
+
   /// The alignment of the chatmessages in the ChatDetailScreen.
   /// Defaults to [Alignment.bottomCenter]
   final Alignment? chatAlignment;
@@ -89,6 +95,10 @@ class ChatOptions {
 /// Typedef for the chatTitleResolver function that is used to get a title for
 /// a chat.
 typedef ChatTitleResolver = String? Function(ChatModel chat);
+
+/// Typedef for the senderTitleResolver function that is used to get a title for
+/// a sender.
+typedef SenderTitleResolver = String? Function(UserModel? user);
 
 /// Typedef for the messageThemeResolver function that is used to get a
 /// [MessageTheme] for a message. This can return null so you can fall back to
