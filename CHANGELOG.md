@@ -20,6 +20,7 @@
 - Changed the ChatBottomInputSection to be multiline and go from 45px to 120px in height depending on how many lines are in the textfield
 - Added chatScreenBuilder to the userstory configuration to customize the specific chat screen with a ChatModel as argument
 - Added senderTitleResolver to the ChatOptions to resolve the title of the sender in the chat message
+- Added imageProviderResolver to the ChatOptions to resolve ImageProvider for all images in the userstory
 
 ## 4.0.0
 - Move to the new user story architecture

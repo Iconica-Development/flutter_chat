@@ -1,3 +1,4 @@
+import "package:cached_network_image/cached_network_image.dart";
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_builders.dart";
@@ -23,6 +24,7 @@ class ChatOptions {
     this.iconDisabledColor,
     this.chatAlignment,
     this.onNoChats,
+    this.imageProviderResolver = _defaultImageProviderResolver,
     ChatRepositoryInterface? chatRepository,
     UserRepositoryInterface? userRepository,
   })  : chatRepository = chatRepository ?? LocalChatRepository(),
@@ -90,6 +92,11 @@ class ChatOptions {
 
   /// [onNoChats] is a function that is triggered when there are no chats.
   final Function? onNoChats;
+
+  /// If [imageProviderResolver] is set, it will be used to get the images for
+  /// the images in the entire userstory. If not provided, CachedNetworkImage
+  /// will be used.
+  final ImageProviderResolver imageProviderResolver;
 }
 
 /// Typedef for the chatTitleResolver function that is used to get a title for
@@ -99,6 +106,13 @@ typedef ChatTitleResolver = String? Function(ChatModel chat);
 /// Typedef for the senderTitleResolver function that is used to get a title for
 /// a sender.
 typedef SenderTitleResolver = String? Function(UserModel? user);
+
+/// Typedef for the imageProviderResolver function that is used to get images
+/// for the userstory.
+typedef ImageProviderResolver = ImageProvider Function(
+  BuildContext context,
+  Uri image,
+);
 
 /// Typedef for the messageThemeResolver function that is used to get a
 /// [MessageTheme] for a message. This can return null so you can fall back to
@@ -251,6 +265,12 @@ MessageTheme? _defaultMessageThemeResolver(
   UserModel? sender,
 ) =>
     null;
+
+ImageProvider _defaultImageProviderResolver(
+  BuildContext context,
+  Uri image,
+) =>
+    CachedNetworkImageProvider(image.toString());
 
 /// All configurable paddings and whitespaces within the userstory
 class ChatSpacing {
