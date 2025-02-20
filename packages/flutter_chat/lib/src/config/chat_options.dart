@@ -106,6 +106,7 @@ typedef SenderTitleResolver = String? Function(UserModel? user);
 typedef MessageThemeResolver = MessageTheme? Function(
   BuildContext context,
   MessageModel message,
+  MessageModel? previousMessage,
   UserModel? sender,
 );
 
@@ -246,6 +247,7 @@ class MessageTheme {
 MessageTheme? _defaultMessageThemeResolver(
   BuildContext context,
   MessageModel message,
+  MessageModel? previousMessage,
   UserModel? sender,
 ) =>
     null;
