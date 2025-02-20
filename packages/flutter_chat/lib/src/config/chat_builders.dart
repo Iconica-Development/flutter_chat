@@ -122,12 +122,13 @@ typedef ImagePickerBuilder = Future<Uint8List?> Function(
 
 /// The text input builder
 typedef TextInputBuilder = Widget Function(
-  BuildContext context,
-  TextEditingController textEditingController,
-  Widget suffixIcon,
-  ChatTranslations translations,
-  VoidCallback onSubmit,
-);
+  BuildContext context, {
+  required TextEditingController textEditingController,
+  required Widget suffixIcon,
+  required ChatTranslations translations,
+  required VoidCallback onSubmit,
+  required bool enabled,
+});
 
 /// The base screen builder
 /// [title] is the title of the screen and can be null while loading

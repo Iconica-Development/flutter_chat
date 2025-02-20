@@ -11,13 +11,8 @@ class DefaultChatLoadingOverlay extends StatelessWidget {
       const DefaultChatLoadingOverlay();
 
   @override
-  Widget build(BuildContext context) => const Column(
-        children: [
-          SizedBox(height: 12),
-          Center(child: CircularProgressIndicator()),
-          SizedBox(height: 12),
-        ],
-      );
+  Widget build(BuildContext context) =>
+      const Center(child: CircularProgressIndicator());
 }
 
 /// A small row spinner item to show partial loading
