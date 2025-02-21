@@ -15,6 +15,9 @@ dependencies:
   intl: any
   flutter_hooks: ^0.20.5
 
+  flutter_accessibility:
+    hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
+    version: ^0.0.1
   flutter_image_picker:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
     version: ^4.0.0
