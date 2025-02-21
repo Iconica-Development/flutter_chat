@@ -256,6 +256,9 @@ class _ChatBody extends HookWidget {
 
     var isLoadingOlder = useState(false);
     var isLoadingNewer = useState(false);
+
+    var hasMoreOlder = useState(true);
+
     var autoScrollEnabled = useState(true);
 
     var messagesStream = useMemoized(
@@ -268,7 +271,9 @@ class _ChatBody extends HookWidget {
     var scrollController = useScrollController();
 
     Future<void> loadOlderMessages() async {
-      if (messages.isEmpty || isLoadingOlder.value) return;
+      if (!hasMoreOlder.value || messages.isEmpty || isLoadingOlder.value) {
+        return;
+      }
       isLoadingOlder.value = true;
 
       var oldestMsg = messages.first;
@@ -292,7 +297,9 @@ class _ChatBody extends HookWidget {
             return;
           }
           var newCount = messages.length;
-          if (newCount > oldCount) {
+          if (newCount == oldCount) {
+            hasMoreOlder.value = false;
+          } else {
             var newMaxScroll = scrollController.position.maxScrollExtent;
             var diff = newMaxScroll - oldMaxScroll;
             scrollController.jumpTo(oldOffset + diff);
@@ -329,21 +336,25 @@ class _ChatBody extends HookWidget {
         var offset = scrollController.offset;
         var maxScroll = scrollController.position.maxScrollExtent;
         var threshold = options.paginationControls.scrollOffset;
+        var autoScrollThreshold =
+            options.paginationControls.autoScrollTriggerOffset;
 
         var distanceFromBottom = maxScroll - offset;
-
-        if (distanceFromBottom > 50) {
-          autoScrollEnabled.value = false;
-        } else {
-          autoScrollEnabled.value = true;
-        }
 
         if (offset <= threshold && !isLoadingOlder.value) {
           unawaited(loadOlderMessages());
         }
 
-        if (distanceFromBottom <= threshold && !isLoadingNewer.value) {
+        if (distanceFromBottom <= threshold &&
+            !isLoadingNewer.value &&
+            !autoScrollEnabled.value) {
           unawaited(loadNewerMessages());
+        }
+
+        if (distanceFromBottom > autoScrollThreshold) {
+          autoScrollEnabled.value = false;
+        } else {
+          autoScrollEnabled.value = true;
         }
       }
 
