@@ -294,6 +294,7 @@ class ChatPaginationControls {
   /// The chat pagination controls constructor
   const ChatPaginationControls({
     this.scrollOffset = 50.0,
+    this.autoScrollTriggerOffset = 50.0,
     this.loadingIndicatorForNewMessages = true,
     this.loadingIndicatorForOldMessages = true,
     this.loadingNewMessageMinDuration = Duration.zero,
@@ -303,6 +304,10 @@ class ChatPaginationControls {
   /// The minimum scroll offset to trigger the pagination to call for more pages
   /// on both sides of the chat. Defaults to 50.0
   final double scrollOffset;
+
+  /// The minimum scroll offset to trigger the auto scroll to the bottom of the
+  /// chat. Defaults to 50.0
+  final double autoScrollTriggerOffset;
 
   /// Whether to show a loading indicator for new messages loading
   final bool loadingIndicatorForNewMessages;
