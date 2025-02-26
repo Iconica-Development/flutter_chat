@@ -148,7 +148,7 @@ class _ChatMessageBubble extends StatelessWidget {
     var showFullDateOnMessage =
         messageTheme.showFullDate ?? (isNewDate || previousMessage == null);
     var messageTime = dateFormatter.format(
-      date: message.timestamp,
+      date: message.timestamp.toLocal(),
       showFullDate: showFullDateOnMessage,
     );
 
