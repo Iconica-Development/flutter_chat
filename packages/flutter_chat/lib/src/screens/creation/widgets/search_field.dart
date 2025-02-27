@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/util/scope.dart";
 
 /// The search field widget
@@ -9,6 +10,7 @@ class SearchField extends StatelessWidget {
     required this.onSearch,
     required this.focusNode,
     required this.text,
+    required this.semanticId,
     super.key,
   });
 
@@ -24,6 +26,9 @@ class SearchField extends StatelessWidget {
   /// The text to display in the search field
   final String text;
 
+  /// Semantic id for search field
+  final String semanticId;
+
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
@@ -32,20 +37,24 @@ class SearchField extends StatelessWidget {
     var translations = options.translations;
 
     if (isSearching) {
-      return TextField(
-        focusNode: focusNode,
-        onChanged: onSearch,
-        decoration: InputDecoration(
-          hintText: translations.searchPlaceholder,
-          hintStyle: theme.textTheme.bodyMedium,
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: theme.colorScheme.primary,
+      return CustomSemantics(
+        identifier: semanticId,
+        isTextField: true,
+        child: TextField(
+          focusNode: focusNode,
+          onChanged: onSearch,
+          decoration: InputDecoration(
+            hintText: translations.searchPlaceholder,
+            hintStyle: theme.textTheme.bodyMedium,
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary,
+              ),
             ),
           ),
+          style: theme.textTheme.bodySmall,
+          cursorColor: theme.textSelectionTheme.cursorColor ?? Colors.white,
         ),
-        style: theme.textTheme.bodySmall,
-        cursorColor: theme.textSelectionTheme.cursorColor ?? Colors.white,
       );
     }
 
