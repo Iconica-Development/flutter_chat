@@ -18,7 +18,7 @@ Future<void> onPressSelectImage(
   if (!context.mounted) return;
   var messenger = ScaffoldMessenger.of(context)
     ..showSnackBar(
-      _getImageLoadingSnackbar(options.translations),
+      _getImageLoadingSnackbar(context, options.translations),
     )
     ..activate();
   await onUploadImage(image);
@@ -87,19 +87,28 @@ class DefaultImagePickerDialog extends StatelessWidget {
   }
 }
 
-SnackBar _getImageLoadingSnackbar(ChatTranslations translations) => SnackBar(
-      duration: const Duration(minutes: 1),
-      content: Row(
-        children: [
-          const SizedBox(
-            width: 25,
-            height: 25,
-            child: CircularProgressIndicator(color: Colors.grey),
+SnackBar _getImageLoadingSnackbar(
+  BuildContext context,
+  ChatTranslations translations,
+) {
+  var theme = Theme.of(context);
+
+  return SnackBar(
+    duration: const Duration(minutes: 1),
+    content: Row(
+      children: [
+        SizedBox(
+          width: 25,
+          height: 25,
+          child: CircularProgressIndicator(
+            color: theme.snackBarTheme.actionTextColor ?? Colors.grey,
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0),
-            child: Text(translations.imageUploading),
-          ),
-        ],
-      ),
-    );
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: Text(translations.imageUploading),
+        ),
+      ],
+    ),
+  );
+}
