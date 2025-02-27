@@ -1,5 +1,6 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/creation/widgets/search_field.dart";
 import "package:flutter_chat/src/screens/creation/widgets/search_icon.dart";
@@ -155,6 +156,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
         SearchIcon(
           isSearching: isSearching,
           onPressed: onPressedSearchIcon,
+          semanticId: options.semantics.newGroupChatSearchIconButton,
         ),
       ],
     );
@@ -272,18 +274,21 @@ class _NextButton extends StatelessWidget {
         ),
         child: Visibility(
           visible: selectedUsers.isNotEmpty,
-          child: FilledButton(
-            onPressed: () async {
-              await onPressGroupChatOverview(selectedUsers);
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  options.translations.next,
-                  style: theme.textTheme.displayLarge,
-                ),
-              ],
+          child: CustomSemantics(
+            identifier: options.semantics.newGroupChatNextButton,
+            child: FilledButton(
+              onPressed: () async {
+                await onPressGroupChatOverview(selectedUsers);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    options.translations.next,
+                    style: theme.textTheme.displayLarge,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

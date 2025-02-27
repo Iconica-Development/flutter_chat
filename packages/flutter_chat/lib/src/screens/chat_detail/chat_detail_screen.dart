@@ -3,8 +3,8 @@ import "dart:typed_data";
 
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_accessibility/flutter_accessibility.dart";
+import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/chat_bottom.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/chat_widgets.dart";
@@ -199,9 +199,12 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     Widget? appBarIcon;
     if (onPressBack != null) {
-      appBarIcon = InkWell(
-        onTap: onPressBack,
-        child: const Icon(Icons.arrow_back_ios),
+      appBarIcon = CustomSemantics(
+        identifier: options.semantics.chatBackButton,
+        child: InkWell(
+          onTap: onPressBack,
+          child: const Icon(Icons.arrow_back_ios),
+        ),
       );
     }
 
@@ -209,19 +212,23 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
       iconTheme: theme.appBarTheme.iconTheme,
       centerTitle: true,
       leading: appBarIcon,
-      title: InkWell(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        hoverColor: Colors.transparent,
-        onTap: onPressChatTitle,
-        child: CustomSemantics(
-          identifier: options.semantics.chatChatTitle,
-          value: chatTitle ?? "",
-          child: options.builders.chatTitleBuilder?.call(chatTitle ?? "") ??
-              Text(
-                chatTitle ?? "",
-                overflow: TextOverflow.ellipsis,
-              ),
+      title: CustomSemantics(
+        identifier: options.semantics.chatTitleButton,
+        buttonWithVariableText: true,
+        child: InkWell(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+          onTap: onPressChatTitle,
+          child: CustomSemantics(
+            identifier: options.semantics.chatChatTitle,
+            value: chatTitle ?? "",
+            child: options.builders.chatTitleBuilder?.call(chatTitle ?? "") ??
+                Text(
+                  chatTitle ?? "",
+                  overflow: TextOverflow.ellipsis,
+                ),
+          ),
         ),
       ),
     );

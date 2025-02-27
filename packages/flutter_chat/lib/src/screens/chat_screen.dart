@@ -197,6 +197,8 @@ class _BodyState extends State<_Body> {
                                     semantics.chatsChatLastUsed(index),
                                 semanticIdUnreadMessages:
                                     semantics.chatsChatUnreadMessages(index),
+                                semanticIdButton:
+                                    semantics.chatsOpenChatButton(index),
                               );
 
                               return !chat.canBeDeleted
@@ -275,18 +277,21 @@ class _BodyState extends State<_Body> {
                   vertical: 24,
                   horizontal: 4,
                 ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    fixedSize: const Size(254, 44),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(56),
+                child: CustomSemantics(
+                  identifier: options.semantics.chatsStartChatButton,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      fixedSize: const Size(254, 44),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(56),
+                      ),
                     ),
-                  ),
-                  onPressed: widget.onPressStartChat,
-                  child: Text(
-                    translations.newChatButton,
-                    style: theme.textTheme.displayLarge,
+                    onPressed: widget.onPressStartChat,
+                    child: Text(
+                      translations.newChatButton,
+                      style: theme.textTheme.displayLarge,
+                    ),
                   ),
                 ),
               ),
@@ -303,6 +308,7 @@ class _ChatItem extends StatelessWidget {
     required this.semanticIdSubTitle,
     required this.semanticIdLastUsed,
     required this.semanticIdUnreadMessages,
+    required this.semanticIdButton,
   });
 
   final ChatModel chat;
@@ -311,6 +317,7 @@ class _ChatItem extends StatelessWidget {
   final String semanticIdSubTitle;
   final String semanticIdLastUsed;
   final String semanticIdUnreadMessages;
+  final String semanticIdButton;
 
   @override
   Widget build(BuildContext context) {
@@ -330,29 +337,33 @@ class _ChatItem extends StatelessWidget {
       semanticIdUnreadMessages: semanticIdUnreadMessages,
     );
 
-    return InkWell(
-      onTap: () {
-        onPressChat(chat);
-      },
-      child: options.builders.chatRowContainerBuilder?.call(
-            context,
-            chatListItem,
-          ) ??
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              border: Border(
-                bottom: BorderSide(
-                  color: theme.dividerColor,
-                  width: 0.5,
+    return CustomSemantics(
+      identifier: semanticIdButton,
+      buttonWithVariableText: true,
+      child: InkWell(
+        onTap: () {
+          onPressChat(chat);
+        },
+        child: options.builders.chatRowContainerBuilder?.call(
+              context,
+              chatListItem,
+            ) ??
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border(
+                  bottom: BorderSide(
+                    color: theme.dividerColor,
+                    width: 0.5,
+                  ),
                 ),
               ),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: chatListItem,
+              ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: chatListItem,
-            ),
-          ),
+      ),
     );
   }
 }
@@ -530,6 +541,10 @@ Future<bool?> _deleteDialog(
 ) async {
   var theme = Theme.of(context);
 
+  var scope = ChatScope.of(context);
+
+  var options = scope.options;
+
   return showModalBottomSheet<bool>(
     context: context,
     builder: (BuildContext context) => Container(
@@ -555,20 +570,23 @@ Future<bool?> _deleteDialog(
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 60),
-            child: FilledButton(
-              onPressed: () {
-                Navigator.of(
-                  context,
-                ).pop(true);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    translations.deleteChatModalConfirm,
-                    style: theme.textTheme.displayLarge,
-                  ),
-                ],
+            child: CustomSemantics(
+              identifier: options.semantics.chatsDeleteConfirmButton,
+              child: FilledButton(
+                onPressed: () {
+                  Navigator.of(
+                    context,
+                  ).pop(true);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      translations.deleteChatModalConfirm,
+                      style: theme.textTheme.displayLarge,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
