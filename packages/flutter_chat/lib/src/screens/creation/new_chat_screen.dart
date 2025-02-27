@@ -145,6 +145,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
         SearchIcon(
           isSearching: isSearching,
           onPressed: onPressedSearchIcon,
+          semanticId: options.semantics.newChatSearchIconButton,
         ),
       ],
     );
@@ -187,23 +188,26 @@ class _Body extends StatelessWidget {
               right: 32,
               top: 20,
             ),
-            child: FilledButton(
-              onPressed: onPressCreateGroupChat,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.groups_2,
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    translations.newGroupChatButton,
-                    style: theme.textTheme.displayLarge,
-                  ),
-                ],
+            child: CustomSemantics(
+              identifier: options.semantics.newChatCreateGroupChatButton,
+              child: FilledButton(
+                onPressed: onPressCreateGroupChat,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.groups_2,
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      translations.newGroupChatButton,
+                      style: theme.textTheme.displayLarge,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

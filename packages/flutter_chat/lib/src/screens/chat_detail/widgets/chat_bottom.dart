@@ -69,20 +69,26 @@ class ChatBottomInputSection extends HookWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton(
-            alignment: Alignment.bottomRight,
-            onPressed: isLoading ? null : onPressSelectImage,
-            icon: Icon(
-              Icons.image_outlined,
-              color: options.iconEnabledColor,
+          CustomSemantics(
+            identifier: options.semantics.chatSelectImageIconButton,
+            child: IconButton(
+              alignment: Alignment.bottomRight,
+              onPressed: isLoading ? null : onPressSelectImage,
+              icon: Icon(
+                Icons.image_outlined,
+                color: options.iconEnabledColor,
+              ),
             ),
           ),
-          IconButton(
-            alignment: Alignment.bottomRight,
-            disabledColor: options.iconDisabledColor,
-            color: options.iconEnabledColor,
-            onPressed: isLoading ? null : onClickSendMessage,
-            icon: const Icon(Icons.send_rounded),
+          CustomSemantics(
+            identifier: options.semantics.chatSendMessageIconButton,
+            child: IconButton(
+              alignment: Alignment.bottomRight,
+              disabledColor: options.iconDisabledColor,
+              color: options.iconEnabledColor,
+              onPressed: isLoading ? null : onClickSendMessage,
+              icon: const Icon(Icons.send_rounded),
+            ),
           ),
         ],
       ),
@@ -119,7 +125,8 @@ class ChatBottomInputSection extends HookWidget {
                 top: 16,
                 bottom: 16,
               ),
-              // this ensures that that there is space at the end of the textfield
+              // this ensures that that there is space at the end of the
+              // textfield
               suffixIcon: AbsorbPointer(
                 child: Opacity(
                   opacity: 0.0,

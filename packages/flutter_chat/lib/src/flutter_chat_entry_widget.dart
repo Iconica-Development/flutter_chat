@@ -18,6 +18,7 @@ class FlutterChatEntryWidget extends StatefulWidget {
     this.counterBackgroundColor = Colors.red,
     this.textStyle,
     this.semanticIdUnreadMessages = "text_unread_messages_count",
+    this.semanticIdOpenButton = "button_open_chat",
     super.key,
   });
 
@@ -51,6 +52,9 @@ class FlutterChatEntryWidget extends StatefulWidget {
   /// Semantic Id for the unread messages text
   final String semanticIdUnreadMessages;
 
+  /// Semantic Id for the unread messages text
+  final String semanticIdOpenButton;
+
   @override
   State<FlutterChatEntryWidget> createState() => _FlutterChatEntryWidgetState();
 }
@@ -83,61 +87,65 @@ class _FlutterChatEntryWidgetState extends State<FlutterChatEntryWidget> {
   }
 
   @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: () async =>
-            widget.onTap?.call() ??
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => FlutterChatNavigatorUserstory(
-                  userId: widget.userId,
-                  options: widget.options ?? ChatOptions(),
-                ),
-              ),
-            ),
-        child: StreamBuilder<int>(
-          stream: chatService.getUnreadMessagesCount(),
-          builder: (BuildContext context, snapshot) => Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: widget.widgetSize,
-                height: widget.widgetSize,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: widget.backgroundColor,
-                ),
-                child: _AnimatedNotificationIcon(
-                  icon: Icon(
-                    widget.icon,
-                    color: widget.iconColor,
-                    size: widget.widgetSize / 1.5,
+  Widget build(BuildContext context) => CustomSemantics(
+        identifier: widget.semanticIdOpenButton,
+        buttonWithVariableText: true,
+        child: InkWell(
+          onTap: () async =>
+              widget.onTap?.call() ??
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => FlutterChatNavigatorUserstory(
+                    userId: widget.userId,
+                    options: widget.options ?? ChatOptions(),
                   ),
-                  notifications: snapshot.data ?? 0,
                 ),
               ),
-              Positioned(
-                right: 0.0,
-                top: 0.0,
-                child: Container(
-                  width: widget.widgetSize / 2,
-                  height: widget.widgetSize / 2,
+          child: StreamBuilder<int>(
+            stream: chatService.getUnreadMessagesCount(),
+            builder: (BuildContext context, snapshot) => Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: widget.widgetSize,
+                  height: widget.widgetSize,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: widget.counterBackgroundColor,
+                    color: widget.backgroundColor,
                   ),
-                  child: Center(
-                    child: CustomSemantics(
-                      identifier: widget.semanticIdUnreadMessages,
-                      value: snapshot.data?.toString() ?? "0",
-                      child: Text(
-                        snapshot.data?.toString() ?? "0",
-                        style: widget.textStyle,
+                  child: _AnimatedNotificationIcon(
+                    icon: Icon(
+                      widget.icon,
+                      color: widget.iconColor,
+                      size: widget.widgetSize / 1.5,
+                    ),
+                    notifications: snapshot.data ?? 0,
+                  ),
+                ),
+                Positioned(
+                  right: 0.0,
+                  top: 0.0,
+                  child: Container(
+                    width: widget.widgetSize / 2,
+                    height: widget.widgetSize / 2,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: widget.counterBackgroundColor,
+                    ),
+                    child: Center(
+                      child: CustomSemantics(
+                        identifier: widget.semanticIdUnreadMessages,
+                        value: snapshot.data?.toString() ?? "0",
+                        child: Text(
+                          snapshot.data?.toString() ?? "0",
+                          style: widget.textStyle,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );

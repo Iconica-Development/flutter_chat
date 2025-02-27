@@ -158,31 +158,35 @@ class _BodyState extends State<_Body> {
                   Center(
                     child: Stack(
                       children: [
-                        InkWell(
-                          onTap: () async => onPressSelectImage(
-                            context,
-                            options,
-                            (image) {
-                              setState(() {
-                                this.image = image;
-                              });
-                            },
-                          ),
-                          child: Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFD9D9D9),
-                              borderRadius: BorderRadius.circular(40),
-                              image: image != null
-                                  ? DecorationImage(
-                                      image: MemoryImage(image!),
-                                      fit: BoxFit.cover,
-                                    )
+                        CustomSemantics(
+                          identifier: options.semantics.newGroupChatSelectImage,
+                          child: InkWell(
+                            onTap: () async => onPressSelectImage(
+                              context,
+                              options,
+                              (image) {
+                                setState(() {
+                                  this.image = image;
+                                });
+                              },
+                            ),
+                            child: Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFD9D9D9),
+                                borderRadius: BorderRadius.circular(40),
+                                image: image != null
+                                    ? DecorationImage(
+                                        image: MemoryImage(image!),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
+                              ),
+                              child: image == null
+                                  ? const Icon(Icons.image)
                                   : null,
                             ),
-                            child:
-                                image == null ? const Icon(Icons.image) : null,
                           ),
                         ),
                         if (image != null)
@@ -197,15 +201,19 @@ class _BodyState extends State<_Body> {
                                 borderRadius: BorderRadius.circular(40),
                               ),
                               child: Center(
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      image = null;
-                                    });
-                                  },
-                                  child: const Icon(
-                                    Icons.close,
-                                    size: 12,
+                                child: CustomSemantics(
+                                  identifier:
+                                      options.semantics.newGroupChatRemoveImage,
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        image = null;
+                                      });
+                                    },
+                                    child: const Icon(
+                                      Icons.close,
+                                      size: 12,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -354,31 +362,34 @@ class _BodyState extends State<_Body> {
             ),
             child: ValueListenableBuilder(
               valueListenable: isButtonEnabled,
-              builder: (context, isEnabled, child) => FilledButton(
-                onPressed: users.isNotEmpty
-                    ? () async {
-                        if (!isPressed) {
-                          isPressed = true;
-                          if (formKey.currentState!.validate()) {
-                            await widget.onComplete(
-                              users,
-                              _chatNameController.text,
-                              _bioController.text,
-                              image,
-                            );
+              builder: (context, isEnabled, child) => CustomSemantics(
+                identifier: "",
+                child: FilledButton(
+                  onPressed: users.isNotEmpty
+                      ? () async {
+                          if (!isPressed) {
+                            isPressed = true;
+                            if (formKey.currentState!.validate()) {
+                              await widget.onComplete(
+                                users,
+                                _chatNameController.text,
+                                _bioController.text,
+                                image,
+                              );
+                            }
+                            isPressed = false;
                           }
-                          isPressed = false;
                         }
-                      }
-                    : null,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      translations.createGroupChatButton,
-                      style: theme.textTheme.displayLarge,
-                    ),
-                  ],
+                      : null,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        translations.createGroupChatButton,
+                        style: theme.textTheme.displayLarge,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -402,38 +413,41 @@ class _SelectedUser extends StatelessWidget {
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
     var options = chatScope.options;
-    return InkWell(
-      onTap: () {
-        onRemove(user);
-      },
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: options.builders.userAvatarBuilder?.call(
-                  context,
-                  user,
-                  40,
-                ) ??
-                Avatar(
-                  boxfit: BoxFit.cover,
-                  user: User(
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    imageUrl: user.imageUrl != "" ? user.imageUrl : null,
+    return CustomSemantics(
+      identifier: options.semantics.newGroupChatRemoveUser,
+      child: InkWell(
+        onTap: () {
+          onRemove(user);
+        },
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: options.builders.userAvatarBuilder?.call(
+                    context,
+                    user,
+                    40,
+                  ) ??
+                  Avatar(
+                    boxfit: BoxFit.cover,
+                    user: User(
+                      firstName: user.firstName,
+                      lastName: user.lastName,
+                      imageUrl: user.imageUrl != "" ? user.imageUrl : null,
+                    ),
+                    size: 40,
                   ),
-                  size: 40,
-                ),
-          ),
-          Positioned.directional(
-            textDirection: Directionality.of(context),
-            end: 0,
-            child: const Icon(
-              Icons.cancel,
-              size: 20,
             ),
-          ),
-        ],
+            Positioned.directional(
+              textDirection: Directionality.of(context),
+              end: 0,
+              child: const Icon(
+                Icons.cancel,
+                size: 20,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

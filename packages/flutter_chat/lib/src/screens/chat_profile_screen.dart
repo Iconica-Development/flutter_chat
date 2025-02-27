@@ -130,55 +130,63 @@ class _Body extends StatelessWidget {
     var chatUserDisplay = Wrap(
       children: [
         if (chat != null) ...[
-          ...chat!.users.map(
-            (tappedUser) => Padding(
-              padding: const EdgeInsets.only(
-                bottom: 8,
-                right: 8,
-              ),
-              child: InkWell(
-                onTap: () => onTapUser?.call(tappedUser),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FutureBuilder<UserModel>(
-                      future: service.getUser(userId: tappedUser).first,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        }
+          ...chat!.users.asMap().entries.map(
+            (entry) {
+              var index = entry.key;
+              var tappedUser = entry.value;
 
-                        var user = snapshot.data;
+              return Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 8,
+                  right: 8,
+                ),
+                child: CustomSemantics(
+                  identifier: options.semantics.profileTapUserButton(index),
+                  child: InkWell(
+                    onTap: () => onTapUser?.call(tappedUser),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FutureBuilder<UserModel>(
+                          future: service.getUser(userId: tappedUser).first,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
 
-                        if (user == null) {
-                          return const SizedBox.shrink();
-                        }
+                            var user = snapshot.data;
 
-                        return options.builders.userAvatarBuilder?.call(
-                              context,
-                              user,
-                              44,
-                            ) ??
-                            Avatar(
-                              boxfit: BoxFit.cover,
-                              user: User(
-                                firstName: user.firstName,
-                                lastName: user.lastName,
-                                imageUrl:
-                                    user.imageUrl != null || user.imageUrl != ""
+                            if (user == null) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return options.builders.userAvatarBuilder?.call(
+                                  context,
+                                  user,
+                                  44,
+                                ) ??
+                                Avatar(
+                                  boxfit: BoxFit.cover,
+                                  user: User(
+                                    firstName: user.firstName,
+                                    lastName: user.lastName,
+                                    imageUrl: user.imageUrl != null ||
+                                            user.imageUrl != ""
                                         ? user.imageUrl
                                         : null,
-                              ),
-                              size: 60,
-                            );
-                      },
+                                  ),
+                                  size: 60,
+                                );
+                          },
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ],
       ],
@@ -286,18 +294,21 @@ class _Body extends StatelessWidget {
                 vertical: 24,
                 horizontal: 80,
               ),
-              child: FilledButton(
-                onPressed: () {
-                  onPressStartChat?.call(user!.id);
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      options.translations.newChatButton,
-                      style: theme.textTheme.displayLarge,
-                    ),
-                  ],
+              child: CustomSemantics(
+                identifier: options.semantics.profileStartChatButton,
+                child: FilledButton(
+                  onPressed: () {
+                    onPressStartChat?.call(user!.id);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        options.translations.newChatButton,
+                        style: theme.textTheme.displayLarge,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

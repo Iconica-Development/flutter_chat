@@ -80,70 +80,20 @@ class _UserListState extends State<UserList> {
         itemBuilder: (context, index) {
           var user = filteredUsers[index];
           var isSelected = widget.selectedUsers.any((u) => u.id == user.id);
-          return InkWell(
-            onTap: () async {
-              if (widget.creatingGroup) {
-                return handleGroupChatTap(user);
-              } else {
-                return handlePersonalChatTap(user);
-              }
-            },
-            child: options.builders.chatRowContainerBuilder?.call(
-                  context,
-                  Row(
-                    children: [
-                      options.builders.userAvatarBuilder
-                              ?.call(context, user, 44) ??
-                          Avatar(
-                            boxfit: BoxFit.cover,
-                            user: User(
-                              firstName: user.firstName,
-                              lastName: user.lastName,
-                              imageUrl:
-                                  user.imageUrl != "" ? user.imageUrl : null,
-                            ),
-                            size: 44,
-                          ),
-                      const SizedBox(
-                        width: 12,
-                      ),
-                      CustomSemantics(
-                        identifier: options.semantics
-                            .newChatUserListUserFullName(index),
-                        value: user.fullname ?? translations.anonymousUser,
-                        child: Text(
-                          user.fullname ?? translations.anonymousUser,
-                          style: theme.textTheme.titleMedium,
-                        ),
-                      ),
-                      if (widget.creatingGroup) ...[
-                        const Spacer(),
-                        Checkbox(
-                          value: isSelected,
-                          onChanged: (value) {
-                            handleGroupChatTap(user);
-                          },
-                        ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                      ],
-                    ],
-                  ),
-                ) ??
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    border: Border(
-                      bottom: BorderSide(
-                        color: theme.dividerColor,
-                        width: 0.5,
-                      ),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
+          return CustomSemantics(
+            identifier: options.semantics.userListTapUser(index),
+            buttonWithVariableText: true,
+            child: InkWell(
+              onTap: () async {
+                if (widget.creatingGroup) {
+                  return handleGroupChatTap(user);
+                } else {
+                  return handlePersonalChatTap(user);
+                }
+              },
+              child: options.builders.chatRowContainerBuilder?.call(
+                    context,
+                    Row(
                       children: [
                         options.builders.userAvatarBuilder
                                 ?.call(context, user, 44) ??
@@ -183,8 +133,63 @@ class _UserListState extends State<UserList> {
                         ],
                       ],
                     ),
+                  ) ??
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: theme.dividerColor,
+                          width: 0.5,
+                        ),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          options.builders.userAvatarBuilder
+                                  ?.call(context, user, 44) ??
+                              Avatar(
+                                boxfit: BoxFit.cover,
+                                user: User(
+                                  firstName: user.firstName,
+                                  lastName: user.lastName,
+                                  imageUrl: user.imageUrl != ""
+                                      ? user.imageUrl
+                                      : null,
+                                ),
+                                size: 44,
+                              ),
+                          const SizedBox(
+                            width: 12,
+                          ),
+                          CustomSemantics(
+                            identifier: options.semantics
+                                .newChatUserListUserFullName(index),
+                            value: user.fullname ?? translations.anonymousUser,
+                            child: Text(
+                              user.fullname ?? translations.anonymousUser,
+                              style: theme.textTheme.titleMedium,
+                            ),
+                          ),
+                          if (widget.creatingGroup) ...[
+                            const Spacer(),
+                            Checkbox(
+                              value: isSelected,
+                              onChanged: (value) {
+                                handleGroupChatTap(user);
+                              },
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+            ),
           );
         },
       ),
