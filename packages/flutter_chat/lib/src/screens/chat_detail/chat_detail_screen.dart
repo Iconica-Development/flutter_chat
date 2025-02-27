@@ -3,6 +3,7 @@ import "dart:typed_data";
 
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
+import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/chat_bottom.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/chat_widgets.dart";
@@ -395,6 +396,41 @@ class _ChatBody extends HookWidget {
       [autoScrollEnabled.value],
     );
 
+    var chatBottomInputSection = ChatBottomInputSection(
+      chat: chat,
+      isLoading: chatIsLoading && !messagesSnapshot.hasData,
+      onPressSelectImage: () async => onPressSelectImage(
+        context,
+        options,
+        onUploadImage,
+      ),
+      onMessageSubmit: onMessageSubmit,
+    );
+
+    if (messagesSnapshot.hasError) {
+      var errorBuilder = options.builders.chatMessagesErrorBuilder;
+      if (errorBuilder != null) {
+        return Column(
+          children: [
+            Expanded(
+              child: errorBuilder(
+                context,
+                messagesSnapshot.error!,
+                messagesSnapshot.stackTrace!,
+                options,
+              ),
+            ),
+            chatBottomInputSection,
+          ],
+        );
+      }
+
+      return ErrorLoadingMessages(
+        options: options,
+        chatBottomInputSection: chatBottomInputSection,
+      );
+    }
+
     var userMap = <String, UserModel>{};
     for (var u in chatUsers) {
       userMap[u.id] = u;
@@ -451,17 +487,43 @@ class _ChatBody extends HookWidget {
             ),
           ),
         ],
-        ChatBottomInputSection(
-          chat: chat,
-          isLoading: chatIsLoading,
-          onPressSelectImage: () async => onPressSelectImage(
-            context,
-            options,
-            onUploadImage,
-          ),
-          onMessageSubmit: onMessageSubmit,
-        ),
+        chatBottomInputSection,
       ],
     );
   }
+}
+
+/// Default widget used when displaying an error for chats.
+class ErrorLoadingMessages extends StatelessWidget {
+  /// Create default error displaying widget for error in loading messages
+  const ErrorLoadingMessages({
+    required this.options,
+    required this.chatBottomInputSection,
+    super.key,
+  });
+
+  /// the options of the current chat userstory
+  final ChatOptions options;
+
+  /// The widget
+  final ChatBottomInputSection chatBottomInputSection;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    options.translations.messagesLoadingError,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          chatBottomInputSection,
+        ],
+      );
 }
