@@ -226,37 +226,41 @@ class _BodyState extends State<_Body> {
                   const SizedBox(
                     height: 12,
                   ),
-                  TextFormField(
-                    style: theme.textTheme.bodySmall,
-                    controller: _chatNameController,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      hintText: translations.groupNameHintText,
-                      hintStyle: theme.textTheme.bodyMedium,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: Colors.transparent,
+                  CustomSemantics(
+                    identifier: options.semantics.newChatNameInput,
+                    isTextField: true,
+                    child: TextFormField(
+                      style: theme.textTheme.bodySmall,
+                      controller: _chatNameController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: translations.groupNameHintText,
+                        hintStyle: theme.textTheme.bodyMedium,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.transparent,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.transparent,
+                          ),
                         ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: Colors.transparent,
-                        ),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return translations.groupNameValidatorEmpty;
-                      }
-                      if (value.length > 15) {
-                        return translations.groupNameValidatorTooLong;
-                      }
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return translations.groupNameValidatorEmpty;
+                        }
+                        if (value.length > 15) {
+                          return translations.groupNameValidatorTooLong;
+                        }
 
-                      return null;
-                    },
+                        return null;
+                      },
+                    ),
                   ),
                   const SizedBox(
                     height: 16,
@@ -268,36 +272,40 @@ class _BodyState extends State<_Body> {
                   const SizedBox(
                     height: 12,
                   ),
-                  TextFormField(
-                    style: theme.textTheme.bodySmall,
-                    controller: _bioController,
-                    minLines: null,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      hintText: translations.groupBioHintText,
-                      hintStyle: theme.textTheme.bodyMedium,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: Colors.transparent,
+                  CustomSemantics(
+                    identifier: options.semantics.newChatBioInput,
+                    isTextField: true,
+                    child: TextFormField(
+                      style: theme.textTheme.bodySmall,
+                      controller: _bioController,
+                      minLines: null,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: translations.groupBioHintText,
+                        hintStyle: theme.textTheme.bodyMedium,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.transparent,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.transparent,
+                          ),
                         ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: Colors.transparent,
-                        ),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return translations.groupBioValidatorEmpty;
-                      }
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return translations.groupBioValidatorEmpty;
+                        }
 
-                      return null;
-                    },
+                        return null;
+                      },
+                    ),
                   ),
                   const SizedBox(
                     height: 16,

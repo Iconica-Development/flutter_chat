@@ -1,5 +1,6 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/util/scope.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
@@ -91,47 +92,51 @@ class ChatBottomInputSection extends HookWidget {
 
     var defaultInputField = Stack(
       children: [
-        TextField(
-          textAlign: TextAlign.start,
-          textAlignVertical: TextAlignVertical.center,
-          style: theme.textTheme.bodySmall,
-          textCapitalization: TextCapitalization.sentences,
-          textInputAction: TextInputAction.newline,
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-          controller: textController,
-          enabled: !isLoading,
-          decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(25),
-              borderSide: const BorderSide(color: Colors.black),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(25),
-              borderSide: const BorderSide(color: Colors.black),
-            ),
-            contentPadding: const EdgeInsets.only(
-              left: 16,
-              top: 16,
-              bottom: 16,
-            ),
-            // this ensures that that there is space at the end of the textfield
-            suffixIcon: AbsorbPointer(
-              child: Opacity(
-                opacity: 0.0,
-                child: messageSendButtons,
+        CustomSemantics(
+          identifier: options.semantics.chatMessageInput,
+          isTextField: true,
+          child: TextField(
+            textAlign: TextAlign.start,
+            textAlignVertical: TextAlignVertical.center,
+            style: theme.textTheme.bodySmall,
+            textCapitalization: TextCapitalization.sentences,
+            textInputAction: TextInputAction.newline,
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            controller: textController,
+            enabled: !isLoading,
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: const BorderSide(color: Colors.black),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: const BorderSide(color: Colors.black),
+              ),
+              contentPadding: const EdgeInsets.only(
+                left: 16,
+                top: 16,
+                bottom: 16,
+              ),
+              // this ensures that that there is space at the end of the textfield
+              suffixIcon: AbsorbPointer(
+                child: Opacity(
+                  opacity: 0.0,
+                  child: messageSendButtons,
+                ),
+              ),
+              hintText: options.translations.messagePlaceholder,
+              hintStyle: theme.textTheme.bodyMedium,
+              fillColor: Colors.white,
+              filled: true,
+              border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(25)),
+                borderSide: BorderSide.none,
               ),
             ),
-            hintText: options.translations.messagePlaceholder,
-            hintStyle: theme.textTheme.bodyMedium,
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(25)),
-              borderSide: BorderSide.none,
-            ),
+            onSubmitted: (_) async => onSubmitField(),
           ),
-          onSubmitted: (_) async => onSubmitField(),
         ),
         Positioned(
           right: 0,

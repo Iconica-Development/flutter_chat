@@ -7,9 +7,9 @@
 /// Class that holds all the semantic ids for the chat component view and
 ///  the corresponding userstory
 class ChatSemantics {
-  /// ChatTranslations constructor where everything is required use this
+  /// ChatSemantics constructor where everything is required use this
   /// if you want to be sure to have all translations specified
-  /// If you just want the default values use the empty constructor
+  /// If you just want the default values use the standard constructor
   /// and optionally override the values with the copyWith method
   const ChatSemantics({
     required this.profileTitle,
@@ -28,6 +28,11 @@ class ChatSemantics {
     required this.chatsChatSubTitle,
     required this.chatsChatLastUsed,
     required this.chatsChatUnreadMessages,
+    required this.chatMessageInput,
+    required this.newChatNameInput,
+    required this.newChatBioInput,
+    required this.newChatSearchInput,
+    required this.newGroupChatSearchInput,
   });
 
   /// Default translations for the chat component view
@@ -48,6 +53,11 @@ class ChatSemantics {
     this.chatsChatSubTitle = _defaultChatsChatSubTitle,
     this.chatsChatLastUsed = _defaultChatsChatLastUsed,
     this.chatsChatUnreadMessages = _defaultChatsChatUnreadMessages,
+    this.chatMessageInput = "input_text_message",
+    this.newChatNameInput = "input_text_name",
+    this.newChatBioInput = "input_text_bio",
+    this.newChatSearchInput = "input_text_search",
+    this.newGroupChatSearchInput = "input_text_search",
   });
 
   // Text
@@ -70,6 +80,13 @@ class ChatSemantics {
   final String Function(int index) chatsChatLastUsed;
   final String Function(int index) chatsChatUnreadMessages;
 
+  // Input texts
+  final String chatMessageInput;
+  final String newChatNameInput;
+  final String newChatBioInput;
+  final String newChatSearchInput;
+  final String newGroupChatSearchInput;
+
   ChatSemantics copyWith({
     String? profileTitle,
     String? profileDescription,
@@ -87,6 +104,11 @@ class ChatSemantics {
     String Function(int)? chatsChatSubTitle,
     String Function(int)? chatsChatLastUsed,
     String Function(int)? chatsChatUnreadMessages,
+    String? chatMessageInput,
+    String? newChatNameInput,
+    String? newChatBioInput,
+    String? newChatSearchInput,
+    String? newGroupChatSearchInput,
   }) =>
       ChatSemantics(
         profileTitle: profileTitle ?? this.profileTitle,
@@ -109,6 +131,12 @@ class ChatSemantics {
         chatsChatLastUsed: chatsChatLastUsed ?? this.chatsChatLastUsed,
         chatsChatUnreadMessages:
             chatsChatUnreadMessages ?? this.chatsChatUnreadMessages,
+        chatMessageInput: chatMessageInput ?? this.chatMessageInput,
+        newChatNameInput: newChatNameInput ?? this.newChatNameInput,
+        newChatBioInput: newChatBioInput ?? this.newChatBioInput,
+        newChatSearchInput: newChatSearchInput ?? this.newChatSearchInput,
+        newGroupChatSearchInput:
+            newGroupChatSearchInput ?? this.newGroupChatSearchInput,
       );
 }
 

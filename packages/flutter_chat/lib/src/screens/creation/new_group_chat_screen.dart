@@ -149,6 +149,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
         onSearch: onSearch,
         focusNode: focusNode,
         text: options.translations.newGroupChatTitle,
+        semanticId: options.semantics.newGroupChatSearchInput,
       ),
       actions: [
         SearchIcon(
