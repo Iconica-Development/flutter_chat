@@ -2,6 +2,7 @@ import "package:cached_network_image/cached_network_image.dart";
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_builders.dart";
+import "package:flutter_chat/src/config/chat_semantics.dart";
 import "package:flutter_chat/src/config/chat_translations.dart";
 
 /// The chat options
@@ -13,6 +14,7 @@ class ChatOptions {
     this.groupChatEnabled = true,
     this.enableLoadingIndicator = true,
     this.translations = const ChatTranslations.empty(),
+    this.semantics = const ChatSemantics.standard(),
     this.builders = const ChatBuilders(),
     this.spacing = const ChatSpacing(),
     this.paginationControls = const ChatPaginationControls(),
@@ -42,6 +44,9 @@ class ChatOptions {
 
   /// [translations] is the chat translations.
   final ChatTranslations translations;
+
+  /// [semantics] is the chat semantics.
+  final ChatSemantics semantics;
 
   /// [builders] is the chat builders.
   final ChatBuilders builders;

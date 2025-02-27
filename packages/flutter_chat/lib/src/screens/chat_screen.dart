@@ -1,5 +1,6 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/config/chat_translations.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/services/date_formatter.dart";
@@ -92,9 +93,13 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
               visible: (snapshot.data ?? 0) > 0,
               child: Padding(
                 padding: const EdgeInsets.only(right: 22.0),
-                child: Text(
-                  "${snapshot.data ?? 0} ${translations.chatsUnread}",
-                  style: theme.textTheme.bodySmall,
+                child: CustomSemantics(
+                  identifier: options.semantics.chatUnreadMessages,
+                  value: "${snapshot.data ?? 0} ${translations.chatsUnread}",
+                  child: Text(
+                    "${snapshot.data ?? 0} ${translations.chatsUnread}",
+                    style: theme.textTheme.bodySmall,
+                  ),
                 ),
               ),
             ),
@@ -166,7 +171,8 @@ class _BodyState extends State<_Body> {
                   }
                   return Column(
                     children: [
-                      for (ChatModel chat in snapshot.data ?? []) ...[
+                      for (var (index, ChatModel chat)
+                          in (snapshot.data ?? []).indexed) ...[
                         DecoratedBox(
                           decoration: BoxDecoration(
                             border: Border(
@@ -177,66 +183,77 @@ class _BodyState extends State<_Body> {
                             ),
                           ),
                           child: Builder(
-                            builder: (context) => !chat.canBeDeleted
-                                ? Dismissible(
-                                    confirmDismiss: (_) async {
-                                      await options
-                                              .builders.deleteChatDialogBuilder
-                                              ?.call(context, chat) ??
-                                          _deleteDialog(
-                                            chat,
-                                            translations,
-                                            // ignore: use_build_context_synchronously
-                                            context,
-                                          );
-                                      return _deleteDialog(
-                                        chat,
-                                        translations,
-                                        // ignore: use_build_context_synchronously
-                                        context,
-                                      );
-                                    },
-                                    onDismissed: (_) {
-                                      widget.onDeleteChat(chat);
-                                    },
-                                    secondaryBackground: const ColoredBox(
-                                      color: Colors.red,
-                                      child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Icon(
-                                            Icons.delete,
-                                            color: Colors.white,
+                            builder: (context) {
+                              var semantics = options.semantics;
+
+                              var chatItem = _ChatItem(
+                                chat: chat,
+                                onPressChat: widget.onPressChat,
+                                semanticIdTitle:
+                                    semantics.chatsChatTitle(index),
+                                semanticIdSubTitle:
+                                    semantics.chatsChatSubTitle(index),
+                                semanticIdLastUsed:
+                                    semantics.chatsChatLastUsed(index),
+                                semanticIdUnreadMessages:
+                                    semantics.chatsChatUnreadMessages(index),
+                              );
+
+                              return !chat.canBeDeleted
+                                  ? Dismissible(
+                                      confirmDismiss: (_) async {
+                                        await options.builders
+                                                .deleteChatDialogBuilder
+                                                ?.call(context, chat) ??
+                                            _deleteDialog(
+                                              chat,
+                                              translations,
+                                              // ignore: use_build_context_synchronously
+                                              context,
+                                            );
+                                        return _deleteDialog(
+                                          chat,
+                                          translations,
+                                          // ignore: use_build_context_synchronously
+                                          context,
+                                        );
+                                      },
+                                      onDismissed: (_) {
+                                        widget.onDeleteChat(chat);
+                                      },
+                                      secondaryBackground: const ColoredBox(
+                                        color: Colors.red,
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.delete,
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    background: const ColoredBox(
-                                      color: Colors.red,
-                                      child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Icon(
-                                            Icons.delete,
-                                            color: Colors.white,
+                                      background: const ColoredBox(
+                                        color: Colors.red,
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.delete,
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    key: ValueKey(
-                                      chat.id,
-                                    ),
-                                    child: _ChatItem(
-                                      chat: chat,
-                                      onPressChat: widget.onPressChat,
-                                    ),
-                                  )
-                                : _ChatItem(
-                                    chat: chat,
-                                    onPressChat: widget.onPressChat,
-                                  ),
+                                      key: ValueKey(
+                                        chat.id,
+                                      ),
+                                      child: chatItem,
+                                    )
+                                  : chatItem;
+                            },
                           ),
                         ),
                       ],
@@ -282,10 +299,18 @@ class _ChatItem extends StatelessWidget {
   const _ChatItem({
     required this.chat,
     required this.onPressChat,
+    required this.semanticIdTitle,
+    required this.semanticIdSubTitle,
+    required this.semanticIdLastUsed,
+    required this.semanticIdUnreadMessages,
   });
 
   final ChatModel chat;
   final Function(ChatModel chat) onPressChat;
+  final String semanticIdTitle;
+  final String semanticIdSubTitle;
+  final String semanticIdLastUsed;
+  final String semanticIdUnreadMessages;
 
   @override
   Widget build(BuildContext context) {
@@ -295,16 +320,23 @@ class _ChatItem extends StatelessWidget {
       options: options,
     );
     var theme = Theme.of(context);
+
+    var chatListItem = _ChatListItem(
+      chat: chat,
+      dateFormatter: dateFormatter,
+      semanticIdTitle: semanticIdTitle,
+      semanticIdSubTitle: semanticIdSubTitle,
+      semanticIdLastUsed: semanticIdLastUsed,
+      semanticIdUnreadMessages: semanticIdUnreadMessages,
+    );
+
     return InkWell(
       onTap: () {
         onPressChat(chat);
       },
       child: options.builders.chatRowContainerBuilder?.call(
             context,
-            _ChatListItem(
-              chat: chat,
-              dateFormatter: dateFormatter,
-            ),
+            chatListItem,
           ) ??
           DecoratedBox(
             decoration: BoxDecoration(
@@ -318,10 +350,7 @@ class _ChatItem extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.all(12),
-              child: _ChatListItem(
-                chat: chat,
-                dateFormatter: dateFormatter,
-              ),
+              child: chatListItem,
             ),
           ),
     );
@@ -332,10 +361,18 @@ class _ChatListItem extends StatelessWidget {
   const _ChatListItem({
     required this.chat,
     required this.dateFormatter,
+    required this.semanticIdTitle,
+    required this.semanticIdSubTitle,
+    required this.semanticIdLastUsed,
+    required this.semanticIdUnreadMessages,
   });
 
   final ChatModel chat;
   final DateFormatter dateFormatter;
+  final String semanticIdTitle;
+  final String semanticIdSubTitle;
+  final String semanticIdLastUsed;
+  final String semanticIdUnreadMessages;
 
   @override
   Widget build(BuildContext context) {
@@ -366,6 +403,10 @@ class _ChatListItem extends StatelessWidget {
 
           return _ChatRow(
             title: chat.chatName ?? translations.groupNameEmpty,
+            semanticIdTitle: semanticIdTitle,
+            semanticIdSubTitle: semanticIdSubTitle,
+            semanticIdLastUsed: semanticIdLastUsed,
+            semanticIdUnreadMessages: semanticIdUnreadMessages,
             unreadMessages:
                 showUnreadMessageCount ? chat.unreadMessageCount : 0,
             subTitle: data != null
@@ -441,6 +482,10 @@ class _ChatListItem extends StatelessWidget {
             return _ChatRow(
               unreadMessages:
                   showUnreadMessageCount ? chat.unreadMessageCount : 0,
+              semanticIdTitle: semanticIdTitle,
+              semanticIdSubTitle: semanticIdSubTitle,
+              semanticIdLastUsed: semanticIdLastUsed,
+              semanticIdUnreadMessages: semanticIdUnreadMessages,
               avatar: options.builders.userAvatarBuilder?.call(
                     context,
                     otherUser,
@@ -536,6 +581,10 @@ Future<bool?> _deleteDialog(
 class _ChatRow extends StatelessWidget {
   const _ChatRow({
     required this.title,
+    required this.semanticIdTitle,
+    required this.semanticIdSubTitle,
+    required this.semanticIdLastUsed,
+    required this.semanticIdUnreadMessages,
     this.unreadMessages = 0,
     this.lastUsed,
     this.subTitle,
@@ -544,15 +593,19 @@ class _ChatRow extends StatelessWidget {
 
   /// The title of the chat.
   final String title;
+  final String semanticIdTitle;
 
   /// The number of unread messages in the chat.
   final int unreadMessages;
+  final String semanticIdUnreadMessages;
 
   /// The last time the chat was used.
   final String? lastUsed;
+  final String semanticIdLastUsed;
 
   /// The subtitle of the chat.
   final String? subTitle;
+  final String semanticIdSubTitle;
 
   /// The avatar associated with the chat.
   final Widget? avatar;
@@ -573,20 +626,28 @@ class _ChatRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium,
+                CustomSemantics(
+                  identifier: semanticIdTitle,
+                  value: title,
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium,
+                  ),
                 ),
                 if (subTitle != null) ...[
                   Padding(
                     padding: const EdgeInsets.only(top: 3.0),
-                    child: Text(
-                      subTitle!,
-                      style: theme.textTheme.bodySmall,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                    child: CustomSemantics(
+                      identifier: semanticIdSubTitle,
+                      value: subTitle,
+                      child: Text(
+                        subTitle!,
+                        style: theme.textTheme.bodySmall,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
                     ),
                   ),
                 ],
@@ -601,9 +662,13 @@ class _ChatRow extends StatelessWidget {
             if (lastUsed != null) ...[
               Padding(
                 padding: const EdgeInsets.only(bottom: 4.0),
-                child: Text(
-                  lastUsed!,
-                  style: theme.textTheme.labelSmall,
+                child: CustomSemantics(
+                  identifier: semanticIdLastUsed,
+                  value: lastUsed,
+                  child: Text(
+                    lastUsed!,
+                    style: theme.textTheme.labelSmall,
+                  ),
                 ),
               ),
             ],
@@ -616,10 +681,14 @@ class _ChatRow extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Center(
-                  child: Text(
-                    unreadMessages.toString(),
-                    style: const TextStyle(
-                      fontSize: 14,
+                  child: CustomSemantics(
+                    identifier: semanticIdUnreadMessages,
+                    value: unreadMessages.toString(),
+                    child: Text(
+                      unreadMessages.toString(),
+                      style: const TextStyle(
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),

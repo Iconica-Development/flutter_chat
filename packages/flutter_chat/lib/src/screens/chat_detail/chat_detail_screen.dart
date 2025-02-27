@@ -4,6 +4,7 @@ import "dart:typed_data";
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/chat_bottom.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/chat_widgets.dart";
@@ -213,11 +214,15 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         highlightColor: Colors.transparent,
         hoverColor: Colors.transparent,
         onTap: onPressChatTitle,
-        child: options.builders.chatTitleBuilder?.call(chatTitle ?? "") ??
-            Text(
-              chatTitle ?? "",
-              overflow: TextOverflow.ellipsis,
-            ),
+        child: CustomSemantics(
+          identifier: options.semantics.chatChatTitle,
+          value: chatTitle ?? "",
+          child: options.builders.chatTitleBuilder?.call(chatTitle ?? "") ??
+              Text(
+                chatTitle ?? "",
+                overflow: TextOverflow.ellipsis,
+              ),
+        ),
       ),
     );
   }
@@ -458,6 +463,9 @@ class _ChatBody extends HookWidget {
             previousMessage: prevMsg,
             sender: userMap[msg.senderId],
             onPressSender: onPressUserProfile,
+            semanticIdTitle: options.semantics.chatBubbleTitle(index),
+            semanticIdTime: options.semantics.chatBubbleTime(index),
+            semanticIdText: options.semantics.chatBubbleText(index),
           ),
         );
       }
