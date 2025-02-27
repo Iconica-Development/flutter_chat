@@ -1,17 +1,15 @@
 import "dart:typed_data";
 
-import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/config/chat_translations.dart";
-import "package:flutter_chat/src/config/screen_types.dart";
+import "package:flutter_chat/flutter_chat.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/default_loader.dart";
-import "package:flutter_chat/src/screens/chat_detail/widgets/default_message_builder.dart";
 import "package:flutter_chat/src/screens/creation/widgets/default_image_picker.dart";
 
 /// The chat builders
 class ChatBuilders {
   /// The chat builders constructor
   const ChatBuilders({
+    this.chatMessagesErrorBuilder,
     this.baseScreenBuilder,
     this.chatScreenBuilder,
     this.messageInputBuilder,
@@ -99,6 +97,10 @@ class ChatBuilders {
   /// This is displayed in the list of chat messages when loading more messages
   /// can be above and below the list
   final WidgetBuilder loadingChatMessageBuilder;
+
+  /// Errorbuilder for when messages are not loading correctly on the detail
+  /// screen of a chat.
+  final ChatErrorBuilder? chatMessagesErrorBuilder;
 }
 
 /// The button builder
@@ -188,4 +190,12 @@ typedef UserAvatarBuilder = Widget Function(
 typedef NoUsersPlaceholderBuilder = Widget Function(
   BuildContext context,
   ChatTranslations translations,
+);
+
+/// Builder for when there is an error on a chatscreen
+typedef ChatErrorBuilder = Widget Function(
+  BuildContext context,
+  Object error,
+  StackTrace stackTrace,
+  ChatOptions options,
 );
