@@ -1,5 +1,6 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/default_message_builder.dart";
 import "package:flutter_chat/src/util/scope.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
@@ -18,15 +19,22 @@ class ChatNoMessages extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
-    var translations = chatScope.options.translations;
+    var options = chatScope.options;
+    var translations = options.translations;
     var theme = Theme.of(context);
 
     return Center(
-      child: Text(
-        isGroupChat
+      child: CustomSemantics(
+        identifier: options.semantics.chatNoMessages,
+        value: isGroupChat
             ? translations.writeFirstMessageInGroupChat
             : translations.writeMessageToStartChat,
-        style: theme.textTheme.bodySmall,
+        child: Text(
+          isGroupChat
+              ? translations.writeFirstMessageInGroupChat
+              : translations.writeMessageToStartChat,
+          style: theme.textTheme.bodySmall,
+        ),
       ),
     );
   }
@@ -39,6 +47,9 @@ class ChatBubble extends HookWidget {
     required this.message,
     required this.sender,
     required this.onPressSender,
+    required this.semanticIdTitle,
+    required this.semanticIdText,
+    required this.semanticIdTime,
     this.previousMessage,
     super.key,
   });
@@ -56,6 +67,15 @@ class ChatBubble extends HookWidget {
   /// Callback function when a message sender is pressed.
   final Function(UserModel user) onPressSender;
 
+  /// Semantic id for message title
+  final String semanticIdTitle;
+
+  /// Semantic id for message time
+  final String semanticIdTime;
+
+  /// Semantic id for message text
+  final String semanticIdText;
+
   @override
   Widget build(BuildContext context) {
     var chatScope = ChatScope.of(context);
@@ -67,12 +87,18 @@ class ChatBubble extends HookWidget {
           previousMessage,
           sender,
           onPressSender,
+          semanticIdTitle,
+          semanticIdTime,
+          semanticIdText,
         ) ??
         DefaultChatMessageBuilder(
           message: message,
           previousMessage: previousMessage,
           sender: sender,
           onPressSender: onPressSender,
+          semanticIdTitle: semanticIdTitle,
+          semanticIdTime: semanticIdTime,
+          semanticIdText: semanticIdText,
         );
   }
 }

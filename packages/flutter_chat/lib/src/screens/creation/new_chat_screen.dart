@@ -1,5 +1,6 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/creation/widgets/search_field.dart";
 import "package:flutter_chat/src/screens/creation/widgets/search_icon.dart";
@@ -211,10 +212,17 @@ class _Body extends StatelessWidget {
             // ignore: discarded_futures
             stream: service.getAllUsers(),
             builder: (context, snapshot) {
+              var chatScope = ChatScope.of(context);
+              var options = chatScope.options;
+
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return Text("Error: ${snapshot.error}");
+                return CustomSemantics(
+                  identifier: options.semantics.newChatGetUsersError,
+                  value: "Error: ${snapshot.error}",
+                  child: Text("Error: ${snapshot.error}"),
+                );
               } else if (snapshot.hasData) {
                 return UserList(
                   users: snapshot.data!,

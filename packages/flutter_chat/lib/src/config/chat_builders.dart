@@ -169,6 +169,9 @@ typedef ChatMessageBuilder = Widget? Function(
   MessageModel? previousMessage,
   UserModel? sender,
   Function(UserModel sender) onPressSender,
+  String semanticIdTitle,
+  String semanticIdText,
+  String semanticIdTime,
 );
 
 /// The group avatar builder
