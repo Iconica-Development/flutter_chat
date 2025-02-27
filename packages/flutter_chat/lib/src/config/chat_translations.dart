@@ -48,6 +48,7 @@ class ChatTranslations {
     required this.selectedMembersHeader,
     required this.createGroupChatButton,
     required this.groupNameEmpty,
+    required this.messagesLoadingError,
     required this.next,
   });
 
@@ -92,6 +93,7 @@ class ChatTranslations {
     this.selectedMembersHeader = "Members: ",
     this.createGroupChatButton = "Create groupchat",
     this.groupNameEmpty = "Group",
+    this.messagesLoadingError = "Error loading messages, you can reload below:",
     this.next = "Next",
   });
 
@@ -134,6 +136,10 @@ class ChatTranslations {
   final String groupBioValidatorEmpty;
   final String groupNameEmpty;
 
+  /// message shown in the default chat screen when the chat messages are unable
+  /// to be loaded.
+  final String messagesLoadingError;
+
   final String next;
 
   // copyWith method to override the default values
@@ -174,6 +180,7 @@ class ChatTranslations {
     String? selectedMembersHeader,
     String? createGroupChatButton,
     String? groupNameEmpty,
+    String? messagesLoadingError,
     String? next,
   }) =>
       ChatTranslations(
@@ -225,6 +232,7 @@ class ChatTranslations {
         createGroupChatButton:
             createGroupChatButton ?? this.createGroupChatButton,
         groupNameEmpty: groupNameEmpty ?? this.groupNameEmpty,
+        messagesLoadingError: messagesLoadingError ?? this.messagesLoadingError,
         next: next ?? this.next,
       );
 }
