@@ -33,6 +33,25 @@ class ChatSemantics {
     required this.newChatBioInput,
     required this.newChatSearchInput,
     required this.newGroupChatSearchInput,
+    required this.profileStartChatButton,
+    required this.chatsStartChatButton,
+    required this.chatsDeleteConfirmButton,
+    required this.newChatCreateGroupChatButton,
+    required this.newGroupChatCreateGroupChatButton,
+    required this.newGroupChatNextButton,
+    required this.imagePickerCancelButton,
+    required this.chatSelectImageIconButton,
+    required this.chatSendMessageIconButton,
+    required this.newChatSearchIconButton,
+    required this.newGroupChatSearchIconButton,
+    required this.chatBackButton,
+    required this.chatTitleButton,
+    required this.newGroupChatSelectImage,
+    required this.newGroupChatRemoveImage,
+    required this.newGroupChatRemoveUser,
+    required this.profileTapUserButton,
+    required this.chatsOpenChatButton,
+    required this.userListTapUser,
   });
 
   /// Default translations for the chat component view
@@ -58,6 +77,25 @@ class ChatSemantics {
     this.newChatBioInput = "input_text_bio",
     this.newChatSearchInput = "input_text_search",
     this.newGroupChatSearchInput = "input_text_search",
+    this.profileStartChatButton = "button_start_chat",
+    this.chatsStartChatButton = "button_start_chat",
+    this.chatsDeleteConfirmButton = "button_delete_chat_confirm",
+    this.newChatCreateGroupChatButton = "button_create_group_chat",
+    this.newGroupChatCreateGroupChatButton = "button_create_group_chat",
+    this.newGroupChatNextButton = "button_next",
+    this.imagePickerCancelButton = "button_cancel",
+    this.chatSelectImageIconButton = "button_icon_select_image",
+    this.chatSendMessageIconButton = "button_icon_send_message",
+    this.newChatSearchIconButton = "button_icon_search",
+    this.newGroupChatSearchIconButton = "button_icon_search",
+    this.chatBackButton = "button_back",
+    this.chatTitleButton = "button_open_profile",
+    this.newGroupChatSelectImage = "button_select_image",
+    this.newGroupChatRemoveImage = "button_remove_image",
+    this.newGroupChatRemoveUser = "button_remove_user",
+    this.profileTapUserButton = _defaultProfileTapUserButton,
+    this.chatsOpenChatButton = _defaultChatsOpenChatButton,
+    this.userListTapUser = _defaultUserListTapUser,
   });
 
   // Text
@@ -87,6 +125,33 @@ class ChatSemantics {
   final String newChatSearchInput;
   final String newGroupChatSearchInput;
 
+  // Buttons
+  final String profileStartChatButton;
+  final String chatsStartChatButton;
+  final String chatsDeleteConfirmButton;
+  final String newChatCreateGroupChatButton;
+  final String newGroupChatCreateGroupChatButton;
+  final String newGroupChatNextButton;
+  final String imagePickerCancelButton;
+
+  // Icon buttons
+  final String chatSelectImageIconButton;
+  final String chatSendMessageIconButton;
+  final String newChatSearchIconButton;
+  final String newGroupChatSearchIconButton;
+
+  // Inkwells
+  final String chatBackButton;
+  final String chatTitleButton;
+  final String newGroupChatSelectImage;
+  final String newGroupChatRemoveImage;
+  final String newGroupChatRemoveUser;
+
+  // Indexed inkwells
+  final String Function(int index) profileTapUserButton;
+  final String Function(int index) chatsOpenChatButton;
+  final String Function(int index) userListTapUser;
+
   ChatSemantics copyWith({
     String? profileTitle,
     String? profileDescription,
@@ -109,6 +174,25 @@ class ChatSemantics {
     String? newChatBioInput,
     String? newChatSearchInput,
     String? newGroupChatSearchInput,
+    String? profileStartChatButton,
+    String? chatsStartChatButton,
+    String? chatsDeleteConfirmButton,
+    String? newChatCreateGroupChatButton,
+    String? newGroupChatCreateGroupChatButton,
+    String? newGroupChatNextButton,
+    String? imagePickerCancelButton,
+    String? chatSelectImageIconButton,
+    String? chatSendMessageIconButton,
+    String? newChatSearchIconButton,
+    String? newGroupChatSearchIconButton,
+    String? chatBackButton,
+    String? chatTitleButton,
+    String? newGroupChatSelectImage,
+    String? newGroupChatRemoveImage,
+    String? newGroupChatRemoveUser,
+    String Function(int)? profileTapUserButton,
+    String Function(int)? chatsOpenChatButton,
+    String Function(int)? userListTapUser,
   }) =>
       ChatSemantics(
         profileTitle: profileTitle ?? this.profileTitle,
@@ -137,6 +221,38 @@ class ChatSemantics {
         newChatSearchInput: newChatSearchInput ?? this.newChatSearchInput,
         newGroupChatSearchInput:
             newGroupChatSearchInput ?? this.newGroupChatSearchInput,
+        profileStartChatButton:
+            profileStartChatButton ?? this.profileStartChatButton,
+        chatsStartChatButton: chatsStartChatButton ?? this.chatsStartChatButton,
+        chatsDeleteConfirmButton:
+            chatsDeleteConfirmButton ?? this.chatsDeleteConfirmButton,
+        newChatCreateGroupChatButton:
+            newChatCreateGroupChatButton ?? this.newChatCreateGroupChatButton,
+        newGroupChatCreateGroupChatButton: newGroupChatCreateGroupChatButton ??
+            this.newGroupChatCreateGroupChatButton,
+        newGroupChatNextButton:
+            newGroupChatNextButton ?? this.newGroupChatNextButton,
+        imagePickerCancelButton:
+            imagePickerCancelButton ?? this.imagePickerCancelButton,
+        chatSelectImageIconButton:
+            chatSelectImageIconButton ?? this.chatSelectImageIconButton,
+        chatSendMessageIconButton:
+            chatSendMessageIconButton ?? this.chatSendMessageIconButton,
+        newChatSearchIconButton:
+            newChatSearchIconButton ?? this.newChatSearchIconButton,
+        newGroupChatSearchIconButton:
+            newGroupChatSearchIconButton ?? this.newGroupChatSearchIconButton,
+        chatBackButton: chatBackButton ?? this.chatBackButton,
+        chatTitleButton: chatTitleButton ?? this.chatTitleButton,
+        newGroupChatSelectImage:
+            newGroupChatSelectImage ?? this.newGroupChatSelectImage,
+        newGroupChatRemoveImage:
+            newGroupChatRemoveImage ?? this.newGroupChatRemoveImage,
+        newGroupChatRemoveUser:
+            newGroupChatRemoveUser ?? this.newGroupChatRemoveUser,
+        profileTapUserButton: profileTapUserButton ?? this.profileTapUserButton,
+        chatsOpenChatButton: chatsOpenChatButton ?? this.chatsOpenChatButton,
+        userListTapUser: userListTapUser ?? this.userListTapUser,
       );
 }
 
@@ -150,3 +266,6 @@ String _defaultChatsChatSubTitle(int index) => "text_chat_sub_title_$index";
 String _defaultChatsChatLastUsed(int index) => "text_chat_last_used_$index";
 String _defaultChatsChatUnreadMessages(int index) =>
     "text_chat_unread_messages_$index";
+String _defaultProfileTapUserButton(int index) => "button_tap_user_$index";
+String _defaultChatsOpenChatButton(int index) => "button_open_chat_$index";
+String _defaultUserListTapUser(int index) => "button_tap_user_$index";

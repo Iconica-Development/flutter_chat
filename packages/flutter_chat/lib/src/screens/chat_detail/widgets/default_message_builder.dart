@@ -297,7 +297,7 @@ class _DefaultChatImage extends StatelessWidget {
                   options.imageProviderResolver(context, Uri.parse(imageUrl)),
               fit: BoxFit.fitWidth,
               errorBuilder: (context, error, stackTrace) => Text(
-                // TODO: Non-replaceable text
+                // TODO(Jacques): Non-replaceable text
                 "Something went wrong with loading the image",
                 style: textTheme.bodyLarge?.copyWith(
                   color: messageTheme.textColor,

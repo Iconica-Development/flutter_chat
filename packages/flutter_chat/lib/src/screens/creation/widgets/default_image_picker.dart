@@ -1,6 +1,7 @@
 import "dart:typed_data";
 
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/config/chat_translations.dart";
 import "package:flutter_chat/src/util/scope.dart";
@@ -71,13 +72,16 @@ class DefaultImagePickerDialog extends StatelessWidget {
                 Icons.insert_drive_file_rounded,
                 size: 60,
               ),
-              closeButtonBuilder: (ontap) => TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(
-                  translations.cancelImagePickerBtn,
-                  style: textTheme.bodyMedium!.copyWith(
-                    fontSize: 18,
-                    decoration: TextDecoration.underline,
+              closeButtonBuilder: (ontap) => CustomSemantics(
+                identifier: options.semantics.imagePickerCancelButton,
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    translations.cancelImagePickerBtn,
+                    style: textTheme.bodyMedium!.copyWith(
+                      fontSize: 18,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
               ),

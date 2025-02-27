@@ -6,6 +6,7 @@ class SearchIcon extends StatelessWidget {
   const SearchIcon({
     required this.isSearching,
     required this.onPressed,
+    required this.semanticId,
     super.key,
   });
 
@@ -15,14 +16,20 @@ class SearchIcon extends StatelessWidget {
   /// Callback function triggered when the search icon is pressed
   final VoidCallback onPressed;
 
+  /// Semantic id for icon button
+  final String semanticId;
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    return IconButton(
-      onPressed: onPressed,
-      icon: Icon(
-        isSearching ? Icons.close : Icons.search,
-        color: theme.appBarTheme.iconTheme?.color ?? Colors.white,
+    return Semantics(
+      identifier: semanticId,
+      child: IconButton(
+        onPressed: onPressed,
+        icon: Icon(
+          isSearching ? Icons.close : Icons.search,
+          color: theme.appBarTheme.iconTheme?.color ?? Colors.white,
+        ),
       ),
     );
   }
