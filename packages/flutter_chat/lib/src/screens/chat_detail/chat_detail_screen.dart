@@ -282,7 +282,6 @@ class _ChatBody extends HookWidget {
       var oldCount = messages.length;
 
       try {
-        debugPrint("loading old messages from message: ${oldestMsg.id}");
         await Future.wait([
           service.loadOldMessagesBefore(firstMessage: oldestMsg),
           Future.delayed(
@@ -315,7 +314,6 @@ class _ChatBody extends HookWidget {
 
       var newestMsg = messages.last;
       try {
-        debugPrint("loading new messages from message: ${newestMsg.id}");
         await Future.wait([
           service.loadNewMessagesAfter(lastMessage: newestMsg),
           Future.delayed(
