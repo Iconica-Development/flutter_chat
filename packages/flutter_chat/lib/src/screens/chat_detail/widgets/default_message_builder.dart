@@ -1,5 +1,6 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
 import "package:flutter_chat/src/services/date_formatter.dart";
 import "package:flutter_chat/src/util/scope.dart";
@@ -14,6 +15,9 @@ class DefaultChatMessageBuilder extends StatelessWidget {
     required this.previousMessage,
     required this.sender,
     required this.onPressSender,
+    required this.semanticIdTitle,
+    required this.semanticIdText,
+    required this.semanticIdTime,
     super.key,
   });
 
@@ -30,6 +34,15 @@ class DefaultChatMessageBuilder extends StatelessWidget {
   /// The function that is called when the sender is clicked
   final Function(UserModel user) onPressSender;
 
+  /// Semantic id for message title
+  final String semanticIdTitle;
+
+  /// Semantic id for message time
+  final String semanticIdTime;
+
+  /// Semantic id for message text
+  final String semanticIdText;
+
   /// implements [ChatMessageBuilder]
   static Widget builder(
     BuildContext context,
@@ -37,12 +50,18 @@ class DefaultChatMessageBuilder extends StatelessWidget {
     MessageModel? previousMessage,
     UserModel? sender,
     Function(UserModel sender) onPressSender,
+    String semanticIdTitle,
+    String semanticIdText,
+    String semanticIdTime,
   ) =>
       DefaultChatMessageBuilder(
         message: message,
         previousMessage: previousMessage,
         sender: sender,
         onPressSender: onPressSender,
+        semanticIdTitle: semanticIdTitle,
+        semanticIdTime: semanticIdTime,
+        semanticIdText: semanticIdText,
       );
 
   /// Merges the [MessageTheme] from the themeresolver with the [MessageTheme]
@@ -87,6 +106,9 @@ class DefaultChatMessageBuilder extends StatelessWidget {
       message: message,
       messageTheme: messageTheme,
       sender: sender,
+      semanticIdTitle: semanticIdTitle,
+      semanticIdTime: semanticIdTime,
+      semanticIdText: semanticIdText,
     );
 
     var messagePadding = messageTheme.messageSidePadding!;
@@ -126,6 +148,9 @@ class _ChatMessageBubble extends StatelessWidget {
     required this.previousMessage,
     required this.messageTheme,
     required this.sender,
+    required this.semanticIdTitle,
+    required this.semanticIdTime,
+    required this.semanticIdText,
   });
 
   final bool isSameSender;
@@ -134,6 +159,9 @@ class _ChatMessageBubble extends StatelessWidget {
   final MessageModel? previousMessage;
   final MessageTheme messageTheme;
   final UserModel? sender;
+  final String semanticIdTitle;
+  final String semanticIdTime;
+  final String semanticIdText;
 
   @override
   Widget build(BuildContext context) {
@@ -154,9 +182,13 @@ class _ChatMessageBubble extends StatelessWidget {
 
     var senderTitle =
         options.senderTitleResolver?.call(sender) ?? sender?.firstName ?? "";
-    var senderTitleText = Text(
-      senderTitle,
-      style: theme.textTheme.titleMedium,
+    var senderTitleText = CustomSemantics(
+      identifier: semanticIdTitle,
+      value: senderTitle,
+      child: Text(
+        senderTitle,
+        style: theme.textTheme.titleMedium,
+      ),
     );
 
     var messageTimeRow = Row(
@@ -164,12 +196,16 @@ class _ChatMessageBubble extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(right: 8, bottom: 4),
-          child: Text(
-            messageTime,
-            style: textTheme.bodySmall?.copyWith(
-              color: messageTheme.textColor,
+          child: CustomSemantics(
+            identifier: semanticIdTime,
+            value: messageTime,
+            child: Text(
+              messageTime,
+              style: textTheme.bodySmall?.copyWith(
+                color: messageTheme.textColor,
+              ),
+              textAlign: TextAlign.end,
             ),
-            textAlign: TextAlign.end,
           ),
         ),
       ],
@@ -207,12 +243,16 @@ class _ChatMessageBubble extends StatelessWidget {
                       right: 12,
                       bottom: 4,
                     ),
-                    child: Text(
-                      message.text!,
-                      style: textTheme.bodyLarge?.copyWith(
-                        color: messageTheme.textColor,
+                    child: Semantics(
+                      identifier: semanticIdText,
+                      value: message.text,
+                      child: Text(
+                        message.text!,
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: messageTheme.textColor,
+                        ),
+                        textAlign: messageTheme.textAlignment,
                       ),
-                      textAlign: messageTheme.textAlignment,
                     ),
                   ),
                 ],
@@ -257,6 +297,7 @@ class _DefaultChatImage extends StatelessWidget {
                   options.imageProviderResolver(context, Uri.parse(imageUrl)),
               fit: BoxFit.fitWidth,
               errorBuilder: (context, error, stackTrace) => Text(
+                // TODO: Non-replaceable text
                 "Something went wrong with loading the image",
                 style: textTheme.bodyLarge?.copyWith(
                   color: messageTheme.textColor,

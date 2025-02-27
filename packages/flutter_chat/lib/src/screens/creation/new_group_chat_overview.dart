@@ -2,6 +2,7 @@ import "dart:typed_data";
 
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/screens/creation/widgets/default_image_picker.dart";
 import "package:flutter_chat/src/util/scope.dart";
@@ -301,10 +302,15 @@ class _BodyState extends State<_Body> {
                   const SizedBox(
                     height: 16,
                   ),
-                  Text(
-                    "${translations.selectedMembersHeader}"
-                    "${users.length}",
-                    style: theme.textTheme.titleMedium,
+                  CustomSemantics(
+                    identifier: options.semantics.newGroupChatMemberAmount,
+                    value: "${translations.selectedMembersHeader}"
+                        "${users.length}",
+                    child: Text(
+                      "${translations.selectedMembersHeader}"
+                      "${users.length}",
+                      style: theme.textTheme.titleMedium,
+                    ),
                   ),
                   const SizedBox(
                     height: 12,

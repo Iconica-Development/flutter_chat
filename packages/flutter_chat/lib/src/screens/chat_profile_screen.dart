@@ -1,5 +1,6 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/config/screen_types.dart";
 import "package:flutter_chat/src/util/scope.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
@@ -50,7 +51,10 @@ class ChatProfileScreen extends HookWidget {
             ? chatModel?.chatName ?? options.translations.groupNameEmpty
             : "";
 
-    var appBar = _AppBar(title: chatTitle);
+    var appBar = _AppBar(
+      title: chatTitle,
+      semanticId: options.semantics.profileTitle,
+    );
 
     var body = _Body(
       user: userModel,
@@ -79,16 +83,22 @@ class ChatProfileScreen extends HookWidget {
 class _AppBar extends StatelessWidget implements PreferredSizeWidget {
   const _AppBar({
     required this.title,
+    required this.semanticId,
   });
 
   final String title;
+  final String semanticId;
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return AppBar(
       iconTheme: theme.appBarTheme.iconTheme,
-      title: Text(title),
+      title: CustomSemantics(
+        identifier: semanticId,
+        value: title,
+        child: Text(title),
+      ),
     );
   }
 
@@ -247,9 +257,13 @@ class _Body extends StatelessWidget {
                       style: theme.textTheme.titleMedium,
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      chat!.description ?? "",
-                      style: theme.textTheme.bodyMedium,
+                    CustomSemantics(
+                      identifier: options.semantics.profileDescription,
+                      value: chat!.description ?? "",
+                      child: Text(
+                        chat!.description ?? "",
+                        style: theme.textTheme.bodyMedium,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Text(

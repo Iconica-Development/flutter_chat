@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/flutter_chat.dart";
 
 /// A widget representing an entry point for a chat UI.
@@ -16,6 +17,7 @@ class FlutterChatEntryWidget extends StatefulWidget {
     this.iconColor = Colors.black,
     this.counterBackgroundColor = Colors.red,
     this.textStyle,
+    this.semanticIdUnreadMessages = "text_unread_messages_count",
     super.key,
   });
 
@@ -45,6 +47,9 @@ class FlutterChatEntryWidget extends StatefulWidget {
 
   /// The chat options
   final ChatOptions? options;
+
+  /// Semantic Id for the unread messages text
+  final String semanticIdUnreadMessages;
 
   @override
   State<FlutterChatEntryWidget> createState() => _FlutterChatEntryWidgetState();
@@ -121,9 +126,13 @@ class _FlutterChatEntryWidgetState extends State<FlutterChatEntryWidget> {
                     color: widget.counterBackgroundColor,
                   ),
                   child: Center(
-                    child: Text(
-                      snapshot.data?.toString() ?? "0",
-                      style: widget.textStyle,
+                    child: CustomSemantics(
+                      identifier: widget.semanticIdUnreadMessages,
+                      value: snapshot.data?.toString() ?? "0",
+                      child: Text(
+                        snapshot.data?.toString() ?? "0",
+                        style: widget.textStyle,
+                      ),
                     ),
                   ),
                 ),

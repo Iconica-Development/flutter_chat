@@ -196,10 +196,17 @@ class _Body extends StatelessWidget {
             // ignore: discarded_futures
             stream: service.getAllUsers(),
             builder: (context, snapshot) {
+              var chatScope = ChatScope.of(context);
+              var options = chatScope.options;
+
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return Text("Error: ${snapshot.error}");
+                return Semantics(
+                  identifier: options.semantics.newGroupChatGetUsersError,
+                  value: "Error: ${snapshot.error}",
+                  child: Text("Error: ${snapshot.error}"),
+                );
               } else if (snapshot.hasData) {
                 return Stack(
                   children: [

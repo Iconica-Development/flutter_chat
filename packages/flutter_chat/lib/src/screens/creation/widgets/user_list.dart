@@ -1,5 +1,6 @@
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/util/scope.dart";
 import "package:flutter_profile/flutter_profile.dart";
 
@@ -106,9 +107,14 @@ class _UserListState extends State<UserList> {
                       const SizedBox(
                         width: 12,
                       ),
-                      Text(
-                        user.fullname ?? translations.anonymousUser,
-                        style: theme.textTheme.titleMedium,
+                      CustomSemantics(
+                        identifier: options.semantics
+                            .newChatUserListUserFullName(index),
+                        value: user.fullname ?? translations.anonymousUser,
+                        child: Text(
+                          user.fullname ?? translations.anonymousUser,
+                          style: theme.textTheme.titleMedium,
+                        ),
                       ),
                       if (widget.creatingGroup) ...[
                         const Spacer(),
@@ -154,9 +160,14 @@ class _UserListState extends State<UserList> {
                         const SizedBox(
                           width: 12,
                         ),
-                        Text(
-                          user.fullname ?? translations.anonymousUser,
-                          style: theme.textTheme.titleMedium,
+                        CustomSemantics(
+                          identifier: options.semantics
+                              .newChatUserListUserFullName(index),
+                          value: user.fullname ?? translations.anonymousUser,
+                          child: Text(
+                            user.fullname ?? translations.anonymousUser,
+                            style: theme.textTheme.titleMedium,
+                          ),
                         ),
                         if (widget.creatingGroup) ...[
                           const Spacer(),
