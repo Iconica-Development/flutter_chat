@@ -352,14 +352,18 @@ class _ChatBody extends HookWidget {
 
         var distanceFromBottom = maxScroll - offset;
 
-        if (offset <= threshold && !isLoadingOlder.value) {
-          unawaited(loadOlderMessages());
+        if (options.paginationControls.loadOldMessagesOnScroll) {
+          if (offset <= threshold && !isLoadingOlder.value) {
+            unawaited(loadOlderMessages());
+          }
         }
 
-        if (distanceFromBottom <= threshold &&
-            !isLoadingNewer.value &&
-            !autoScrollEnabled.value) {
-          unawaited(loadNewerMessages());
+        if (options.paginationControls.loadNewMessagesOnScroll) {
+          if (distanceFromBottom <= threshold &&
+              !isLoadingNewer.value &&
+              !autoScrollEnabled.value) {
+            unawaited(loadNewerMessages());
+          }
         }
 
         if (distanceFromBottom > autoScrollThreshold) {

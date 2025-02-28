@@ -302,6 +302,8 @@ class ChatPaginationControls {
     this.autoScrollTriggerOffset = 50.0,
     this.loadingIndicatorForNewMessages = true,
     this.loadingIndicatorForOldMessages = true,
+    this.loadNewMessagesOnScroll = true,
+    this.loadOldMessagesOnScroll = true,
     this.loadingNewMessageMinDuration = Duration.zero,
     this.loadingOldMessageMinDuration = Duration.zero,
   });
@@ -313,6 +315,15 @@ class ChatPaginationControls {
   /// The minimum scroll offset to trigger the auto scroll to the bottom of the
   /// chat. Defaults to 50.0
   final double autoScrollTriggerOffset;
+
+  /// Whether to load new messages when someone scrolls to the end of the chat
+  final bool loadNewMessagesOnScroll;
+
+  /// Whether to load older messages when scrolling towards the start of the
+  /// chat.
+  ///
+  /// If the messages are loaded by pagination, it is smart to add this.
+  final bool loadOldMessagesOnScroll;
 
   /// Whether to show a loading indicator for new messages loading
   final bool loadingIndicatorForNewMessages;
