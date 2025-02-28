@@ -25,6 +25,7 @@
 - Added autoScrollTriggerOffset to the ChatPaginationControls to adjust when the auto scroll should be enabled
 - Added the ability to set the color of the CircularProgressIndicator of the ImageLoadingSnackbar by theme.snackBarTheme.actionTextColor
 - Added semantics for variable text, buttons and textfields
+- Added flag to enable/disable loading new and old messages on scrolling to the end of the current view.
 
 ## 4.0.0
 - Move to the new user story architecture
