@@ -154,7 +154,10 @@ class ChatBottomInputSection extends HookWidget {
     );
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      padding: EdgeInsets.symmetric(
+        horizontal: options.spacing.chatSidePadding,
+        vertical: 16,
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 120, minHeight: 45),
         child: options.builders.messageInputBuilder?.call(
