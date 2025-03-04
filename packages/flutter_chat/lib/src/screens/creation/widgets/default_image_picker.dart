@@ -58,6 +58,7 @@ class DefaultImagePickerDialog extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           color: Colors.white,
           child: ImagePicker(
+            config: const ImagePickerConfig(imageQuality: 20),
             theme: ImagePickerTheme(
               spaceBetweenIcons: 32.0,
               iconColor: theme.primaryColor,
