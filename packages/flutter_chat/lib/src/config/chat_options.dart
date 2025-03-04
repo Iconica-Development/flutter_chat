@@ -26,6 +26,7 @@ class ChatOptions {
     this.iconDisabledColor,
     this.chatAlignment,
     this.onNoChats,
+    this.imageQuality = 20,
     this.imageProviderResolver = _defaultImageProviderResolver,
     ChatRepositoryInterface? chatRepository,
     UserRepositoryInterface? userRepository,
@@ -97,6 +98,12 @@ class ChatOptions {
 
   /// [onNoChats] is a function that is triggered when there are no chats.
   final Function? onNoChats;
+
+  /// [imageQuality] sets the quality of the image to send over with chat image
+  /// messages. This should be a value between 1 and 100 where 1 is the worst
+  /// image quality and 100 is the best image quality. Note that the higher the
+  /// image quality is set, the larger te iage is, that is being sent over.
+  final int imageQuality;
 
   /// If [imageProviderResolver] is set, it will be used to get the images for
   /// the images in the entire userstory. If not provided, CachedNetworkImage
