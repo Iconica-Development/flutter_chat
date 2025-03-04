@@ -1,6 +1,6 @@
 name: firebase_chat_repository
 description: "A new Flutter package project."
-version: 4.0.0
+version: 5.0.0
 homepage: "https://github.com/Iconica-Development"
 
 publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub/
@@ -15,7 +15,7 @@ dependencies:
 
   chat_repository_interface:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
-    version: ^4.0.0
+    version: ^5.0.0
 
   firebase_storage: any
   cloud_firestore: any
