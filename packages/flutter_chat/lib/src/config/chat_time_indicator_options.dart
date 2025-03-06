@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_chat/flutter_chat.dart";
-import "package:flutter_chat/src/screens/chat_detail/widgets/default_chat_time_indicator.dart";
+export "package:flutter_chat/src/screens/chat_detail/widgets/default_chat_time_indicator.dart";
 
 /// All options related to the time indicator
 class ChatTimeIndicatorOptions {

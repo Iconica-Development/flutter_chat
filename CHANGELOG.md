@@ -1,3 +1,6 @@
+## 5.1.1
+- Expose default indicator builder from the indicator options
+
 ## 5.1.0
 - Added optional time indicator in chat detail screens to show which day the message is posted
 
