@@ -1,5 +1,5 @@
 name: firebase_chat_repository
-description: "A new Flutter package project."
+description: "Firebase repository implementation for the chat domain repository interface"
 version: 5.0.0
 homepage: "https://github.com/Iconica-Development"
 

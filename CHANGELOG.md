@@ -1,4 +1,4 @@
-## 5.0.0 - WIP
+## 5.0.0
 - Removed the default values for the ChatOptions that are now nullable so they resolve to the ThemeData values
 - Added chatAlignment to change the alignment of the chat messages
 - Added messageType to the ChatMessageModel to allow for different type of messages, it is nullable to remain backwards compatible
@@ -26,6 +26,7 @@
 - Added the ability to set the color of the CircularProgressIndicator of the ImageLoadingSnackbar by theme.snackBarTheme.actionTextColor
 - Added semantics for variable text, buttons and textfields
 - Added flag to enable/disable loading new and old messages on scrolling to the end of the current view.
+- Updated description of packages to be more descriptive
 
 ## 4.0.0
 - Move to the new user story architecture

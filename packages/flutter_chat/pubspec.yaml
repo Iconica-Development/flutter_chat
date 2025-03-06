@@ -1,5 +1,5 @@
 name: flutter_chat
-description: "A new Flutter package project."
+description: "User story of the chat domain for quick integration into flutter apps"
 version: 5.0.0
 publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub/
 
