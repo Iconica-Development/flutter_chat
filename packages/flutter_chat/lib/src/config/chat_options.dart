@@ -1,9 +1,7 @@
 import "package:cached_network_image/cached_network_image.dart";
-import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
-import "package:flutter_chat/src/config/chat_builders.dart";
+import "package:flutter_chat/flutter_chat.dart";
 import "package:flutter_chat/src/config/chat_semantics.dart";
-import "package:flutter_chat/src/config/chat_translations.dart";
 
 /// The chat options
 /// Use this class to configure the chat options.
@@ -28,6 +26,7 @@ class ChatOptions {
     this.onNoChats,
     this.imageQuality = 20,
     this.imageProviderResolver = _defaultImageProviderResolver,
+    this.timeIndicatorOptions = const ChatTimeIndicatorOptions(),
     ChatRepositoryInterface? chatRepository,
     UserRepositoryInterface? userRepository,
   })  : chatRepository = chatRepository ?? LocalChatRepository(),
@@ -109,6 +108,9 @@ class ChatOptions {
   /// the images in the entire userstory. If not provided, CachedNetworkImage
   /// will be used.
   final ImageProviderResolver imageProviderResolver;
+
+  /// Options regarding the time indicator in chat screens
+  final ChatTimeIndicatorOptions timeIndicatorOptions;
 }
 
 /// Typedef for the chatTitleResolver function that is used to get a title for
