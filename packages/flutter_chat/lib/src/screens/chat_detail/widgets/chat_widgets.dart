@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/default_message_builder.dart";
 import "package:flutter_chat/src/util/scope.dart";
+import "package:flutter_chat/src/util/utils.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
 /// Widget displayed when there are no messages in the chat.
@@ -100,5 +101,34 @@ class ChatBubble extends HookWidget {
           semanticIdTime: semanticIdTime,
           semanticIdText: semanticIdText,
         );
+  }
+}
+
+/// The indicator above a set of messages, shown per date.
+class ChatTimeIndicator extends StatelessWidget {
+  /// Creates a ChatTimeIndicator
+  const ChatTimeIndicator({
+    required this.forDate,
+    super.key,
+  });
+
+  /// The dateTime at which the new time section starts
+  final DateTime forDate;
+
+  @override
+  Widget build(BuildContext context) {
+    var scope = ChatScope.of(context);
+    var indicatorOptions = scope.options.timeIndicatorOptions;
+
+    var today = DateTime.now();
+    var differenceInDays = today.getDateOffsetInDays(forDate);
+
+    var message = indicatorOptions.labelResolver(
+      context,
+      differenceInDays,
+      forDate,
+    );
+
+    return indicatorOptions.indicatorBuilder(context, message);
   }
 }

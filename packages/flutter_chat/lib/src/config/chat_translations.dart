@@ -4,6 +4,8 @@
 
 // ignore_for_file: public_member_api_docs
 
+import "package:intl/intl.dart";
+
 /// Class that holds all the translations for the chat component view and
 ///  the corresponding userstory
 class ChatTranslations {
@@ -50,6 +52,7 @@ class ChatTranslations {
     required this.groupNameEmpty,
     required this.messagesLoadingError,
     required this.next,
+    required this.chatTimeIndicatorLabel,
   });
 
   /// Default translations for the chat component view
@@ -95,6 +98,8 @@ class ChatTranslations {
     this.groupNameEmpty = "Group",
     this.messagesLoadingError = "Error loading messages, you can reload below:",
     this.next = "Next",
+    this.chatTimeIndicatorLabel =
+        ChatTranslations.defaultChatTimeIndicatorLabel,
   });
 
   final String chatsTitle;
@@ -140,6 +145,33 @@ class ChatTranslations {
   /// to be loaded.
   final String messagesLoadingError;
 
+  /// The message of a label given a certain offset.
+  ///
+  /// The offset determines whether it is today (0), yesterday (-1), or earlier.
+  ///
+  /// [dateOffset] will rarely be a +1, however if anyone ever wants to see
+  /// future chat messages, then this number will be positive.
+  ///
+  /// use the given [time] format to display exact time information.
+  final String Function(int dateOffset, DateTime time) chatTimeIndicatorLabel;
+
+  /// Standard function to convert an offset to a String.
+  ///
+  /// Recommended to always override this in any production app with an
+  /// app localizations implementation.
+  static String defaultChatTimeIndicatorLabel(
+    int dateOffset,
+    DateTime time,
+  ) =>
+      switch (dateOffset) {
+        0 => "Today",
+        -1 => "Yesterday",
+        1 => "Tomorrow",
+        int value when value < 5 && value > 1 => "In $value days",
+        int value when value < -1 && value > -5 => "$value days ago",
+        _ => DateFormat("dd-MM-YYYY").format(time),
+      };
+
   final String next;
 
   // copyWith method to override the default values
@@ -182,6 +214,7 @@ class ChatTranslations {
     String? groupNameEmpty,
     String? messagesLoadingError,
     String? next,
+    String Function(int dateOffset, DateTime time)? chatTimeIndicatorLabel,
   }) =>
       ChatTranslations(
         chatsTitle: chatsTitle ?? this.chatsTitle,
@@ -234,5 +267,7 @@ class ChatTranslations {
         groupNameEmpty: groupNameEmpty ?? this.groupNameEmpty,
         messagesLoadingError: messagesLoadingError ?? this.messagesLoadingError,
         next: next ?? this.next,
+        chatTimeIndicatorLabel:
+            chatTimeIndicatorLabel ?? this.chatTimeIndicatorLabel,
       );
 }

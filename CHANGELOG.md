@@ -1,3 +1,6 @@
+## 5.1.0
+- Added optional time indicator in chat detail screens to show which day the message is posted
+
 ## 5.0.0
 - Removed the default values for the ChatOptions that are now nullable so they resolve to the ThemeData values
 - Added chatAlignment to change the alignment of the chat messages

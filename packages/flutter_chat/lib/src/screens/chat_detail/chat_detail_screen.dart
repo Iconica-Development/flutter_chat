@@ -1,15 +1,12 @@
 import "dart:async";
 import "dart:typed_data";
 
-import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_accessibility/flutter_accessibility.dart";
-import "package:flutter_chat/src/config/chat_options.dart";
-import "package:flutter_chat/src/config/screen_types.dart";
+import "package:flutter_chat/flutter_chat.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/chat_bottom.dart";
 import "package:flutter_chat/src/screens/chat_detail/widgets/chat_widgets.dart";
 import "package:flutter_chat/src/screens/creation/widgets/default_image_picker.dart";
-import "package:flutter_chat/src/util/scope.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
 /// Chat detail screen
@@ -465,14 +462,26 @@ class _ChatBody extends HookWidget {
       bubbleChildren
           .add(ChatNoMessages(isGroupChat: chat?.isGroupChat ?? false));
     } else {
-      for (var (index, msg) in messages.indexed) {
-        var prevMsg = index > 0 ? messages[index - 1] : null;
+      for (var (index, currentMessage) in messages.indexed) {
+        var previousMessage = index > 0 ? messages[index - 1] : null;
+
+        if (options.timeIndicatorOptions.isMessageInNewTimeSection(
+          context,
+          previousMessage,
+          currentMessage,
+        )) {
+          bubbleChildren.add(
+            ChatTimeIndicator(
+              forDate: currentMessage.timestamp,
+            ),
+          );
+        }
 
         bubbleChildren.add(
           ChatBubble(
-            message: msg,
-            previousMessage: prevMsg,
-            sender: userMap[msg.senderId],
+            message: currentMessage,
+            previousMessage: previousMessage,
+            sender: userMap[currentMessage.senderId],
             onPressSender: onPressUserProfile,
             semanticIdTitle: options.semantics.chatBubbleTitle(index),
             semanticIdTime: options.semantics.chatBubbleTime(index),
