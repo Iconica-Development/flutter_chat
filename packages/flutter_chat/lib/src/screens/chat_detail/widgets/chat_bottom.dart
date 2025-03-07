@@ -127,10 +127,12 @@ class ChatBottomInputSection extends HookWidget {
               ),
               // this ensures that that there is space at the end of the
               // textfield
-              suffixIcon: AbsorbPointer(
-                child: Opacity(
-                  opacity: 0.0,
-                  child: messageSendButtons,
+              suffixIcon: ExcludeFocus(
+                child: AbsorbPointer(
+                  child: Opacity(
+                    opacity: 0.0,
+                    child: messageSendButtons,
+                  ),
                 ),
               ),
               hintText: options.translations.messagePlaceholder,
