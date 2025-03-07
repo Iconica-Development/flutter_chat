@@ -1,3 +1,7 @@
+## 5.1.2
+- Added correct padding inbetween time indicators and names
+- Show names if a new day occurs and an indicator is shown
+
 ## 5.1.1
 - Expose default indicator builder from the indicator options
 

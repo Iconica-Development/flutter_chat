@@ -1,6 +1,6 @@
 name: flutter_chat
 description: "User story of the chat domain for quick integration into flutter apps"
-version: 5.1.1
+version: 5.1.2
 publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub/
 
 environment:

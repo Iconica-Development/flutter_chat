@@ -1,6 +1,6 @@
 name: chat_repository_interface
 description: "The interface for a chat repository"
-version: 5.1.1
+version: 5.1.2
 homepage: "https://github.com/Iconica-Development"
 
 publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub/
