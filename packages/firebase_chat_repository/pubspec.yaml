@@ -1,6 +1,6 @@
 name: firebase_chat_repository
 description: "Firebase repository implementation for the chat domain repository interface"
-version: 5.1.1
+version: 5.1.2
 homepage: "https://github.com/Iconica-Development"
 
 publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub/

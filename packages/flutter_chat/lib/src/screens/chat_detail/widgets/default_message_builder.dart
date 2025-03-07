@@ -97,10 +97,17 @@ class DefaultChatMessageBuilder extends StatelessWidget {
     var isSameSender = previousMessage != null &&
         previousMessage?.senderId == message.senderId;
 
+    var hasPreviousIndicator = options.timeIndicatorOptions.sectionCheck(
+      context,
+      previousMessage,
+      message,
+    );
+
     var isMessageFromSelf = message.senderId == userId;
 
     var chatMessage = _ChatMessageBubble(
       isSameSender: isSameSender,
+      hasPreviousIndicator: hasPreviousIndicator,
       isMessageFromSelf: isMessageFromSelf,
       previousMessage: previousMessage,
       message: message,
@@ -143,6 +150,7 @@ class DefaultChatMessageBuilder extends StatelessWidget {
 class _ChatMessageBubble extends StatelessWidget {
   const _ChatMessageBubble({
     required this.isSameSender,
+    required this.hasPreviousIndicator,
     required this.isMessageFromSelf,
     required this.message,
     required this.previousMessage,
@@ -154,6 +162,7 @@ class _ChatMessageBubble extends StatelessWidget {
   });
 
   final bool isSameSender;
+  final bool hasPreviousIndicator;
   final bool isMessageFromSelf;
   final MessageModel message;
   final MessageModel? previousMessage;
@@ -211,14 +220,19 @@ class _ChatMessageBubble extends StatelessWidget {
       ],
     );
 
+    var showName =
+        messageTheme.showName ?? (!isSameSender || hasPreviousIndicator);
+
+    var isNewSection = hasPreviousIndicator || showName;
+
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (messageTheme.showName ?? !isSameSender) ...[
+          if (isNewSection) ...[
             SizedBox(height: options.spacing.chatBetweenMessagesPadding),
-            senderTitleText,
           ],
+          if (showName) senderTitleText,
           const SizedBox(height: 4),
           DefaultChatMessageContainer(
             backgroundColor: messageTheme.backgroundColor!,
