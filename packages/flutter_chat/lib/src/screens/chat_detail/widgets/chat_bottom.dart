@@ -63,34 +63,37 @@ class ChatBottomInputSection extends HookWidget {
     }
 
     /// Image and send buttons
-    var messageSendButtons = SizedBox(
-      height: 45,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomSemantics(
-            identifier: options.semantics.chatSelectImageIconButton,
-            child: IconButton(
-              alignment: Alignment.bottomRight,
-              onPressed: isLoading ? null : onPressSelectImage,
-              icon: Icon(
-                Icons.image_outlined,
-                color: options.iconEnabledColor,
+    var messageSendButtons = Padding(
+      padding: const EdgeInsets.only(right: 6.0),
+      child: SizedBox(
+        height: 48,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CustomSemantics(
+              identifier: options.semantics.chatSelectImageIconButton,
+              child: IconButton(
+                alignment: Alignment.bottomRight,
+                onPressed: isLoading ? null : onPressSelectImage,
+                icon: Icon(
+                  Icons.image_outlined,
+                  color: options.iconEnabledColor,
+                ),
               ),
             ),
-          ),
-          CustomSemantics(
-            identifier: options.semantics.chatSendMessageIconButton,
-            child: IconButton(
-              alignment: Alignment.bottomRight,
-              disabledColor: options.iconDisabledColor,
-              color: options.iconEnabledColor,
-              onPressed: isLoading ? null : onClickSendMessage,
-              icon: const Icon(Icons.send_rounded),
+            CustomSemantics(
+              identifier: options.semantics.chatSendMessageIconButton,
+              child: IconButton(
+                alignment: Alignment.bottomRight,
+                disabledColor: options.iconDisabledColor,
+                color: options.iconEnabledColor,
+                onPressed: isLoading ? null : onClickSendMessage,
+                icon: const Icon(Icons.send_rounded),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
 
