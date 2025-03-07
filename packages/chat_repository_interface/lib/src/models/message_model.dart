@@ -1,3 +1,24 @@
+/// Message status enumeration
+enum MessageStatus {
+  /// Status when a message has not yet been received by the server.
+  sending,
+
+  /// Status used when a message has been received by the server.
+  sent;
+
+  /// Attempt to parse [MessageStatus] from String
+  static MessageStatus? tryParse(String name) =>
+      MessageStatus.values.where((status) => status.name == name).firstOrNull;
+
+  /// Parse [MessageStatus] from String
+  /// or throw a [FormatException]
+  static MessageStatus parse(String name) =>
+      tryParse(name) ??
+      (throw const FormatException(
+        "MessageStatus with that name does not exist",
+      ));
+}
+
 /// Message model
 /// Represents a message in a chat
 /// [id] is the message id.
@@ -15,6 +36,7 @@ class MessageModel {
     required this.imageUrl,
     required this.timestamp,
     required this.senderId,
+    this.status = MessageStatus.sent,
   });
 
   /// Creates a message model instance given a map instance
@@ -27,6 +49,7 @@ class MessageModel {
         imageUrl: map["imageUrl"],
         timestamp: DateTime.fromMillisecondsSinceEpoch(map["timestamp"]),
         senderId: map["senderId"],
+        status: MessageStatus.tryParse(map["status"]) ?? MessageStatus.sent,
       );
 
   /// The chat id
@@ -50,6 +73,9 @@ class MessageModel {
   /// The sender id
   final String senderId;
 
+  /// The message status
+  final MessageStatus status;
+
   /// The message model copy with method
   MessageModel copyWith({
     String? chatId,
@@ -59,6 +85,7 @@ class MessageModel {
     String? imageUrl,
     DateTime? timestamp,
     String? senderId,
+    MessageStatus? status,
   }) =>
       MessageModel(
         chatId: chatId ?? this.chatId,
@@ -68,6 +95,7 @@ class MessageModel {
         imageUrl: imageUrl ?? this.imageUrl,
         timestamp: timestamp ?? this.timestamp,
         senderId: senderId ?? this.senderId,
+        status: status ?? this.status,
       );
 
   /// Creates a map representation of this object
@@ -78,7 +106,11 @@ class MessageModel {
         "imageUrl": imageUrl,
         "timestamp": timestamp.millisecondsSinceEpoch,
         "senderId": senderId,
+        "status": status.name,
       };
+
+  /// marks the message model as sent
+  MessageModel markSent() => copyWith(status: MessageStatus.sent);
 }
 
 /// Extension on [MessageModel] to check the message type

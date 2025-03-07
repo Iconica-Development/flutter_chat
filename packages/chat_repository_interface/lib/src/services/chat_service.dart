@@ -2,13 +2,16 @@ import "dart:async";
 import "dart:typed_data";
 
 import "package:chat_repository_interface/src/interfaces/chat_repostory_interface.dart";
+import "package:chat_repository_interface/src/interfaces/pending_message_repository_interface.dart";
 import "package:chat_repository_interface/src/interfaces/user_repository_interface.dart";
 import "package:chat_repository_interface/src/local/local_chat_repository.dart";
+import "package:chat_repository_interface/src/local/local_pending_message_repository.dart.dart";
 import "package:chat_repository_interface/src/local/local_user_repository.dart";
 import "package:chat_repository_interface/src/models/chat_model.dart";
 import "package:chat_repository_interface/src/models/message_model.dart";
 import "package:chat_repository_interface/src/models/user_model.dart";
 import "package:collection/collection.dart";
+import "package:rxdart/rxdart.dart";
 
 /// The chat service
 /// Use this service to interact with the chat repository.
@@ -18,8 +21,11 @@ class ChatService {
   ChatService({
     required this.userId,
     ChatRepositoryInterface? chatRepository,
+    PendingMessageRepositoryInterface? pendingMessageRepository,
     UserRepositoryInterface? userRepository,
   })  : chatRepository = chatRepository ?? LocalChatRepository(),
+        pendingMessageRepository =
+            pendingMessageRepository ?? LocalPendingMessageRepository(),
         userRepository = userRepository ?? LocalUserRepository();
 
   /// The user ID of the person currently looking at the chat
@@ -27,6 +33,9 @@ class ChatService {
 
   /// The chat repository
   final ChatRepositoryInterface chatRepository;
+
+  /// The pending messages repository
+  final PendingMessageRepositoryInterface pendingMessageRepository;
 
   /// The user repository
   final UserRepositoryInterface userRepository;
@@ -135,11 +144,32 @@ class ChatService {
   /// Returns a list of [MessageModel] stream.
   Stream<List<MessageModel>?> getMessages({
     required String chatId,
-  }) =>
-      chatRepository.getMessages(
-        userId: userId,
-        chatId: chatId,
-      );
+  }) {
+    List<MessageModel> mergePendingMessages(
+      List<MessageModel> messages,
+      List<MessageModel> pendingMessages,
+    ) =>
+        {
+          ...Map.fromEntries(
+            pendingMessages.map((message) => MapEntry(message.id, message)),
+          ),
+          ...Map.fromEntries(
+            messages.map((message) => MapEntry(message.id, message)),
+          ),
+        }.values.toList();
+
+    return Rx.combineLatest2(
+      chatRepository.getMessages(userId: userId, chatId: chatId),
+      pendingMessageRepository.getMessages(userId: userId, chatId: chatId),
+      (chatMessages, pendingChatMessages) {
+        // TODO(Quirille): This is because chatRepository.getMessages
+        // might return null, when really it should've just thrown
+        // an exception instead.
+        if (chatMessages == null) return null;
+        return mergePendingMessages(chatMessages, pendingChatMessages);
+      },
+    );
+  }
 
   /// Signals that new messages should be loaded after the given message.
   /// The stream should emit the new messages.
@@ -173,15 +203,39 @@ class ChatService {
     String? text,
     String? messageType,
     String? imageUrl,
-  }) =>
-      chatRepository.sendMessage(
-        chatId: chatId,
-        messageId: messageId,
-        text: text,
-        messageType: messageType,
-        senderId: senderId,
-        imageUrl: imageUrl,
-      );
+  }) async {
+    await pendingMessageRepository.createMessage(
+      chatId: chatId,
+      senderId: senderId,
+      messageId: messageId,
+      text: text,
+      messageType: messageType,
+      imageUrl: imageUrl,
+    );
+
+    unawaited(
+      chatRepository
+          .sendMessage(
+            chatId: chatId,
+            messageId: messageId,
+            text: text,
+            messageType: messageType,
+            senderId: senderId,
+            imageUrl: imageUrl,
+          )
+          .then(
+            (_) => pendingMessageRepository.markMessageSent(
+              chatId: chatId,
+              messageId: messageId,
+            ),
+          )
+          .onError(
+        (e, s) {
+          // TODO(Quirille): handle exception when message sending has failed.
+        },
+      ),
+    );
+  }
 
   /// Delete the chat with the given parameters.
   /// [chatId] is the chat id.
