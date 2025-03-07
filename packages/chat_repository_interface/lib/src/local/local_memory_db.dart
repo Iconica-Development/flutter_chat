@@ -11,6 +11,9 @@ final List<ChatModel> chats = [];
 /// All the messages of the local memory database mapped by chat id
 final Map<String, List<MessageModel>> chatMessages = {};
 
+/// All the pending messages of the local memory database mapped by chat id
+final Map<String, List<MessageModel>> pendingChatMessages = {};
+
 /// All the users of the local memory database
 final List<UserModel> users = [
   const UserModel(

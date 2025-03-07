@@ -1,3 +1,12 @@
+/// Message status enumeration
+enum MessageStatus {
+  /// Status when a message has not yet been received by the server.
+  sending,
+
+  /// Status used when a message has been received by the server.
+  sent;
+}
+
 /// Message model
 /// Represents a message in a chat
 /// [id] is the message id.
@@ -15,6 +24,7 @@ class MessageModel {
     required this.imageUrl,
     required this.timestamp,
     required this.senderId,
+    this.status = MessageStatus.sending,
   });
 
   /// Creates a message model instance given a map instance
@@ -50,6 +60,9 @@ class MessageModel {
   /// The sender id
   final String senderId;
 
+  /// The message status
+  final MessageStatus status;
+
   /// The message model copy with method
   MessageModel copyWith({
     String? chatId,
@@ -59,6 +72,7 @@ class MessageModel {
     String? imageUrl,
     DateTime? timestamp,
     String? senderId,
+    MessageStatus? status,
   }) =>
       MessageModel(
         chatId: chatId ?? this.chatId,
@@ -68,6 +82,7 @@ class MessageModel {
         imageUrl: imageUrl ?? this.imageUrl,
         timestamp: timestamp ?? this.timestamp,
         senderId: senderId ?? this.senderId,
+        status: status ?? this.status,
       );
 
   /// Creates a map representation of this object
@@ -79,6 +94,9 @@ class MessageModel {
         "timestamp": timestamp.millisecondsSinceEpoch,
         "senderId": senderId,
       };
+
+  /// marks the message model as sent
+  MessageModel markSent() => copyWith(status: MessageStatus.sent);
 }
 
 /// Extension on [MessageModel] to check the message type
