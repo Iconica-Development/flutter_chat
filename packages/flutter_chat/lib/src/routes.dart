@@ -61,6 +61,7 @@ MaterialPageRoute chatDetailRoute({
             chatId: chatId,
             senderId: userId,
             imageUrl: path,
+            imageData: data,
           );
         },
         onMessageSubmit: (text) async {

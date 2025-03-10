@@ -1,6 +1,7 @@
 import "dart:async";
 import "dart:typed_data";
 
+import "package:chat_repository_interface/src/extension/uint8list_data_uri.dart";
 import "package:chat_repository_interface/src/interfaces/chat_repostory_interface.dart";
 import "package:chat_repository_interface/src/interfaces/pending_message_repository_interface.dart";
 import "package:chat_repository_interface/src/interfaces/user_repository_interface.dart";
@@ -203,6 +204,7 @@ class ChatService {
     String? text,
     String? messageType,
     String? imageUrl,
+    Uint8List? imageData,
   }) async {
     await pendingMessageRepository.createMessage(
       chatId: chatId,
@@ -210,7 +212,7 @@ class ChatService {
       messageId: messageId,
       text: text,
       messageType: messageType,
-      imageUrl: imageUrl,
+      imageUrl: imageData?.toDataUri() ?? imageUrl,
     );
 
     unawaited(
