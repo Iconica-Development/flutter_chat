@@ -168,7 +168,7 @@ class ChatTranslations {
         -1 => "Yesterday",
         1 => "Tomorrow",
         int value when value < 5 && value > 1 => "In $value days",
-        int value when value < -1 && value > -5 => "$value days ago",
+        int value when value < -1 && value > -5 => "${value.abs()} days ago",
         _ => DateFormat("dd-MM-YYYY").format(time),
       };
 
