@@ -147,6 +147,30 @@ class DefaultChatMessageBuilder extends StatelessWidget {
   }
 }
 
+class _ChatMessageStatus extends StatelessWidget {
+  const _ChatMessageStatus({
+    required this.messageTheme,
+    required this.status,
+  });
+
+  final MessageTheme messageTheme;
+  final MessageStatus status;
+
+  @override
+  Widget build(BuildContext context) => switch (status) {
+        MessageStatus.sending => Icon(
+            Icons.access_time,
+            size: 16.0,
+            color: messageTheme.textColor,
+          ),
+        MessageStatus.sent => Icon(
+            Icons.check,
+            size: 16.0,
+            color: messageTheme.textColor,
+          ),
+      };
+}
+
 class _ChatMessageBubble extends StatelessWidget {
   const _ChatMessageBubble({
     required this.isSameSender,
@@ -200,12 +224,15 @@ class _ChatMessageBubble extends StatelessWidget {
       ),
     );
 
-    var messageTimeRow = Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(right: 8, bottom: 4),
-          child: CustomSemantics(
+    var messageTimeRow = Padding(
+      padding: const EdgeInsets.only(
+        bottom: 8.0,
+        right: 8.0,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          CustomSemantics(
             identifier: semanticIdTime,
             value: messageTime,
             child: Text(
@@ -216,8 +243,13 @@ class _ChatMessageBubble extends StatelessWidget {
               textAlign: TextAlign.end,
             ),
           ),
-        ),
-      ],
+          const SizedBox(width: 4.0),
+          _ChatMessageStatus(
+            messageTheme: messageTheme,
+            status: message.status,
+          ),
+        ],
+      ),
     );
 
     var showName =
