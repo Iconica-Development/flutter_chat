@@ -225,6 +225,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
       messageType: messageType,
       senderId: senderId,
       imageUrl: imageUrl,
+      status: MessageStatus.sent,
     );
 
     var chat = chats.firstWhereOrNull((e) => e.id == chatId);
