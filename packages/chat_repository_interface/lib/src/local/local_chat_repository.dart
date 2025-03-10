@@ -3,6 +3,7 @@ import "dart:math" as math;
 import "dart:typed_data";
 
 import "package:chat_repository_interface/chat_repository_interface.dart";
+import "package:chat_repository_interface/src/extension/uint8list_data_uri.dart";
 import "package:chat_repository_interface/src/local/local_memory_db.dart";
 import "package:collection/collection.dart";
 import "package:rxdart/rxdart.dart";
@@ -272,7 +273,7 @@ class LocalChatRepository implements ChatRepositoryInterface {
     required String chatId,
     required String senderId,
   }) =>
-      Future.value("https://picsum.photos/200/300");
+      Future.value(image.toDataUri());
 
   /// All the chats of the local memory database
   List<ChatModel> get getLocalChats => chats;
