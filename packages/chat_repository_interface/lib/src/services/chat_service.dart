@@ -5,7 +5,7 @@ import "package:chat_repository_interface/src/interfaces/chat_repostory_interfac
 import "package:chat_repository_interface/src/interfaces/pending_message_repository_interface.dart";
 import "package:chat_repository_interface/src/interfaces/user_repository_interface.dart";
 import "package:chat_repository_interface/src/local/local_chat_repository.dart";
-import "package:chat_repository_interface/src/local/local_pending_message_repository.dart.dart";
+import "package:chat_repository_interface/src/local/local_pending_message_repository.dart";
 import "package:chat_repository_interface/src/local/local_user_repository.dart";
 import "package:chat_repository_interface/src/models/chat_model.dart";
 import "package:chat_repository_interface/src/models/message_model.dart";
