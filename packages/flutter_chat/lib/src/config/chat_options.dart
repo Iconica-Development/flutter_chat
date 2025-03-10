@@ -284,7 +284,10 @@ ImageProvider _defaultImageProviderResolver(
   BuildContext context,
   Uri image,
 ) =>
-    CachedNetworkImageProvider(image.toString());
+    switch (image.scheme) {
+      "data" => MemoryImage(image.data!.contentAsBytes()),
+      _ => CachedNetworkImageProvider(image.toString()),
+    };
 
 /// All configurable paddings and whitespaces within the userstory
 class ChatSpacing {

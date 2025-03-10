@@ -9,6 +9,7 @@ environment:
   sdk: ">=3.4.3 <4.0.0"
 
 dependencies:
+  mime: any
   rxdart: any
   collection: any
 
