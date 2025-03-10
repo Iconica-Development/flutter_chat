@@ -2,7 +2,6 @@ import "dart:async";
 import "dart:math" as math;
 
 import "package:chat_repository_interface/chat_repository_interface.dart";
-import "package:chat_repository_interface/src/interfaces/pending_message_repository_interface.dart";
 import "package:chat_repository_interface/src/local/local_memory_db.dart";
 import "package:collection/collection.dart";
 import "package:rxdart/rxdart.dart";
