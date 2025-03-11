@@ -25,9 +25,9 @@ class ChatService {
     PendingMessageRepositoryInterface? pendingMessageRepository,
     UserRepositoryInterface? userRepository,
   })  : chatRepository = chatRepository ?? LocalChatRepository(),
+        userRepository = userRepository ?? LocalUserRepository(),
         pendingMessageRepository =
-            pendingMessageRepository ?? LocalPendingMessageRepository(),
-        userRepository = userRepository ?? LocalUserRepository();
+            pendingMessageRepository ?? LocalPendingMessageRepository();
 
   /// The user ID of the person currently looking at the chat
   final String userId;
@@ -200,12 +200,15 @@ class ChatService {
   Future<void> sendMessage({
     required String chatId,
     required String senderId,
-    required String messageId,
+    String? presetMessageId,
     String? text,
     String? messageType,
     String? imageUrl,
     Uint8List? imageData,
   }) async {
+    var messageId = presetMessageId ??
+        await chatRepository.getNextMessageId(userId: userId, chatId: chatId);
+
     await pendingMessageRepository.createMessage(
       chatId: chatId,
       senderId: senderId,
@@ -236,6 +239,32 @@ class ChatService {
           // TODO(Quirille): handle exception when message sending has failed.
         },
       ),
+    );
+  }
+
+  /// Method for sending an image and a message at the same time.
+  Future<void> sendImageMessage({
+    required String chatId,
+    required String userId,
+    required Uint8List data,
+  }) async {
+    var messageId = await chatRepository.getNextMessageId(
+      userId: userId,
+      chatId: chatId,
+    );
+
+    var path = await uploadImage(
+      path: "chats/$messageId",
+      image: data,
+      chatId: chatId,
+    );
+
+    await sendMessage(
+      presetMessageId: messageId,
+      chatId: chatId,
+      senderId: userId,
+      imageUrl: path,
+      imageData: data,
     );
   }
 

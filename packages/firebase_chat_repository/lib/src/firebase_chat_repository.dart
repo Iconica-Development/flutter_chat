@@ -141,6 +141,13 @@ class FirebaseChatRepository implements ChatRepositoryInterface {
   }
 
   @override
+  Future<String> getNextMessageId({
+    required String userId,
+    required String chatId,
+  }) async =>
+      "$chatId-$userId-${DateTime.now()}";
+
+  @override
   Future<void> sendMessage({
     required String chatId,
     required String senderId,

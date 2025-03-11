@@ -73,6 +73,12 @@ abstract class ChatRepositoryInterface {
     required MessageModel firstMessage,
   });
 
+  /// Function that provides the next message id
+  Future<String> getNextMessageId({
+    required String userId,
+    required String chatId,
+  });
+
   /// Send a message with the given parameters.
   /// [chatId] is the chat id.
   /// [senderId] is the sender id.

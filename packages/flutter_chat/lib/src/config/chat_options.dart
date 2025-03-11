@@ -29,11 +29,18 @@ class ChatOptions {
     this.timeIndicatorOptions = const ChatTimeIndicatorOptions(),
     ChatRepositoryInterface? chatRepository,
     UserRepositoryInterface? userRepository,
+    PendingMessageRepositoryInterface? pendingMessagesRepository,
   })  : chatRepository = chatRepository ?? LocalChatRepository(),
-        userRepository = userRepository ?? LocalUserRepository();
+        userRepository = userRepository ?? LocalUserRepository(),
+        pendingMessagesRepository =
+            pendingMessagesRepository ?? LocalPendingMessageRepository();
 
   /// The implementation for communication with persistance layer for chats
   final ChatRepositoryInterface chatRepository;
+
+  /// The implementation for communication with persistance layer
+  /// for pending messages
+  final PendingMessageRepositoryInterface pendingMessagesRepository;
 
   /// The implementation for communication with persistance layer for users
   final UserRepositoryInterface userRepository;
