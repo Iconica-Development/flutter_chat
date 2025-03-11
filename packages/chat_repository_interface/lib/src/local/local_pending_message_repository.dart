@@ -1,5 +1,4 @@
 import "dart:async";
-import "dart:math" as math;
 
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:chat_repository_interface/src/local/local_memory_db.dart";
@@ -14,9 +13,6 @@ class LocalPendingMessageRepository
 
   final StreamController<List<MessageModel>> _messageController =
       BehaviorSubject<List<MessageModel>>();
-
-  final Map<String, int> _startIndexMap = {};
-  final Map<String, int> _endIndexMap = {};
 
   @override
   Stream<List<MessageModel>> getMessages({
@@ -34,14 +30,7 @@ class LocalPendingMessageRepository
       );
       allMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
-      _startIndexMap[chatId] ??= math.max(0, allMessages.length - chunkSize);
-      _endIndexMap[chatId] ??= allMessages.length;
-
-      var displayedMessages = allMessages.sublist(
-        _startIndexMap[chatId]!,
-        _endIndexMap[chatId],
-      );
-      _messageController.add(displayedMessages);
+      _messageController.add(allMessages);
     }
 
     return _messageController.stream;
