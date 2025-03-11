@@ -1,3 +1,11 @@
+## 6.0.0
+- Added pending message repository to temporarily store messages that are not yet received by the backend
+- Added pending message icons next to time on default messages
+- Added pending image uploading by base64encoding the data and putting it in the image url
+- Added image pre-loading to handle error and loading states
+- Added reload button in case of an image loading error
+- Added messageStatus field to MessageModel to differentiate between sent and pending messages
+
 ## 5.1.2
 - Added correct padding inbetween time indicators and names
 - Show names if a new day occurs and an indicator is shown
