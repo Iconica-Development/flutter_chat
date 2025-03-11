@@ -1,5 +1,6 @@
-import "dart:typed_data";
+import "dart:io";
 
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
@@ -52,6 +53,7 @@ class DefaultImagePickerDialog extends StatelessWidget {
           child: ImagePicker(
             config: ImagePickerConfig(
               imageQuality: options.imageQuality.clamp(0, 100),
+              cameraOption: !kIsWeb && (Platform.isAndroid || Platform.isIOS),
             ),
             theme: ImagePickerTheme(
               spaceBetweenIcons: 32.0,
