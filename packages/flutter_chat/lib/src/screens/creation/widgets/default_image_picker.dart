@@ -3,7 +3,6 @@ import "dart:typed_data";
 import "package:flutter/material.dart";
 import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_chat/src/config/chat_options.dart";
-import "package:flutter_chat/src/config/chat_translations.dart";
 import "package:flutter_chat/src/util/scope.dart";
 import "package:flutter_image_picker/flutter_image_picker.dart";
 
@@ -16,15 +15,7 @@ Future<void> onPressSelectImage(
   var image = await options.builders.imagePickerBuilder.call(context);
 
   if (image == null) return;
-  if (!context.mounted) return;
-  var messenger = ScaffoldMessenger.of(context)
-    ..showSnackBar(
-      _getImageLoadingSnackbar(context, options.translations),
-    )
-    ..activate();
   await onUploadImage(image);
-  await Future.delayed(const Duration(seconds: 1));
-  messenger.hideCurrentSnackBar();
 }
 
 /// Default image picker dialog for selecting an image from the gallery or
@@ -92,30 +83,4 @@ class DefaultImagePickerDialog extends StatelessWidget {
           ),
         );
   }
-}
-
-SnackBar _getImageLoadingSnackbar(
-  BuildContext context,
-  ChatTranslations translations,
-) {
-  var theme = Theme.of(context);
-
-  return SnackBar(
-    duration: const Duration(minutes: 1),
-    content: Row(
-      children: [
-        SizedBox(
-          width: 25,
-          height: 25,
-          child: CircularProgressIndicator(
-            color: theme.snackBarTheme.actionTextColor ?? Colors.grey,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 16.0),
-          child: Text(translations.imageUploading),
-        ),
-      ],
-    ),
-  );
 }
