@@ -147,6 +147,7 @@ class MessageTheme {
     this.borderColor,
     this.textColor,
     this.timeTextColor,
+    this.imageBackgroundColor,
     this.borderRadius,
     this.messageAlignment,
     this.messageSidePadding,
@@ -163,6 +164,7 @@ class MessageTheme {
         borderColor: theme.colorScheme.primary,
         textColor: theme.colorScheme.onPrimary,
         timeTextColor: theme.colorScheme.onPrimary,
+        imageBackgroundColor: theme.colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(12),
         textAlignment: TextAlign.start,
         messageSidePadding: 144.0,
@@ -201,6 +203,12 @@ class MessageTheme {
   /// Defaults to [ThemeData.colorScheme.primaryColor]
   final Color? borderColor;
 
+  /// The color of the background when an image is loading, the image is
+  /// transparent or there is an error.
+  ///
+  /// Defaults to [ThemeData.colorScheme.secondaryContainer]
+  final Color? imageBackgroundColor;
+
   /// The border radius of the message container
   /// Defaults to [BorderRadius.circular(12)]
   final BorderRadius? borderRadius;
@@ -231,6 +239,7 @@ class MessageTheme {
     Color? borderColor,
     Color? textColor,
     Color? timeTextColor,
+    Color? imageBackgroundColor,
     BorderRadius? borderRadius,
     double? messageSidePadding,
     TextAlign? messageAlignment,
@@ -245,6 +254,7 @@ class MessageTheme {
         borderColor: borderColor ?? this.borderColor,
         textColor: textColor ?? this.textColor,
         timeTextColor: timeTextColor ?? this.timeTextColor,
+        imageBackgroundColor: imageBackgroundColor ?? this.imageBackgroundColor,
         borderRadius: borderRadius ?? this.borderRadius,
         messageSidePadding: messageSidePadding ?? this.messageSidePadding,
         messageAlignment: messageAlignment ?? this.messageAlignment,
@@ -262,6 +272,8 @@ class MessageTheme {
         borderColor: borderColor ?? other.borderColor,
         textColor: textColor ?? other.textColor,
         timeTextColor: timeTextColor ?? other.timeTextColor,
+        imageBackgroundColor:
+            imageBackgroundColor ?? other.imageBackgroundColor,
         borderRadius: borderRadius ?? other.borderRadius,
         messageSidePadding: messageSidePadding ?? other.messageSidePadding,
         messageAlignment: messageAlignment ?? other.messageAlignment,
