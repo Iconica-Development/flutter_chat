@@ -73,17 +73,27 @@ abstract class ChatRepositoryInterface {
     required MessageModel firstMessage,
   });
 
-  /// Function that provides the next message id
+  /// Retrieve the next unused message id given a current chat.
+  ///
+  /// The resulting string should be at least unique per [chatId]. The userId
+  /// is provided in case the specific user has influence on the id.
+  ///
+  /// Imagine returning a UUID, the next integer in a counter or the document
+  /// id in firebase.
   Future<String> getNextMessageId({
     required String userId,
     required String chatId,
   });
 
   /// Send a message with the given parameters.
+  ///
   /// [chatId] is the chat id.
   /// [senderId] is the sender id.
+  /// [messageId] is the identifier for this message
   /// [text] is the message text.
   /// [imageUrl] is the image url.
+  /// [messageType] is a way to identify a difference in messages
+  /// [timestamp] is the moment of sending.
   Future<void> sendMessage({
     required String chatId,
     required String senderId,

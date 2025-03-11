@@ -15,10 +15,14 @@ abstract class PendingMessageRepositoryInterface {
   });
 
   /// Create a message in the pending messages and return the created message.
+  ///
   /// [chatId] is the chat id.
   /// [senderId] is the sender id.
+  /// [messageId] is the identifier for this message
   /// [text] is the message text.
   /// [imageUrl] is the image url.
+  /// [messageType] is a way to identify a difference in messages
+  /// [timestamp] is the moment of sending.
   Future<MessageModel> createMessage({
     required String chatId,
     required String senderId,
