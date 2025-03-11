@@ -497,19 +497,27 @@ class _ChatBody extends HookWidget {
       bottomSpinner,
     ];
 
+    var messageList = ListView.builder(
+      reverse: false,
+      controller: scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(top: 24),
+      itemCount: listViewChildren.length,
+      itemBuilder: (context, index) => listViewChildren[index],
+    );
+
     return Column(
       children: [
         if (chatIsLoading && options.enableLoadingIndicator) ...[
-          Expanded(child: options.builders.loadingWidgetBuilder.call(context)),
+          Expanded(
+            child: _CloseKeyboardOnTap(
+              child: options.builders.loadingWidgetBuilder.call(context),
+            ),
+          ),
         ] else ...[
           Expanded(
-            child: ListView.builder(
-              reverse: false,
-              controller: scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(top: 24),
-              itemCount: listViewChildren.length,
-              itemBuilder: (context, index) => listViewChildren[index],
+            child: _CloseKeyboardOnTap(
+              child: messageList,
             ),
           ),
         ],
@@ -517,6 +525,26 @@ class _ChatBody extends HookWidget {
       ],
     );
   }
+}
+
+class _CloseKeyboardOnTap extends StatelessWidget {
+  const _CloseKeyboardOnTap({
+    required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTapUp: (_) {
+          var mediaQuery = MediaQuery.of(context);
+          if (mediaQuery.viewInsets.isNonNegative) {
+            FocusScope.of(context).unfocus();
+          }
+        },
+        child: child,
+      );
 }
 
 /// Default widget used when displaying an error for chats.
