@@ -94,6 +94,7 @@ abstract class _BaseChatNavigatorUserstory extends HookWidget {
         userId: userId,
         chatRepository: options.chatRepository,
         userRepository: options.userRepository,
+        pendingMessageRepository: options.pendingMessagesRepository,
       ),
       [userId, options],
     );

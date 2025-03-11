@@ -50,28 +50,16 @@ MaterialPageRoute chatDetailRoute({
         chatId: chatId,
         onExit: onExit,
         onReadChat: (chat) async => chatService.markAsRead(chatId: chat.id),
-        onUploadImage: (data) async {
-          var path = await chatService.uploadImage(
-            path: "chats/$chatId-$userId-${DateTime.now()}",
-            image: data,
-            chatId: chatId,
-          );
-          await chatService.sendMessage(
-            messageId: "$chatId-$userId-${DateTime.now()}",
-            chatId: chatId,
-            senderId: userId,
-            imageUrl: path,
-            imageData: data,
-          );
-        },
-        onMessageSubmit: (text) async {
-          await chatService.sendMessage(
-            messageId: "$chatId-$userId-${DateTime.now()}",
-            chatId: chatId,
-            senderId: userId,
-            text: text,
-          );
-        },
+        onUploadImage: (data) async => chatService.sendImageMessage(
+          chatId: chatId,
+          userId: userId,
+          data: data,
+        ),
+        onMessageSubmit: (text) async => chatService.sendMessage(
+          chatId: chatId,
+          senderId: userId,
+          text: text,
+        ),
         onPressChatTitle: (chat) async {
           if (chat.isGroupChat) {
             await _routeToScreen(
