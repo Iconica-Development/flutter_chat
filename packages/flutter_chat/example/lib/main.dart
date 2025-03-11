@@ -19,18 +19,19 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MyHomePage(),
-      // FutureBuilder(
-      // future: Firebase.initializeApp(
-      // options: DefaultFirebaseOptions.currentPlatform,
+      // home: FutureBuilder(
+      //   future: Firebase.initializeApp(
+      //     options: DefaultFirebaseOptions.currentPlatform,
+      //   ),
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState != ConnectionState.done) {
+      //       return const Center(
+      //         child: CircularProgressIndicator(),
+      //       );
+      //     }
+      //     return const MyHomePage();
+      //   },
       // ),
-      // builder: (context, snapshot) {
-      // if (snapshot.connectionState != ConnectionState.done) {
-      // return const Center(
-      // child: CircularProgressIndicator(),
-      // );
-      // }
-      // return const MyHomePage();
-      // }),
     );
   }
 }
@@ -45,8 +46,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // @override
   // void initState() {
-  // FirebaseAuth.instance.signInAnonymously();
-  // super.initState();
+  //   FirebaseAuth.instance.signInAnonymously();
+  //   super.initState();
   // }
 
   @override
