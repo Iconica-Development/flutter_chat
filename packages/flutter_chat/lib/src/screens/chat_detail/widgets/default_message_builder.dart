@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:chat_repository_interface/chat_repository_interface.dart";
 import "package:flutter/material.dart";
 import "package:flutter_accessibility/flutter_accessibility.dart";
@@ -278,6 +280,7 @@ class _ChatMessageBubble extends StatelessWidget {
                   _DefaultChatImage(
                     message: message,
                     messageTheme: messageTheme,
+                    options: options,
                   ),
                   const SizedBox(height: 2),
                 ],
@@ -314,40 +317,121 @@ class _ChatMessageBubble extends StatelessWidget {
   }
 }
 
-class _DefaultChatImage extends StatelessWidget {
+class _DefaultChatImage extends StatefulWidget {
   const _DefaultChatImage({
     required this.message,
     required this.messageTheme,
+    required this.options,
   });
 
   final MessageModel message;
-
+  final ChatOptions options;
   final MessageTheme messageTheme;
 
   @override
+  State<_DefaultChatImage> createState() => _DefaultChatImageState();
+}
+
+/// Exception thrown when the image builder fails to recognize the image
+class InvalidImageUrlException implements Exception {}
+
+class _DefaultChatImageState extends State<_DefaultChatImage>
+    with AutomaticKeepAliveClientMixin {
+  late ImageProvider provider;
+  late Completer imageLoadingCompleter;
+
+  void _preloadImage() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var uri = Uri.tryParse(widget.message.imageUrl ?? "");
+      if (uri == null) {
+        imageLoadingCompleter.completeError(InvalidImageUrlException());
+        return;
+      }
+
+      provider = widget.options.imageProviderResolver(
+        context,
+        uri,
+      );
+
+      if (!mounted) return;
+      await precacheImage(
+        provider,
+        context,
+        onError: imageLoadingCompleter.completeError,
+      );
+
+      imageLoadingCompleter.complete();
+    });
+  }
+
+  void _refreshImage() {
+    setState(() {
+      imageLoadingCompleter = Completer();
+    });
+    _preloadImage();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    imageLoadingCompleter = Completer();
+    _preloadImage();
+  }
+
+  @override
+  void didUpdateWidget(covariant _DefaultChatImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.message.imageUrl != widget.message.imageUrl) {
+      _refreshImage();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var chatScope = ChatScope.of(context);
-    var options = chatScope.options;
-    var textTheme = Theme.of(context).textTheme;
-    var imageUrl = message.imageUrl!;
+    super.build(context);
+
+    var theme = Theme.of(context);
+
+    var asyncImageBuilder = FutureBuilder<void>(
+      future: imageLoadingCompleter.future,
+      builder: (context, snapshot) => switch (snapshot.connectionState) {
+        ConnectionState.waiting => Center(
+            child: CircularProgressIndicator(
+              color: widget.messageTheme.textColor,
+            ),
+          ),
+        ConnectionState.done when !snapshot.hasError => Image(
+            image: provider,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                _DefaultMessageImageError(
+              messageTheme: widget.messageTheme,
+              onRefresh: _refreshImage,
+            ),
+          ),
+        _ => _DefaultMessageImageError(
+            messageTheme: widget.messageTheme,
+            onRefresh: _refreshImage,
+          ),
+      },
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: SizedBox(
         width: double.infinity,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: AnimatedSize(
-            duration: const Duration(milliseconds: 300),
-            child: Image(
-              image:
-                  options.imageProviderResolver(context, Uri.parse(imageUrl)),
-              fit: BoxFit.fitWidth,
-              errorBuilder: (context, error, stackTrace) => Text(
-                // TODO(Jacques): Non-replaceable text
-                "Something went wrong with loading the image",
-                style: textTheme.bodyLarge?.copyWith(
-                  color: messageTheme.textColor,
-                ),
+        child: LayoutBuilder(
+          builder: (context, constraints) => ConstrainedBox(
+            constraints: BoxConstraints.tightForFinite(
+              width: constraints.maxWidth,
+              height: constraints.maxWidth,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: ColoredBox(
+                color: widget.messageTheme.imageBackgroundColor ??
+                    theme.colorScheme.secondaryContainer,
+                child: asyncImageBuilder,
               ),
             ),
           ),
@@ -355,6 +439,30 @@ class _DefaultChatImage extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class _DefaultMessageImageError extends StatelessWidget {
+  const _DefaultMessageImageError({
+    required this.messageTheme,
+    required this.onRefresh,
+  });
+
+  final MessageTheme messageTheme;
+  final VoidCallback onRefresh;
+
+  @override
+  Widget build(BuildContext context) => Center(
+        child: IconButton(
+          onPressed: onRefresh,
+          icon: Icon(
+            Icons.refresh,
+            color: messageTheme.textColor,
+          ),
+        ),
+      );
 }
 
 /// A container for the chat message that provides a decoration around the
