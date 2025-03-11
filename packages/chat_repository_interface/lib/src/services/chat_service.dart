@@ -157,7 +157,9 @@ class ChatService {
           ...Map.fromEntries(
             messages.map((message) => MapEntry(message.id, message)),
           ),
-        }.values.toList();
+        }.values.toList().sorted(
+              (a, b) => a.timestamp.compareTo(b.timestamp),
+            );
 
     return Rx.combineLatest2(
       chatRepository.getMessages(userId: userId, chatId: chatId),
