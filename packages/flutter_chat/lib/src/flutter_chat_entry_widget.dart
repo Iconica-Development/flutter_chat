@@ -83,6 +83,7 @@ class _FlutterChatEntryWidgetState extends State<FlutterChatEntryWidget> {
       userId: widget.userId,
       chatRepository: widget.options?.chatRepository,
       userRepository: widget.options?.userRepository,
+      pendingMessageRepository: widget.options?.pendingMessagesRepository,
     );
   }
 
