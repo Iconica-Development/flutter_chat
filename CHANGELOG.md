@@ -1,3 +1,7 @@
+## 3.0.2
+
+- Update Firebase dependencies to their latest versions
+
 ## 3.0.1
 
 - fix bug where you could make multiple groups quickly by routing back to the previous screen
