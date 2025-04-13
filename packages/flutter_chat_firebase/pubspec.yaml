@@ -14,16 +14,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_core: ^2.1.1
-  cloud_firestore: ^4.0.5
-  firebase_storage: ^11.0.5
-  firebase_auth: ^4.1.2
+  firebase_core: ^3.13.0
+  cloud_firestore: ^5.6.6
+  firebase_storage: ^12.4.5
+  firebase_auth: ^5.5.2
   uuid: ^4.0.0
   flutter_chat_interface:
-    git:
-      url: https://github.com/Iconica-Development/flutter_chat
-      path: packages/flutter_chat_interface
-      ref: 3.0.1
+    hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub/
+    version: ^3.0.1
 
 dev_dependencies:
   flutter_iconica_analysis:
