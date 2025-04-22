@@ -7,10 +7,13 @@ class FirebaseUserRepository implements UserRepositoryInterface {
   FirebaseUserRepository({
     FirebaseFirestore? firestore,
     String userCollection = "users",
+    String chatCollection = "chats",
   })  : _userCollection = userCollection,
+        _chatCollection = chatCollection,
         _firestore = firestore ?? FirebaseFirestore.instance;
   final FirebaseFirestore _firestore;
   final String _userCollection;
+  final String _chatCollection;
 
   @override
   Stream<List<UserModel>> getAllUsers() =>
@@ -35,19 +38,20 @@ class FirebaseUserRepository implements UserRepositoryInterface {
           );
 
   @override
-  Stream<List<UserModel>> getAllUsersForChat({required String chatId}) =>
-      _firestore
-          .collection(_userCollection)
-          .where("chats", arrayContains: chatId)
-          .snapshots()
-          .map(
-            (querySnapshot) => querySnapshot.docs
-                .map(
-                  (doc) => UserModel.fromMap(
-                    doc.id,
-                    doc.data(),
-                  ),
-                )
-                .toList(),
-          );
+  Stream<List<UserModel>> getAllUsersForChat({required String chatId}) {
+    var chatDocStream =
+        _firestore.collection(_chatCollection).doc(chatId).snapshots();
+
+    return chatDocStream.asyncMap((snapshot) async {
+      if (!snapshot.exists) return [];
+
+      var chatModel = ChatModel.fromMap(snapshot.id, snapshot.data()!);
+      var userIds = chatModel.users;
+
+      var userStreams =
+          userIds.map((userId) => getUser(userId: userId)).toList();
+
+      return Future.wait(userStreams.map((s) => s.first));
+    });
+  }
 }
