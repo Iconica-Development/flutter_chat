@@ -148,23 +148,13 @@ Widget _createImagePickerContainer(
       padding: const EdgeInsets.all(8.0),
       color: Colors.white,
       child: ImagePicker(
-        imagePickerTheme: ImagePickerTheme(
+        theme: ImagePickerTheme(
           title: translations.imagePickerTitle,
-          titleTextSize: 16,
+          titleStyle: const TextStyle(fontSize: 16.0),
           titleAlignment: TextAlign.center,
           iconSize: 60.0,
           makePhotoText: translations.takePicture,
           selectImageText: translations.uploadFile,
-        ),
-        customButton: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
-          onPressed: onClose,
-          child: Text(
-            translations.cancelImagePickerBtn,
-            style: const TextStyle(color: Colors.white),
-          ),
         ),
       ),
     );
