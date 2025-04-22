@@ -1,3 +1,7 @@
+## 3.0.3
+
+- Sync minimum required Flutter and Dart versions between the internal components
+
 ## 3.0.2
 
 - Update Firebase dependencies to their latest versions
