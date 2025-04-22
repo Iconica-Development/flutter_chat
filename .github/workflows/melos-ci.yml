@@ -11,5 +11,4 @@ jobs:
     secrets: inherit
     permissions: write-all
     with:
-      subfolder: '.' # add optional subfolder to run workflow in
-      flutter_version: 3.19.6
+      flutter_version: 3.22.1
