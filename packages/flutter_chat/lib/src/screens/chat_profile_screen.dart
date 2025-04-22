@@ -193,18 +193,16 @@ class _Body extends StatelessWidget {
     );
 
     var targetUser = user ??
-        (
-          chat != null
-              ? UserModel(
-                  id: UniqueKey().toString(),
-                  firstName: chat?.chatName,
-                  imageUrl: chat?.imageUrl,
-                )
-              : UserModel(
-                  id: UniqueKey().toString(),
-                  firstName: options.translations.groupNameEmpty,
-                ),
-        ) as UserModel;
+        (chat != null
+            ? UserModel(
+                id: UniqueKey().toString(),
+                firstName: chat?.chatName,
+                imageUrl: chat?.imageUrl,
+              )
+            : UserModel(
+                id: UniqueKey().toString(),
+                firstName: options.translations.groupNameEmpty,
+              ));
 
     return Stack(
       children: [
