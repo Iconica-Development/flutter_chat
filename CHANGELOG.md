@@ -1,6 +1,7 @@
 ## 6.0.1
 - Added proper implementation for getAllUsersForChat in Firebase repository
 - Removed cast which throws an error in ChatProfileScreen
+- Added BackButton to ChatOverviewScreen when onExit is not null
 
 ## 6.0.0
 - Added pending message repository to temporarily store messages that are not yet received by the backend
