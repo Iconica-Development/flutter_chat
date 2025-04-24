@@ -78,6 +78,8 @@ abstract class _BaseChatNavigatorUserstory extends HookWidget {
   final ChatOptions options;
 
   /// Callback for when the user wants to navigate back.
+  ///
+  /// This will also show the back button in the appbar when not null
   final VoidCallback? onExit;
 
   /// Implemented by subclasses to provide the initial route of the userstory.
@@ -108,7 +110,7 @@ abstract class _BaseChatNavigatorUserstory extends HookWidget {
       service: service,
       popHandler: popHandler,
       child: NavigatorPopHandler(
-        onPop: () => popHandler.handlePop(),
+        onPop: popHandler.handlePop,
         child: Navigator(
           key: nestedNavigatorKey,
           onGenerateInitialRoutes: (_, __) => [

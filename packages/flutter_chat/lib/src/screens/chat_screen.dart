@@ -46,7 +46,7 @@ class ChatScreen extends HookWidget {
 
     if (options.builders.baseScreenBuilder == null) {
       return Scaffold(
-        appBar: const _AppBar(),
+        appBar: _AppBar(onExit),
         body: _Body(
           onPressChat: onPressChat,
           onPressStartChat: onPressStartChat,
@@ -58,7 +58,7 @@ class ChatScreen extends HookWidget {
     return options.builders.baseScreenBuilder!.call(
       context,
       mapScreenType,
-      const _AppBar(),
+      _AppBar(onExit),
       translations.chatsTitle,
       _Body(
         onPressChat: onPressChat,
@@ -70,7 +70,9 @@ class ChatScreen extends HookWidget {
 }
 
 class _AppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _AppBar();
+  const _AppBar(this.onExit);
+
+  final VoidCallback? onExit;
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +83,11 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
     var theme = Theme.of(context);
 
     return AppBar(
+      leading: onExit != null
+          ? BackButton(
+              onPressed: () => onExit?.call(),
+            )
+          : null,
       title: Text(
         translations.chatsTitle,
       ),
