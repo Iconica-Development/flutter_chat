@@ -21,6 +21,7 @@ export "src/screens/chat_screen.dart";
 export "src/screens/creation/new_chat_screen.dart";
 export "src/screens/creation/new_group_chat_overview.dart";
 export "src/screens/creation/new_group_chat_screen.dart";
+export "src/screens/creation/widgets/default_image_picker.dart";
 
 // Services
 export "src/services/date_formatter.dart";
